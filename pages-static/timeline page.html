@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialNet - Connect with Friends</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-pic-lg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message-sent {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-received {
+            background-color: #e9ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .friend-request-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .online-status {
+            width: 12px;
+            height: 12px;
+            background-color: #28a745;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 2px solid white;
+        }
+
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+        }
+
+        .modal-header {
+            border-bottom: none;
+        }
+
+        .modal-footer {
+            border-top: none;
+        }
+
+        .like-btn {
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .like-btn.liked {
+            color: var(--danger-color);
+        }
+
+        .comment-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .admin-badge {
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-users"></i> SocialNet</a>
+            
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <div class="nav-item me-3">
+                    <input type="search" class="form-control" placeholder="Search friends..." style="width: 250px;">
+                </div>
+                
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge badge bg-danger position-absolute" style="top: -8px; right: -8px;">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Sarah Johnson</strong> liked your post
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Mike Chen</strong> sent you a friend request
+                                    <div class="text-muted small">5 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="#" onclick="showProfile()"><i class="fas fa-user me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="#" onclick="showSettings()"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="showAdminPanel()"><i class="fas fa-shield-alt me-2"></i>Admin Panel</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Login/Register Modal -->
+        <div class="modal fade" id="authModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Welcome to SocialNet</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs mb-3" id="authTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#loginTab">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#registerTab">Register</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="loginTab">
+                                <form id="loginForm">
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" placeholder="Email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" placeholder="Password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                                    <div class="text-center mt-3">
+                                        <a href="#" class="text-decoration-none">Forgot Password?</a>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="registerTab">
+                                <form id="registerForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <input type="text" class="form-control" placeholder="First Name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <input type="text" class="form-control" placeholder="Last Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" placeholder="Email" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" placeholder="Password" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" placeholder="Confirm Password" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">Create Account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row" id="mainContent">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="text-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" class="profile-pic-lg mb-3">
+                        <h5>John Doe</h5>
+                        <p class="text-muted">Software Developer</p>
+                        <div class="d-flex justify-content-around">
+                            <div class="text-center">
+                                <div class="fw-bold">245</div>
+                                <small class="text-muted">Friends</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold">89</div>
+                                <small class="text-muted">Posts</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action active" onclick="showFeed()">
+                            <i class="fas fa-home me-2"></i>News Feed
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="showFriends()">
+                            <i class="fas fa-users me-2"></i>Friends
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="showMessages()">
+                            <i class="fas fa-envelope me-2"></i>Messages
+                            <span class="badge bg-primary ms-auto">2</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" onclick="showFriendRequests()">
+                            <i class="fas fa-user-plus me-2"></i>Friend Requests
+                            <span class="badge bg-success ms-auto">3</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Feed -->
+            <div class="col-lg-6">
+                <!-- Create Post -->
+                <div class="post-card p-4" id="feedSection">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                        <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-light flex-fill me-2" onclick="openCreatePost()">
+                            <i class="fas fa-edit me-2"></i>Post
+                        </button>
+                        <button class="btn btn-light flex-fill me-2" onclick="openImageUpload()">
+                            <i class="fas fa-image me-2"></i>Photo
+                        </button>
+                        <button class="btn btn-light flex-fill">
+                            <i class="fas fa-video me-2"></i>Video
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Posts Feed -->
+                <div id="postsContainer">
+                    <!-- Sample Posts -->
+                    <div class="post-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <h6 class="mb-0">Sarah Johnson</h6>
+                                    <small class="text-muted">2 hours ago</small>
+                                </div>
+                                <div class="ms-auto dropdown">
+                                    <button class="btn btn-sm" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#">Edit</a></li>
+                                        <li><a class="dropdown-item" href="#">Delete</a></li>
+                                        <li><a class="dropdown-item" href="#">Report</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <p>Just finished an amazing hiking trip! The views were absolutely breathtaking. Can't wait to plan the next adventure! 🏔️ #hiking #nature</p>
+                            
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop" class="img-fluid rounded mb-3">
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="text-muted">24 likes • 8 comments</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart me-1"></i>Like
+                                </button>
+                                <button class="btn btn-light flex-fill me-2" onclick="toggleComments(this)">
+                                    <i class="fas fa-comment me-1"></i>Comment
+                                </button>
+                                <button class="btn btn-light flex-fill">
+                                    <i class="fas fa-share me-1"></i>Share
+                                </button>
+                            </div>
+                            
+                            <div class="comment-section hidden">
+                                <div class="mb-3">
+                                    <div class="d-flex mb-2">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=30&h=30&fit=crop&crop=face" class="profile-pic me-2" style="width: 30px; height: 30px;">
+                                        <div class="flex-grow-1">
+                                            <strong>Mike Chen</strong>
+                                            <p class="mb-1">Absolutely stunning! Where was this taken?</p>
+                                            <small class="text-muted">1 hour ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=30&h=30&fit=crop&crop=face" class="profile-pic me-2" style="width: 30px; height: 30px;">
+                                    <input type="text" class="form-control" placeholder="Write a comment...">
+                                    <button class="btn btn-primary ms-2">Post</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="post-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <h6 class="mb-0">Mike Chen</h6>
+                                    <small class="text-muted">4 hours ago</small>
+                                </div>
+                            </div>
+                            
+                            <p>Excited to announce that I just got accepted into the software engineering program! Thanks to everyone who supported me along the way. The journey continues! 💻🎉</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted">15 likes • 12 comments</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart me-1"></i>Like
+                                </button>
+                                <button class="btn btn-light flex-fill me-2" onclick="toggleComments(this)">
+                                    <i class="fas fa-comment me-1"></i>Comment
+                                </button>
+                                <button class="btn btn-light flex-fill">
+                                    <i class="fas fa-share me-1"></i>Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friends Section -->
+                <div id="friendsSection" class="hidden">
+                    <div class="sidebar">
+                        <h4 class="mb-4">My Friends (245)</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                        <div class="online-status"></div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">Sarah Johnson</h6>
+                                        <small class="text-muted">Online</small>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="openChat('Sarah Johnson')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">Mike Chen</h6>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="openChat('Mike Chen')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">Emma Wilson</h6>
+                                        <small class="text-muted">Yesterday</small>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" onclick="openChat('Emma Wilson')">
+                                        <i class="fas fa-envelope"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friend Requests Section -->
+                <div id="friendRequestsSection" class="hidden">
+                    <h4 class="mb-4">Friend Requests</h4>
+                    
+                    <div class="friend-request-card">
+                        <div class="d-flex align-items-center">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop&crop=face" class="profile-pic me-3" style="width: 60px; height: 60px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Alex Rodriguez</h6>
+                                <p class="text-muted mb-0">2 mutual friends</p>
+                                <small class="text-muted">Sent 2 hours ago</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-sm me-2" onclick="acceptFriendRequest(this)">Accept</button>
+                                <button class="btn btn-secondary btn-sm" onclick="declineFriendRequest(this)">Decline</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="friend-request-card">
+                        <div class="d-flex align-items-center">
+                            <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=60&h=60&fit=crop&crop=face" class="profile-pic me-3" style="width: 60px; height: 60px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">Lisa Park</h6>
+                                <p class="text-muted mb-0">5 mutual friends</p>
+                                <small class="text-muted">Sent yesterday</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary btn-sm me-2" onclick="acceptFriendRequest(this)">Accept</button>
+                                <button class="btn btn-secondary btn-sm" onclick="declineFriendRequest(this)">Decline</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Section -->
+                <div id="messagesSection" class="hidden">
+                    <div class="sidebar">
+                        <h4 class="mb-4">Messages</h4>
+                        
+                        <div class="list-group">
+                            <div class="list-group-item list-group-item-action" onclick="openChat('Sarah Johnson')">
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                        <div class="online-status"></div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-1">Sarah Johnson</h6>
+                                            <small class="text-muted">2:30 PM</small>
+                                        </div>
+                                        <p class="mb-1 text-muted">Hey! How was your weekend?</p>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">2</span>
+                                </div>
+                            </div>
+                            
+                            <div class="list-group-item list-group-item-action" onclick="openChat('Mike Chen')">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-1">Mike Chen</h6>
+                                            <small class="text-muted">Yesterday</small>
+                                        </div>
+                                        <p class="mb-1 text-muted">Thanks for the advice!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <h6 class="mb-3">Friend Suggestions</h6>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" style="font-size: 0.9em;">Alex Rodriguez</h6>
+                                <small class="text-muted">2 mutual friends</small>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="sendFriendRequest(this)">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" style="font-size: 0.9em;">Lisa Park</h6>
+                                <small class="text-muted">5 mutual friends</small>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="sendFriendRequest(this)">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <h6 class="mb-3">Online Friends</h6>
+                    <div class="mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="position-relative">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=35&h=35&fit=crop&crop=face" class="profile-pic me-2" style="width: 35px; height: 35px;">
+                                
