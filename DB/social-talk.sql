@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 26, 2025 at 03:53 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: May 26, 2025 at 11:17 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `unicorn`
+-- Database: `social-talk`
 --
 
 -- --------------------------------------------------------
@@ -34,6 +34,26 @@ CREATE TABLE `comments` (
   `content` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `education`
+--
+
+CREATE TABLE `education` (
+  `education_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `institution_name` varchar(255) NOT NULL,
+  `degree` varchar(100) NOT NULL,
+  `field_of_study` varchar(100) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -62,7 +82,7 @@ CREATE TABLE `likes` (
   `comment_id` int(11) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -176,11 +196,6 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `first_name` varchar(50) DEFAULT NULL,
-  `last_name` varchar(50) DEFAULT NULL,
-  `bio` text DEFAULT NULL,
-  `profile_pic` varchar(255) DEFAULT 'default.jpg',
-  `cover_photo` varchar(255) DEFAULT NULL,
   `email_verified` tinyint(1) DEFAULT 0,
   `verification_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -192,9 +207,56 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `bio`, `profile_pic`, `cover_photo`, `email_verified`, `verification_token`, `created_at`, `last_login`, `status`) VALUES
-(2, 'abdulaziz', 'abdulazizkhan1997@gmail.com', '$2y$10$2Qolzx01EKsF9d1jdcrHluNt0NP5ZEnCvArG2h2qSCcesgRuyqeOC', NULL, NULL, NULL, 'default.jpg', NULL, 0, NULL, '2025-05-25 20:22:23', NULL, 'active'),
-(3, 'abdulazizkhan', 'abdulazizkhan.web@gmail.com', '$2y$10$XHqs1BvOgHDnjV0uzg.W4eVOE.m9o5JbP9lxReePfmTEz240lk7pC', NULL, NULL, NULL, 'default.jpg', NULL, 0, NULL, '2025-05-25 21:39:42', NULL, 'active');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `email_verified`, `verification_token`, `created_at`, `last_login`, `status`) VALUES
+(2, 'abdulaziz', 'abdulazizkhan1997@gmail.com', '$2y$10$2Qolzx01EKsF9d1jdcrHluNt0NP5ZEnCvArG2h2qSCcesgRuyqeOC', 0, NULL, '2025-05-25 20:22:23', NULL, 'active'),
+(3, 'abdulazizkhan', 'abdulazizkhan.web@gmail.com', '$2y$10$XHqs1BvOgHDnjV0uzg.W4eVOE.m9o5JbP9lxReePfmTEz240lk7pC', 0, NULL, '2025-05-25 21:39:42', NULL, 'active'),
+(4, 'mamun', 'mamun@gmail.com', '$2y$10$lz.IOuDGwAcq1pAjbhr2wO5eS9NuqpSXq8mCfpqju5anY/eihVXNK', 0, NULL, '2025-05-26 05:14:18', NULL, 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_profile`
+--
+
+CREATE TABLE `user_profile` (
+  `user_id` int(11) NOT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `blood_group` enum('A+','A-','B+','B-','AB+','AB-','O+','O-') DEFAULT NULL,
+  `country` varchar(100) DEFAULT NULL,
+  `address_line1` varchar(255) DEFAULT NULL,
+  `address_line2` varchar(255) DEFAULT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(20) DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `bio` text DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `cover_photo` varchar(128) NOT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `gender` enum('Male','Female','Other') DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `work_history`
+--
+
+CREATE TABLE `work_history` (
+  `work_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `company_name` varchar(255) NOT NULL,
+  `job_title` varchar(100) NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -207,6 +269,13 @@ ALTER TABLE `comments`
   ADD PRIMARY KEY (`comment_id`),
   ADD KEY `post_id` (`post_id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `education`
+--
+ALTER TABLE `education`
+  ADD PRIMARY KEY (`education_id`),
+  ADD KEY `idx_education_user_id` (`user_id`);
 
 --
 -- Indexes for table `friendships`
@@ -289,6 +358,21 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `user_profile`
+--
+ALTER TABLE `user_profile`
+  ADD PRIMARY KEY (`user_id`),
+  ADD KEY `idx_user_profile_country` (`country`),
+  ADD KEY `idx_user_profile_city` (`city`);
+
+--
+-- Indexes for table `work_history`
+--
+ALTER TABLE `work_history`
+  ADD PRIMARY KEY (`work_id`),
+  ADD KEY `idx_work_history_user_id` (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -297,6 +381,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `comments`
   MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `education`
+--
+ALTER TABLE `education`
+  MODIFY `education_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `friendships`
@@ -356,7 +446,13 @@ ALTER TABLE `shares`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `work_history`
+--
+ALTER TABLE `work_history`
+  MODIFY `work_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -368,6 +464,12 @@ ALTER TABLE `users`
 ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `education`
+--
+ALTER TABLE `education`
+  ADD CONSTRAINT `education_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `friendships`
@@ -430,6 +532,18 @@ ALTER TABLE `sessions`
 ALTER TABLE `shares`
   ADD CONSTRAINT `shares_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `shares_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `posts` (`post_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_profile`
+--
+ALTER TABLE `user_profile`
+  ADD CONSTRAINT `user_profile_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `work_history`
+--
+ALTER TABLE `work_history`
+  ADD CONSTRAINT `work_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

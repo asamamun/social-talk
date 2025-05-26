@@ -1,0 +1,67 @@
+-- Ensure the users table exists in unicorn.sql with user_id as INT PRIMARY KEY
+-- Example users table (modify based on unicorn.sql):
+-- CREATE TABLE users (
+--     user_id INT AUTO_INCREMENT PRIMARY KEY,
+--     username VARCHAR(50) NOT NULL UNIQUE,
+--     email VARCHAR(100) NOT NULL UNIQUE,
+--     password_hash VARCHAR(255) NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Creating the user_profile table
+CREATE TABLE user_profile (
+    user_id INT PRIMARY KEY,
+    first_name VARCHAR(50) DEFAULT NULL,
+    last_name VARCHAR(50) DEFAULT NULL,
+    blood_group ENUM('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-') DEFAULT NULL,
+    country VARCHAR(100) DEFAULT NULL,
+    address_line1 VARCHAR(255) DEFAULT NULL,
+    address_line2 VARCHAR(255) DEFAULT NULL,
+    city VARCHAR(100) DEFAULT NULL,
+    state VARCHAR(100) DEFAULT NULL,
+    postal_code VARCHAR(20) DEFAULT NULL,
+    phone_number VARCHAR(20) DEFAULT NULL,
+    bio TEXT DEFAULT NULL,
+    profile_picture VARCHAR(255) DEFAULT NULL,
+    date_of_birth DATE DEFAULT NULL,
+    gender ENUM('Male', 'Female', 'Other') DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_user_profile_country (country),
+    INDEX idx_user_profile_city (city)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Creating the work_history table
+CREATE TABLE work_history (
+    work_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
+    job_title VARCHAR(100) NOT NULL,
+    location VARCHAR(255) DEFAULT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE DEFAULT NULL,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_work_history_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Creating the education table
+CREATE TABLE education (
+    education_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    institution_name VARCHAR(255) NOT NULL,
+    degree VARCHAR(100) NOT NULL,
+    field_of_study VARCHAR(100) DEFAULT NULL,
+    location VARCHAR(255) DEFAULT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE DEFAULT NULL,
+    description TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    INDEX idx_education_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
