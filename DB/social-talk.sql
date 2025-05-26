@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 26, 2025 at 11:17 AM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: May 26, 2025 at 12:27 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -198,6 +198,7 @@ CREATE TABLE `users` (
   `password_hash` varchar(255) NOT NULL,
   `email_verified` tinyint(1) DEFAULT 0,
   `verification_token` varchar(100) DEFAULT NULL,
+  `role` enum('admin','user','','') NOT NULL DEFAULT 'user',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_login` timestamp NULL DEFAULT NULL,
   `status` enum('active','banned','deleted') DEFAULT 'active'
@@ -207,10 +208,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `email_verified`, `verification_token`, `created_at`, `last_login`, `status`) VALUES
-(2, 'abdulaziz', 'abdulazizkhan1997@gmail.com', '$2y$10$2Qolzx01EKsF9d1jdcrHluNt0NP5ZEnCvArG2h2qSCcesgRuyqeOC', 0, NULL, '2025-05-25 20:22:23', NULL, 'active'),
-(3, 'abdulazizkhan', 'abdulazizkhan.web@gmail.com', '$2y$10$XHqs1BvOgHDnjV0uzg.W4eVOE.m9o5JbP9lxReePfmTEz240lk7pC', 0, NULL, '2025-05-25 21:39:42', NULL, 'active'),
-(4, 'mamun', 'mamun@gmail.com', '$2y$10$lz.IOuDGwAcq1pAjbhr2wO5eS9NuqpSXq8mCfpqju5anY/eihVXNK', 0, NULL, '2025-05-26 05:14:18', NULL, 'active');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `email_verified`, `verification_token`, `role`, `created_at`, `last_login`, `status`) VALUES
+(2, 'abdulaziz', 'abdulazizkhan1997@gmail.com', '$2y$10$2Qolzx01EKsF9d1jdcrHluNt0NP5ZEnCvArG2h2qSCcesgRuyqeOC', 0, NULL, 'user', '2025-05-25 20:22:23', NULL, 'active'),
+(3, 'abdulazizkhan', 'abdulazizkhan.web@gmail.com', '$2y$10$XHqs1BvOgHDnjV0uzg.W4eVOE.m9o5JbP9lxReePfmTEz240lk7pC', 0, NULL, 'user', '2025-05-25 21:39:42', NULL, 'active'),
+(4, 'mamun', 'mamun@gmail.com', '$2y$10$lz.IOuDGwAcq1pAjbhr2wO5eS9NuqpSXq8mCfpqju5anY/eihVXNK', 0, NULL, 'user', '2025-05-26 05:14:18', NULL, 'active');
 
 -- --------------------------------------------------------
 
