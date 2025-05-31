@@ -69,7 +69,7 @@
                             <a class="dropdown-item" href="user-profile.php?id=<?php echo $_SESSION['user_id']; ?>"><i class="fas fa-user me-2"></i>My Profile</a>
                             <a class="dropdown-item" href="setting.php" onclick="showSettings()"><i class="fas fa-cog me-2"></i>Settings</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                            <a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                         </div>
                     </div>
                 </div>

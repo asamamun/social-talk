@@ -10,24 +10,30 @@ if (isset($_SESSION['user_id'])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $db = new MysqliDb();
-    if ($_POST['password'] != $_POST['confirmPassword']) {
-        $message = "Passwords do not match";
-    } else {
-        $data = array(
-            'username' => $_POST['username'],
-            'email' => $_POST['email'],
-            'password_hash' => password_hash($_POST['password'], PASSWORD_DEFAULT)
-        );
 
-        if ($db->insert('users', $data)) {
-            $_SESSION['message'] = "User registered successfully";
-            header("Location: login.php");
-            exit;
+    if ($db->where('email', $_POST['email'])->getValue('users', 'email')) {
+        $message = "Email already exists";
+    } else {
+        if ($_POST['password'] != $_POST['confirmPassword']) {
+            $message = "Passwords do not match";
         } else {
-            $message = "Error in registering user";
+            $data = array(
+                'username' => $_POST['username'],
+                'email' => $_POST['email'],
+                'password_hash' => password_hash($_POST['password'], PASSWORD_DEFAULT)
+            );
+
+            if ($db->insert('users', $data)) {
+                $_SESSION['message'] = "User registered successfully";
+                header("Location: login.php");
+                exit;
+            } else {
+                $message = "Error in registering user";
+            }
         }
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

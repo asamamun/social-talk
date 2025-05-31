@@ -566,3 +566,129 @@ document.getElementById('media').addEventListener('change', function (event) {
     });
 });
 
+
+
+//post actions for index.php
+function toggleLike(postId) {
+    fetch('index.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=like_post&post_id=${postId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+        const likeCount = likeBtn.querySelector('.like-count');
+        
+        if (data.status === 'liked') {
+            likeBtn.classList.add('liked');
+            likeCount.textContent = parseInt(likeCount.textContent) + 1;
+        } else {
+            likeBtn.classList.remove('liked');
+            likeCount.textContent = Math.max(0, parseInt(likeCount.textContent) - 1);
+        }
+        
+        // Update the summary text
+        const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+        const newLikeCount = likeCount.textContent;
+        const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`).textContent;
+        summaryText.textContent = `${newLikeCount} likes · ${commentCount} comments`;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    if (commentsSection.style.display === 'none') {
+        commentsSection.style.display = 'block';
+        loadComments(postId);
+    } else {
+        commentsSection.style.display = 'none';
+    }
+}
+
+function handleCommentSubmit(event, postId) {
+    if (event.key === 'Enter') {
+        const comment = event.target.value.trim();
+        if (comment) {
+            addComment(postId, comment);
+            event.target.value = '';
+        }
+    }
+}
+
+function addComment(postId, comment) {
+    fetch('index.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=add_comment&post_id=${postId}&comment=${encodeURIComponent(comment)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            loadComments(postId);
+            // Update comment count
+            const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
+            const currentCount = parseInt(commentCount.textContent);
+            commentCount.textContent = currentCount + 1;
+            
+            // Update summary text
+            const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+            const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`).textContent;
+            summaryText.textContent = `${likeCount} likes · ${currentCount + 1} comments`;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function loadComments(postId) {
+    fetch('index.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=load_comments&post_id=${postId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const commentsList = document.getElementById(`comments-list-${postId}`);
+            commentsList.innerHTML = '';
+            
+            data.comments.forEach(comment => {
+                const commentHtml = `
+                    <div class="comment-item d-flex">
+                        <img src="${comment.profile_picture || 'assets/default-avatar.png'}" 
+                             alt="Profile" class="profile-img me-2">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <strong class="small">${comment.username}</strong>
+                                <small class="text-muted">${timeAgoJS(comment.created_at)}</small>
+                            </div>
+                            <p class="mb-0 small">${comment.content}</p>
+                        </div>
+                    </div>
+                `;
+                commentsList.innerHTML += commentHtml;
+            });
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function timeAgoJS(datetime) {
+    const time = Math.floor((new Date() - new Date(datetime)) / 1000);
+    
+    if (time < 60) return 'just now';
+    if (time < 3600) return Math.floor(time/60) + ' minutes ago';
+    if (time < 86400) return Math.floor(time/3600) + ' hours ago';
+    if (time < 2592000) return Math.floor(time/86400) + ' days ago';
+    if (time < 31536000) return Math.floor(time/2592000) + ' months ago';
+    return Math.floor(time/31536000) + ' years ago';
+}
+
+//post actions for index.php end
