@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 26, 2025 at 12:27 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Generation Time: May 31, 2025 at 12:07 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -69,6 +69,16 @@ CREATE TABLE `friendships` (
   `action_user_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `friendships`
+--
+
+INSERT INTO `friendships` (`friendship_id`, `user1_id`, `user2_id`, `status`, `action_user_id`, `created_at`) VALUES
+(1, 4, 6, 'accepted', 4, '2025-05-31 06:06:12'),
+(2, 4, 8, 'accepted', 8, '2025-05-31 06:06:42'),
+(3, 6, 9, 'accepted', 9, '2025-05-31 06:06:58'),
+(4, 9, 11, 'accepted', 11, '2025-05-31 06:07:11');
 
 -- --------------------------------------------------------
 
@@ -138,11 +148,25 @@ CREATE TABLE `posts` (
   `post_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `content` text NOT NULL,
-  `image` varchar(255) DEFAULT NULL,
+  `images` varchar(255) DEFAULT NULL,
   `visibility` enum('public','friends','private') DEFAULT 'public',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`post_id`, `user_id`, `content`, `images`, `visibility`, `created_at`, `updated_at`) VALUES
+(1, 5, 'test post number 1 for testing  out post in test post', '', 'public', '2025-05-31 05:02:43', '2025-05-31 05:02:43'),
+(2, 5, 'Your JavaScript preview script is correct and unrelated to why images aren’t uploading. If the images are previewing fine but not getting uploaded, the issue is likely in your PHP file handling or form setup.', 'img_683a8e7de33063.21047537.jpg,img_683a8e7de35040.39753478.jpg', 'public', '2025-05-31 05:07:09', '2025-05-31 05:07:09'),
+(3, 6, 'This is our social media.which name social-talk', 'img_683a9a5c7dbe51.33889234.webp', 'public', '2025-05-31 05:57:48', '2025-05-31 05:57:48'),
+(4, 8, 'hi.\r\nwe are testing socialtalk.', '', 'public', '2025-05-31 05:59:57', '2025-05-31 05:59:57'),
+(5, 6, 'This is our social media which name is social-talk', 'img_683a9af07ca231.58964211.jpg', 'public', '2025-05-31 06:00:16', '2025-05-31 06:00:16'),
+(6, 9, 'sfdgfhgfjhgkiojklkm,lhfyhrdse34eretfdgfghjhkjlk;l\';l\'p[[[[[[[[[[[[[[', 'img_683a9b8749b1b8.87455655.png', 'public', '2025-05-31 06:02:47', '2025-05-31 06:02:47'),
+(7, 8, 'Hulk is my favorite hero....rddfgfdg', 'img_683a9bdb956a51.37816438.png', 'public', '2025-05-31 06:04:11', '2025-05-31 06:04:11'),
+(8, 11, 'mdjkgfgnmdxfkkkkkkkkkkkkkfgvfdgvn', 'img_683a9c13d50fc6.18568980.PNG', 'public', '2025-05-31 06:05:07', '2025-05-31 06:05:07');
 
 -- --------------------------------------------------------
 
@@ -196,9 +220,9 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
+  `role` set('user','admin') NOT NULL DEFAULT 'user',
   `email_verified` tinyint(1) DEFAULT 0,
   `verification_token` varchar(100) DEFAULT NULL,
-  `role` enum('admin','user','','') NOT NULL DEFAULT 'user',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_login` timestamp NULL DEFAULT NULL,
   `status` enum('active','banned','deleted') DEFAULT 'active'
@@ -208,10 +232,16 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `email_verified`, `verification_token`, `role`, `created_at`, `last_login`, `status`) VALUES
-(2, 'abdulaziz', 'abdulazizkhan1997@gmail.com', '$2y$10$2Qolzx01EKsF9d1jdcrHluNt0NP5ZEnCvArG2h2qSCcesgRuyqeOC', 0, NULL, 'user', '2025-05-25 20:22:23', NULL, 'active'),
-(3, 'abdulazizkhan', 'abdulazizkhan.web@gmail.com', '$2y$10$XHqs1BvOgHDnjV0uzg.W4eVOE.m9o5JbP9lxReePfmTEz240lk7pC', 0, NULL, 'user', '2025-05-25 21:39:42', NULL, 'active'),
-(4, 'mamun', 'mamun@gmail.com', '$2y$10$lz.IOuDGwAcq1pAjbhr2wO5eS9NuqpSXq8mCfpqju5anY/eihVXNK', 0, NULL, 'user', '2025-05-26 05:14:18', NULL, 'active');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role`, `email_verified`, `verification_token`, `created_at`, `last_login`, `status`) VALUES
+(2, 'abdulaziz', 'abdulazizkhan1997@gmail.com', '$2y$10$2Qolzx01EKsF9d1jdcrHluNt0NP5ZEnCvArG2h2qSCcesgRuyqeOC', 'user', 0, NULL, '2025-05-25 20:22:23', NULL, 'active'),
+(3, 'abdulazizkhan', 'abdulazizkhan.web@gmail.com', '$2y$10$XHqs1BvOgHDnjV0uzg.W4eVOE.m9o5JbP9lxReePfmTEz240lk7pC', 'user', 0, NULL, '2025-05-25 21:39:42', NULL, 'active'),
+(4, 'mamun', 'mamun@gmail.com', '$2y$10$lz.IOuDGwAcq1pAjbhr2wO5eS9NuqpSXq8mCfpqju5anY/eihVXNK', 'user', 0, NULL, '2025-05-26 05:14:18', NULL, 'active'),
+(5, 'user1', 'user1@gmail.com', '$2y$10$WraNi.GPNRabflfMizqhAOZFB5H.//iUkW0y2LHOHPn2QAvc1HxTS', 'user', 0, NULL, '2025-05-31 03:56:22', NULL, 'active'),
+(6, 'Jhuma', 'mj@gmail.com', '$2y$10$JkDCRUpORpv6SJf8reiySum7Em80Mo//JkY4ETluBWTijWwxvA2y.', 'user', 0, NULL, '2025-05-31 04:16:11', NULL, 'active'),
+(8, 'AbdulAziz1', 'abdulazizkhan2023@gmail.com', '$2y$10$UhKeRk4CZy9SykkJR3p2hOPEbTAlPeMT2qlhDZ44A1Uyi7YrQ3a/.', 'user', 0, NULL, '2025-05-31 05:58:23', NULL, 'active'),
+(9, 'sumi', 'bisew.tahminasumi@gmail.com', '$2y$10$9BCe3Tyd52KPo643.TIXN.962Bq97cSJmoD/8SjZObY0RMSuPQ.9m', 'user', 0, NULL, '2025-05-31 06:01:21', NULL, 'active'),
+(11, 'Shamima Naznin', 'rune182013@gmail.com', '$2y$10$Ej0XrD06s6mVu7.Ihq0EJ.jh92FQjHap6KlsmnWMSZD4yUaQkUopO', 'user', 0, NULL, '2025-05-31 06:04:37', NULL, 'active'),
+(12, 'Aak', 'Aak@gmail.com', '$2y$10$5/ylCRzKTgJd8XhHKB5bnOlts/7xfNPkj7Gw14fyot3Zf2HUQ.UDe', 'user', 0, NULL, '2025-05-31 06:05:58', NULL, 'active');
 
 -- --------------------------------------------------------
 
@@ -393,7 +423,7 @@ ALTER TABLE `education`
 -- AUTO_INCREMENT for table `friendships`
 --
 ALTER TABLE `friendships`
-  MODIFY `friendship_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `friendship_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `likes`
@@ -423,7 +453,7 @@ ALTER TABLE `password_resets`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `reports`
@@ -447,7 +477,7 @@ ALTER TABLE `shares`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `work_history`
