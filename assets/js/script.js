@@ -1,7 +1,7 @@
-// socialNet.js
+// socialTalk.js
 (function () {
-    // SocialNet object to encapsulate all functionality
-    const socialNet = {
+    // socialTalk object to encapsulate all functionality
+    const socialTalk = {
         // === Post-Related Functions ===
         // Redirect to create_post.php for post creation
         openCreatePost: function () {
@@ -52,7 +52,7 @@
         addComment: function () {
             const comment = prompt('Enter your comment:');
             if (comment) {
-                alert(`Comment added: ${socialNet.sanitizeInput(comment)}`);
+                alert(`Comment added: ${socialTalk.sanitizeInput(comment)}`);
                 // Future: Append comment to post via backend
             }
         },
@@ -62,7 +62,7 @@
             const postContent = link.closest('.card-body').querySelector('p').textContent;
             const newContent = prompt('Edit post:', postContent);
             if (newContent) {
-                link.closest('.card-body').querySelector('p').textContent = socialNet.sanitizeInput(newContent);
+                link.closest('.card-body').querySelector('p').textContent = socialTalk.sanitizeInput(newContent);
                 // Future: Send updated content to backend
             }
         },
@@ -121,7 +121,7 @@
             if (card) {
                 card.remove();
                 alert('Friend request accepted!');
-                socialNet.checkNoRequests();
+                socialTalk.checkNoRequests();
                 // Future: Send acceptance to backend
             }
         },
@@ -132,7 +132,7 @@
             if (card) {
                 card.remove();
                 alert('Friend request declined.');
-                socialNet.checkNoRequests();
+                socialTalk.checkNoRequests();
                 // Future: Send decline to backend
             }
         },
@@ -150,7 +150,7 @@
         // Handle notification click
         handleNotificationClick: function (type, id, element) {
             element.classList.remove('unread');
-            socialNet.checkNoNotifications();
+            socialTalk.checkNoNotifications();
             if (type === 'post') {
                 alert(`Navigating to post ID ${id}`);
                 // Future: window.location.href = `post.php?id=${id}`;
@@ -169,7 +169,7 @@
             notifications.forEach((notification) => {
                 notification.classList.remove('unread');
             });
-            socialNet.checkNoNotifications();
+            socialTalk.checkNoNotifications();
         },
 
         // Clear all notifications
@@ -180,7 +180,7 @@
                 notification.classList.add('remove');
                 setTimeout(() => notification.remove(), 300);
             });
-            setTimeout(socialNet.checkNoNotifications, 300);
+            setTimeout(socialTalk.checkNoNotifications, 300);
         },
 
         // Check if there are no notifications
@@ -252,7 +252,7 @@
             const chatContainer = document.getElementById('chatContainer');
             if (!input || !chatContainer) return;
 
-            const text = socialNet.sanitizeInput(input.value.trim());
+            const text = socialTalk.sanitizeInput(input.value.trim());
             if (!text) return;
 
             const messageDiv = document.createElement('div');
@@ -325,7 +325,7 @@
                     coverPhotoPreview.src =
                         'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop';
                     coverPhotoInput.value = '';
-                    socialNet.updateProfileCompletion();
+                    socialTalk.updateProfileCompletion();
                 }
             }
         },
@@ -423,7 +423,7 @@
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     document.getElementById('coverPhotoPreview').src = e.target.result;
-                    socialNet.updateProfileCompletion();
+                    socialTalk.updateProfileCompletion();
                 };
                 reader.readAsDataURL(file);
             }
@@ -443,7 +443,7 @@
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     document.getElementById('profilePicPreview').src = e.target.result;
-                    socialNet.updateProfileCompletion();
+                    socialTalk.updateProfileCompletion();
                 };
                 reader.readAsDataURL(file);
             }
@@ -456,7 +456,7 @@
             document.querySelectorAll('.blood-group-option').forEach((opt) => opt.classList.remove('selected'));
             this.classList.add('selected');
             document.getElementById('bloodGroupInput').value = this.dataset.value;
-            socialNet.updateProfileCompletion();
+            socialTalk.updateProfileCompletion();
         });
     });
 
@@ -466,7 +466,7 @@
             document.querySelectorAll('.gender-option').forEach((opt) => opt.classList.remove('selected'));
             this.classList.add('selected');
             document.getElementById('genderInput').value = this.dataset.value;
-            socialNet.updateProfileCompletion();
+            socialTalk.updateProfileCompletion();
         });
     });
 
@@ -480,7 +480,7 @@
                 bioCount.textContent = count;
                 bioCount.style.color = count > 450 ? '#dc3545' : '#6c757d';
             }
-            socialNet.updateProfileCompletion();
+            socialTalk.updateProfileCompletion();
         });
     }
 
@@ -534,8 +534,8 @@
         new bootstrap.Tooltip(el);
     });
 
-    // Expose socialNet to global scope
-    window.socialNet = socialNet;
+    // Expose socialTalk to global scope
+    window.socialTalk = socialTalk;
 })();
 
 

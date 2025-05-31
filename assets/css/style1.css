@@ -127,6 +127,19 @@ body {
     transform: scale(1.1);
 }
 
+
+.profile-name {
+    margin: 0;
+    color: var(--text-dark);
+       align-items: center;
+    position: absolute;
+     bottom: -50px;
+    left: 300px;
+    gap: 20px;
+}
+
+
+
 .profile-header, .cover-photo-section {
     background: var(--gradient-bg);
     height: 300px;
@@ -134,8 +147,8 @@ body {
     position: relative;
     margin-bottom: 100px;
     box-shadow: 0 4px 20px var(--shadow-dark);
+    padding: 20px;
 }
-
 .cover-photo-container {
     position: relative;
     width: 100%;

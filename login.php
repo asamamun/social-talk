@@ -53,7 +53,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
             <div>
                 <i class="fas fa-users fa-4x mb-4"></i>
                 <h1>Welcome Back!</h1>
-                <p>Connect with friends and the world around you on SocialNet.</p>
+                <p>Connect with friends and the world around you on Social-Talk.</p>
                 <div class="mt-4">
                     <i class="fas fa-heart me-2"></i>
                     <i class="fas fa-share me-2"></i>
@@ -66,7 +66,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         <!-- Right Side - Login Form -->
         <div class="col-md-6 login-right">
             <div class="brand-title d-md-none">
-                <i class="fas fa-users"></i> SocialNet
+                <i class="fas fa-users"></i> Social-Talk
             </div>
 
             <!-- Success/Error Messages -->

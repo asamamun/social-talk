@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include_once '../includes/header2.php';
-include_once '../includes/db.php';
+include_once 'includes/header1.php';
+include_once 'includes/db.php';
 
 ?>
 
@@ -188,5 +188,5 @@ include_once '../includes/db.php';
 
 
 <?php
-include_once '../includes/footer2.php';
+include_once 'includes/footer1.php';
 ?>

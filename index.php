@@ -263,17 +263,17 @@ include_once 'includes/header1.php';
                         </div>
                     </div>
                     <div class="list-group list-group-flush">
-                        <a href="timeline.php" class="list-group-item active" onclick="socialNet.showFeed()" aria-current="true">
+                        <a href="timeline.php" class="list-group-item active" onclick="socialTalk.showFeed()" aria-current="true">
                             <i class="fas fa-home me-2"></i>News Feed
                         </a>
-                        <a href="user-profile/friend.php" class="list-group-item" onclick="socialNet.showFriends()">
+                        <a href="user-profile/friend.php" class="list-group-item" onclick="socialTalk.showFriends()">
                             <i class="fas fa-users me-2"></i>Friends
                         </a>
-                        <a href="messages.php" class="list-group-item" onclick="socialNet.showMessages()">
+                        <a href="messages.php" class="list-group-item" onclick="socialTalk.showMessages()">
                             <i class="fas fa-envelope me-2"></i>Messages
                             <span class="badge bg-primary text-dark">2</span>
                         </a>
-                        <a href="friend-request.php" class="list-group-item" onclick="socialNet.showFriendRequests()">
+                        <a href="friend-request.php" class="list-group-item" onclick="socialTalk.showFriendRequests()">
                             <i class="fas fa-user-plus me-2"></i>Friend Requests
                             <span class="badge bg-success">3</span>
                         </a>
@@ -292,6 +292,7 @@ include_once 'includes/header1.php';
                         <!-- <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()"> -->
                         <textarea name="postContent" id="" class="form-control" placeholder="What's on your mind, <?= $user['username'] ?>?" required minlength="30"></textarea>
                     </div>
+                    
                     
                     <div class="d-flex justify-content-between"> 
                         <input type="file" name="media[]" id="media" class="d-none" multiple> 
@@ -374,23 +375,23 @@ include_once 'includes/header1.php';
                             <?php endif; ?>
 
                             <!-- Post Actions -->
-                            <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                                <div class="d-flex align-items-center">
-                                    <button class="like-btn me-3 <?php echo $post['user_liked'] ? 'liked' : ''; ?>" 
-                                            onclick="toggleLike(<?php echo $post['post_id']; ?>)">
-                                        <i class="fas fa-heart me-1"></i>
-                                        <span class="like-count"><?php echo $post['like_count']; ?></span>
-                                    </button>
-                                    <button class="comment-btn me-3" onclick="toggleComments(<?php echo $post['post_id']; ?>)">
-                                        <i class="fas fa-comment me-1"></i>
-                                        <span class="comment-count"><?php echo $post['comment_count']; ?></span>
-                                    </button>
-                                </div>
-                                <small class="text-muted">
-                                    <?php echo $post['like_count']; ?> likes · <?php echo $post['comment_count']; ?> comments
-                                </small>
-                            </div>
-
+                           <div class="d-flex justify-content-between align-items-center border-top pt-3">
+    <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-action like-btn <?php echo $post['user_liked'] ? 'text-danger' : 'text-muted'; ?>" 
+                onclick="toggleLike(<?php echo $post['post_id']; ?>)">
+            <i class="fas fa-heart me-1"></i>
+            <span class="like-count fw-medium"><?php echo $post['like_count']; ?></span>
+        </button>
+        <button class="btn btn-action comment-btn text-muted" 
+                onclick="toggleComments(<?php echo $post['post_id']; ?>)">
+            <i class="fas fa-comment me-1"></i>
+            <span class="comment-count fw-medium"><?php echo $post['comment_count']; ?></span>
+        </button>
+    </div>
+    <small class="text-muted">
+        <?php echo $post['like_count']; ?> likes · <?php echo $post['comment_count']; ?> comments
+    </small>
+</div>
                             <!-- Comment Section -->
                             <div class="comment-section mt-3" id="comments-<?php echo $post['post_id']; ?>" style="display: none;">
                                 <div class="border-top pt-3">
@@ -430,7 +431,7 @@ include_once 'includes/header1.php';
                                 <h6 class="mb-0" style="font-size: 0.9em;">Alex Rodriguez</h6>
                                 <small class="text-muted">2 mutual friends</small>
                             </div>
-                            <button class="btn btn-primary btn-sm" onclick="socialNet.sendFriendRequest(this)" aria-label="Add Alex Rodriguez as friend">
+                            <button class="btn btn-primary btn-sm" onclick="socialTalk.sendFriendRequest(this)" aria-label="Add Alex Rodriguez as friend">
                                 <i class="fas fa-user-plus"></i>
                             </button>
                         </div>
@@ -442,7 +443,7 @@ include_once 'includes/header1.php';
                                 <h6 class="mb-0" style="font-size: 0.9em;">Lisa Park</h6>
                                 <small class="text-muted">5 mutual friends</small>
                             </div>
-                            <button class="btn btn-primary btn-sm" onclick="socialNet.sendFriendRequest(this)" aria-label="Add Lisa Park as friend">
+                            <button class="btn btn-primary btn-sm" onclick="socialTalk.sendFriendRequest(this)" aria-label="Add Lisa Park as friend">
                                 <i class="fas fa-user-plus"></i>
                             </button>
                         </div>

@@ -3,22 +3,27 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include_once 'includes/header2.php';
+include_once 'includes/header1.php';
 
 ?>
 
 
     <div class="container mt-4">
         <!-- Profile Header -->
-        <div class="profile-header">
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=180&h=180&fit=crop&crop=face" class="profile-pic-xl" alt="John Doe">
-            <div class="profile-actions">
-               
-               <a href="edit-about.php" class="btn btn-primary">
-    <i class="fas fa-pencil-alt me-2"></i>Edit Profile
-</a>
-            </div>
+   <div class="profile-header">
+    <div class="profile-header-content">
+        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=180&h=180&fit=crop&crop=face" class="profile-pic-xl" alt="John Doe">
+        <div class="profile-info">
+            <h1 class="profile-name">John Doe</h1>
+            <!-- You can add additional profile info here if needed -->
         </div>
+    </div>
+    <div class="profile-actions">
+        <a href="edit-about.php" class="btn btn-primary">
+            <i class="fas fa-pencil-alt me-2"></i>Edit Profile
+        </a>
+    </div>
+</div>
 
         <div class="row">
             <!-- Left Column -->
@@ -180,14 +185,14 @@ include_once 'includes/header2.php';
                         <textarea class="form-control mb-3" rows="4" placeholder="What's on your mind?" id="postContent" aria-label="Post content"></textarea>
                         <div class="d-flex justify-content-between">
                             <div>
-                                <button class="btn btn-light me-2" onclick="socialNet.openImageUpload()" aria-label="Upload photo">
+                                <button class="btn btn-light me-2" onclick="socialTalk.openImageUpload()" aria-label="Upload photo">
                                     <i class="fas fa-image me-1"></i>Photo
                                 </button>
                                 <button class="btn btn-light" aria-label="Upload video">
                                     <i class="fas fa-video me-1"></i>Video
                                 </button>
                             </div>
-                            <button class="btn btn-primary" onclick="socialNet.createPost()">Post</button>
+                            <button class="btn btn-primary" onclick="socialTalk.createPost()">Post</button>
                         </div>
                     </div>
                 </div>
@@ -360,5 +365,5 @@ include_once 'includes/header2.php';
     
 
 <?php
-include_once 'includes/footer2.php';
+include_once 'includes/footer1.php';
 ?>

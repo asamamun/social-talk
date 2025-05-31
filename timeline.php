@@ -106,17 +106,17 @@ include_once 'includes/db.php';
                         </div>
                     </div>
                     <div class="list-group list-group-flush">
-                        <a href="timeline.php" class="list-group-item active" onclick="socialNet.showFeed()" aria-current="true">
+                        <a href="timeline.php" class="list-group-item active" onclick="socialTalk.showFeed()" aria-current="true">
                             <i class="fas fa-home me-2"></i>News Feed
                         </a>
-                        <a href="user-profile/friend.php" class="list-group-item" onclick="socialNet.showFriends()">
+                        <a href="friend.php" class="list-group-item" onclick="socialTalk.showFriends()">
                             <i class="fas fa-users me-2"></i>Friends
                         </a>
-                        <a href="messages.php" class="list-group-item" onclick="socialNet.showMessages()">
+                        <a href="messages.php" class="list-group-item" onclick="socialTalk.showMessages()">
                             <i class="fas fa-envelope me-2"></i>Messages
                             <span class="badge bg-primary text-dark">2</span>
                         </a>
-                        <a href="friend-request.php" class="list-group-item" onclick="socialNet.showFriendRequests()">
+                        <a href="friend-request.php" class="list-group-item" onclick="socialTalk.showFriendRequests()">
                             <i class="fas fa-user-plus me-2"></i>Friend Requests
                             <span class="badge bg-success">3</span>
                         </a>
@@ -150,14 +150,14 @@ include_once 'includes/db.php';
                 <div id="postsContainer">
                     <div class="post-card fade-in position-relative">
                         <!-- Main clickable overlay -->
-                        <a href="other-user-profile/other-user-post.php" class="stretched-link" aria-label="View full post"></a>
+                        <a href="other-user-post.php" class="stretched-link" aria-label="View full post"></a>
                         
                         <div class="card-body">
                             <!-- Post Header -->
                             <div class="d-flex align-items-center mb-3 position-relative">
                                 <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Sarah Johnson profile">
                                 <div>
-                                    <a href="other-user-profile/other-user-profile.php" class="position-relative" style="z-index: 2;">
+                                    <a href="other-user-profile.php" class="position-relative" style="z-index: 2;">
                                         <h6 class="mb-0">Sarah Johnson</h6>
                                     </a>
                                     <small class="text-muted">2 hours ago</small>
@@ -190,13 +190,13 @@ include_once 'includes/db.php';
 
                             <!-- Post Actions -->
                             <div class="d-flex border-top border-bottom py-2 mb-3 position-relative" style="z-index: 2;">
-                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="socialNet.toggleLike(this)" aria-label="Like post">
+                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="socialTalk.toggleLike(this)" aria-label="Like post">
                                     <i class="fas fa-thumbs-up me-2"></i>Like
                                 </button>
-                                <button class="btn btn-light flex-fill me-2" onclick="socialNet.focusComment(this)" aria-label="Comment on post">
+                                <button class="btn btn-light flex-fill me-2" onclick="socialTalk.focusComment(this)" aria-label="Comment on post">
                                     <i class="fas fa-comment me-2"></i>Comment
                                 </button>
-                                <button class="btn btn-light flex-fill" onclick="socialNet.sharePost(this)" aria-label="Share post">
+                                <button class="btn btn-light flex-fill" onclick="socialTalk.sharePost(this)" aria-label="Share post">
                                     <i class="fas fa-share me-2"></i>Share
                                 </button>
                             </div>
@@ -275,13 +275,13 @@ include_once 'includes/db.php';
                                 </div>
                             </div>
                             <div class="d-flex border-top border-bottom py-2 mb-3 position-relative" style="z-index: 2;">
-                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="socialNet.toggleLike(this)" aria-label="Like post">
+                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="socialTalk.toggleLike(this)" aria-label="Like post">
                                     <i class="fas fa-thumbs-up me-2"></i>Like
                                 </button>
-                                <button class="btn btn-light flex-fill me-2" onclick="socialNet.focusComment(this)" aria-label="Comment on post">
+                                <button class="btn btn-light flex-fill me-2" onclick="socialTalk.focusComment(this)" aria-label="Comment on post">
                                     <i class="fas fa-comment me-2"></i>Comment
                                 </button>
-                                <button class="btn btn-light flex-fill" onclick="socialNet.sharePost(this)" aria-label="Share post">
+                                <button class="btn btn-light flex-fill" onclick="socialTalk.sharePost(this)" aria-label="Share post">
                                     <i class="fas fa-share me-2"></i>Share
                                 </button>
                             </div>
@@ -301,7 +301,7 @@ include_once 'includes/db.php';
                                 <h6 class="mb-0" style="font-size: 0.9em;">Alex Rodriguez</h6>
                                 <small class="text-muted">2 mutual friends</small>
                             </div>
-                            <button class="btn btn-primary btn-sm" onclick="socialNet.sendFriendRequest(this)" aria-label="Add Alex Rodriguez as friend">
+                            <button class="btn btn-primary btn-sm" onclick="socialTalk.sendFriendRequest(this)" aria-label="Add Alex Rodriguez as friend">
                                 <i class="fas fa-user-plus"></i>
                             </button>
                         </div>
@@ -313,7 +313,7 @@ include_once 'includes/db.php';
                                 <h6 class="mb-0" style="font-size: 0.9em;">Lisa Park</h6>
                                 <small class="text-muted">5 mutual friends</small>
                             </div>
-                            <button class="btn btn-primary btn-sm" onclick="socialNet.sendFriendRequest(this)" aria-label="Add Lisa Park as friend">
+                            <button class="btn btn-primary btn-sm" onclick="socialTalk.sendFriendRequest(this)" aria-label="Add Lisa Park as friend">
                                 <i class="fas fa-user-plus"></i>
                             </button>
                         </div>

@@ -90,7 +90,7 @@
                     <div class="mt-3">
                         <div class="input-group">
                             <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." aria-label="Type your message">
-                            <button class="btn btn-primary" onclick="socialNet.sendMessage()" aria-label="Send message">
+                            <button class="btn btn-primary" onclick="socialTalk.sendMessage()" aria-label="Send message">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>

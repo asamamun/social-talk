@@ -23,7 +23,7 @@ include_once 'includes/db.php';
         <div class="search-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="mb-0">Suggested Friends</h4>
-                <a href="user-profile/user-profile.php" class="btn btn-light"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+                <a href="user-profile.php" class="btn btn-light"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
             </div>
             <div class="friend-grid">
                 <div class="friend-card position-relative">

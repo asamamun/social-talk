@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include_once '../includes/header2.php';
-include_once '../includes/db.php';
+include_once 'includes/header1.php';
+include_once 'includes/db.php';
 
 ?>
 
@@ -16,7 +16,7 @@ include_once '../includes/db.php';
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="mb-0">John Doe's Friends (245)</h4>
                 <div>
-                   <a href="../find-friend.php"class="btn btn-primary me-2"><i class="fas fa-user-plus me-2"></i>Find Friends</a>
+                   <a href="find-friend.php"class="btn btn-primary me-2"><i class="fas fa-user-plus me-2"></i>Find Friends</a>
                     <a href="user-profile.php" class="btn btn-light"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
                 </div>
             </div>
@@ -62,5 +62,5 @@ include_once '../includes/db.php';
 
 
 <?php
-include_once '../includes/footer2.php';
+include_once 'includes/footer1.php';
 ?>
