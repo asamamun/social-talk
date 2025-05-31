@@ -537,3 +537,32 @@
     // Expose socialNet to global scope
     window.socialNet = socialNet;
 })();
+
+
+
+
+
+document.getElementById('media').addEventListener('change', function (event) {
+    const selectedImagesContainer = document.getElementById('selectedImages');
+    selectedImagesContainer.innerHTML = ''; // Clear previous previews
+
+    const files = event.target.files;
+
+    if (files.length === 0) return;
+
+    Array.from(files).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'img-thumbnail me-2 mb-2'; // Bootstrap styling
+            img.style.maxWidth = '100px';
+            img.style.maxHeight = '100px';
+            selectedImagesContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+

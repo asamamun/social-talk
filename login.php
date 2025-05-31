@@ -2,7 +2,36 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+require __DIR__ . '/vendor/autoload.php';
+if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true){
+    header("Location: index.php");
+    exit;    
+}
+if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $db = new MysqliDb();
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $user = $db->rawQuery("SELECT * FROM users WHERE email = ?", [$email]);
+/*     var_dump($user);
+    exit; */
+    if(!empty($user)){
+        if(password_verify($password, $user[0]['password_hash'])){
+            $_SESSION['user_id'] = $user[0]['user_id'];
+            $_SESSION['username'] = $user[0]['username'];
+            $_SESSION['logged_in'] = true;
+            $_SESSION['role'] = $user[0]['role'];
+            if($user[0]['role'] == 'admin'){
+                header("Location: admin/");
+                exit;
+            }
+            else{
+                header("Location: index.php");
+                exit;
+            }
+        }
+            
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -44,7 +73,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div id="alertContainer"></div>
 
             <!-- Login Form -->
-            <form id="loginForm" action="login.php" method="POST">
+            <form id="loginForm" action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
                 <div class="form-floating">
                     <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
                     <label for="email"><i class="fas fa-envelope me-2"></i>Email Address</label>
@@ -85,7 +114,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </form>
 
             <div class="signup-link">
-                Don't have an account? <a href="signup.php">Create Account</a>
+                Don't have an account? <a href="register.php">Create Account</a>
             </div>
         </div>
     </div>

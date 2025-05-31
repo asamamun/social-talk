@@ -34,96 +34,7 @@ function showAlert(message, type = 'success') {
     }, 5000);
 }
 
-// ========== LOGIN Script ==========
-document.addEventListener('DOMContentLoaded', function () {
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value; // Updated ID
-            const password = document.getElementById('password').value; // Updated ID
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.classList.add('loading');
 
-            // Send AJAX request to login.php
-            fetch('login.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    'login': 'true',
-                    'email': email,
-                    'password': password
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                submitBtn.classList.remove('loading');
-                if (data.success) {
-                    showAlert('Login successful! Redirecting...', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'index.php';
-                    }, 1500);
-                } else {
-                    showAlert(data.message || 'Invalid email or password', 'danger');
-                }
-            })
-            .catch(error => {
-                submitBtn.classList.remove('loading');
-                showAlert('An error occurred. Please try again.', 'danger');
-                console.error('Error:', error);
-            });
-        });
-    }
-
-    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-    if (forgotPasswordForm) {
-        forgotPasswordForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const email = document.getElementById('resetEmail').value;
-            const submitBtn = this.querySelector('button[type="submit"]');
-            submitBtn.classList.add('loading');
-
-            setTimeout(() => {
-                submitBtn.classList.remove('loading');
-                if (email) {
-                    showAlert('Password reset link sent to your email!', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide();
-                    this.reset();
-                } else {
-                    showAlert('Please enter your email address.', 'danger');
-                }
-            }, 2000);
-        });
-    }
-
-    // Forgot password modal show
-    window.showForgotPassword = function () {
-        const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
-        modal.show();
-    };
-
-    // Social logins
-    window.loginWithGoogle = function () {
-        showAlert('Google login integration would be implemented here.', 'info');
-    };
-
-    window.loginWithFacebook = function () {
-        showAlert('Facebook login integration would be implemented here.', 'info');
-    };
-
-    // Input focus effects
-    document.querySelectorAll('.form-control').forEach(input => {
-        input.addEventListener('focus', function () {
-            this.parentElement.style.transform = 'scale(1.02)';
-            this.parentElement.style.transition = 'transform 0.2s ease';
-        });
-        input.addEventListener('blur', function () {
-            this.parentElement.style.transform = 'scale(1)';
-        });
-    });
-});
 
 // ========== SIGNUP Script ==========
 document.addEventListener('DOMContentLoaded', function () {
@@ -173,48 +84,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return isValid;
     }
 
-    signupForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (validateForm()) {
-            const btn = this.querySelector('button[type="submit"]');
-            const originalText = btn.textContent;
-            btn.textContent = 'Creating Account...';
-            btn.disabled = true;
-
-            // Send AJAX request to signup.php
-            fetch('signup.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    'username': username.value,
-                    'email': email.value,
-                    'password': password.value,
-                    'confirmPassword': confirmPassword.value
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                btn.textContent = originalText;
-                btn.disabled = false;
-                if (data.success) {
-                    showAlert('Account created successfully!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'login.php';
-                    }, 1500);
-                } else {
-                    showAlert(data.message || 'An error occurred during signup.', 'danger');
-                }
-            })
-            .catch(error => {
-                btn.textContent = originalText;
-                btn.disabled = false;
-                showAlert('An error occurred. Please try again.', 'danger');
-                console.error('Error:', error);
-            });
-        }
-    });
 
     confirmPassword.addEventListener('input', function () {
         const errorElement = document.getElementById('confirmPasswordError');

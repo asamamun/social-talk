@@ -1,0 +1,24 @@
+i need to get this form values in php and add the content in posts table(post_id, user_id, content, images, visibility) user_id is in $_SESSION['user_id]. images will be uploaded in assets/contentimages/{user_id}/ directory with random name. all images names will be stored in images field in csv 
+                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="createPostForm" name="createPostForm" method="post" enctype="multipart/form-data">
+                <div class="post-card p-4" id="feedSection">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                        <!-- <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()"> -->
+                        <textarea name="postContent" id="" class="form-control" placeholder="What's on your mind, <?= $user['username'] ?>?" required minlength="30"></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between"> 
+                        <input type="file" name="media" id="media" class="d-none" multiple> 
+                        <div id="selectedImages"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-3">
+                        <label for="media" class="btn btn-light flex-fill me-2">
+                            <i class="fas fa-image me-2"></i>Add Image
+                        </label>
+                        <button class="btn btn-light flex-fill me-2" type="submit">
+                            <i class="fas fa-edit me-2"></i>Create Post
+                        </button>
+                    </div>
+                </div>
+                </form>
