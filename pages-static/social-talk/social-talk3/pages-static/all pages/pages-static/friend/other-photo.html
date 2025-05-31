@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jane Smith's Photos | SocialNet</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary-color: #1877f2;
+      --secondary-color: #42b883;
+      --light-bg: #f8f9fa;
+    }
+
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--primary-color) !important;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      height: 200px;
+      border-radius: 15px;
+      position: relative;
+      margin-bottom: 80px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .profile-pic-xl {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      position: absolute;
+      bottom: -70px;
+      left: 40px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 15px;
+    }
+
+    .photo-grid img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+
+    .photo-grid img:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-nav .nav-link {
+      color: #555;
+      font-weight: 500;
+      padding: 12px 20px;
+    }
+
+    .profile-nav .nav-link.active {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="timeline-page.html"><i class="fas fa-users"></i> SocialNet</a>
+      <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+        <input type="search" class="form-control me-3" placeholder="Search friends..." style="width: 250px;">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=face" class="profile-pic" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=180&h=180&fit=crop&crop=face" class="profile-pic-xl" alt="Jane Smith">
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav profile-nav mb-4">
+      <li class="nav-item"><a class="nav-link" href="other-profile.html">Posts</a></li>
+      <li class="nav-item"><a class="nav-link" href="other-about.html">About</a></li>
+      <li class="nav-item"><a class="nav-link active" href="other-photo.html">Photos</a></li>
+    </ul>
+
+    <!-- Photo Grid -->
+    <div class="profile-card">
+      <h4 class="mb-4">Jane's Photos</h4>
+      <div class="photo-grid">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=300&fit=crop" alt="Photo">
+        <img src="https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=300&h=300&fit=crop" alt="Photo">
+        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=300&fit=crop" alt="Photo">
+        <img src="https://images.unsplash.com/photo-1470114716159-e389f8712fda?w=300&h=300&fit=crop" alt="Photo">
+        <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&h=300&fit=crop" alt="Photo">
+        <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=300&fit=crop" alt="Photo">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

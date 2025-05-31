@@ -15,10 +15,12 @@ $db = new MysqliDb();
     <a href="register.php">register</a> | 
     <a href="login.php">login</a>
     <hr>
+	<?php
     $allusers = $db->get("users");
 
 echo "<pre>";
 print_r($allusers);
 echo "</pre>";
+?>
 </body>
 </html>

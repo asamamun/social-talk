@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings | SocialNet</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1877f2;
+      --secondary-color: #42b883;
+      --light-bg: #f8f9fa;
+      --dark-bg: #1e1e2f;
+      --dark-text: #ccc;
+    }
+
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.dark-mode {
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--primary-color) !important;
+    }
+
+    .settings-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin-top: 30px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark-mode .settings-card {
+      background: #2c2c3e;
+      color: var(--dark-text);
+    }
+
+    .settings-section h5 {
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="timeline-page.html"><i class="fas fa-users"></i> SocialNet</a>
+      <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+        <div class="nav-item dropdown">
+          <a class="nav-link" href="#" data-bs-toggle="dropdown">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" class="rounded-circle" style="width: 40px; height: 40px;">
+          </a>
+          <div class="dropdown-menu dropdown-menu-end">
+            <a class="dropdown-item" href="user-profile.html"><i class="fas fa-user me-2"></i>My Profile</a>
+            <a class="dropdown-item" href="settings.html"><i class="fas fa-cog me-2"></i>Settings</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Settings -->
+  <div class="container">
+    <div class="settings-card">
+      <ul class="nav nav-tabs mb-4" id="settingsTabs">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#account">Account</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#privacy">Privacy</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#notifications">Notifications</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#security">Security</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Account Settings -->
+        <div class="tab-pane fade show active" id="account">
+          <h5>Account Settings</h5>
+          <form>
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" value="John Doe">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="john@example.com">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+
+        <!-- Privacy -->
+        <div class="tab-pane fade" id="privacy">
+          <h5>Privacy Settings</h5>
+          <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" id="showEmail" checked>
+            <label class="form-check-label" for="showEmail">Show email on profile</label>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="tab-pane fade" id="notifications">
+          <h5>Notification Settings</h5>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="emailNotifs" checked>
+            <label class="form-check-label" for="emailNotifs">Email Notifications</label>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div class="tab-pane fade" id="security">
+          <h5>Security & Danger Zone</h5>
+          <div class="mb-3">
+            <label class="form-label">Change Password</label>
+            <input type="password" class="form-control" placeholder="New Password">
+          </div>
+          <button class="btn btn-warning mb-3">Update Password</button>
+          <hr>
+          <h6 class="text-danger">Delete Account</h6>
+          <p class="small">This action cannot be undone. Your profile and all data will be permanently removed.</p>
+          <button class="btn btn-danger" onclick="confirmDelete()">Delete My Account</button>
+        </div>
+      </div>
+
+      <hr class="mt-5">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="darkModeToggle">
+        <label class="form-check-label" for="darkModeToggle">Enable Dark Mode</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('darkModeToggle').addEventListener('change', function () {
+      document.body.classList.toggle('dark-mode', this.checked);
+    });
+
+    function confirmDelete() {
+      if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+        alert('Account deletion requested.');
+        // Implement actual deletion logic here
+      }
+    }
+  </script>
+</body>
+</html>

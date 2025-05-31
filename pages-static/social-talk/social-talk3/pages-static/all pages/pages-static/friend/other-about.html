@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Jane Smith | SocialNet</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary-color: #1877f2;
+      --secondary-color: #42b883;
+      --light-bg: #f8f9fa;
+    }
+
+    body {
+      background-color: var(--light-bg);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--primary-color) !important;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      height: 200px;
+      border-radius: 15px;
+      position: relative;
+      margin-bottom: 80px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .profile-pic-xl {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      position: absolute;
+      bottom: -70px;
+      left: 40px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      margin-bottom: 20px;
+    }
+
+    .info-item i {
+      width: 25px;
+      color: var(--primary-color);
+    }
+
+    .profile-nav .nav-link {
+      color: #555;
+      font-weight: 500;
+      padding: 12px 20px;
+    }
+
+    .profile-nav .nav-link.active {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+    }
+
+    h4 {
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="timeline-page.html"><i class="fas fa-users"></i> SocialNet</a>
+      <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+        <input type="search" class="form-control me-3" placeholder="Search friends..." style="width: 250px;">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop&crop=face" class="profile-pic" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=180&h=180&fit=crop&crop=face" class="profile-pic-xl" alt="Jane Smith">
+    </div>
+
+    <!-- Profile Navigation Tabs -->
+    <ul class="nav profile-nav mb-4">
+      <li class="nav-item"><a class="nav-link" href="other-profile.html">Posts</a></li>
+      <li class="nav-item"><a class="nav-link active" href="other-about.html">About</a></li>
+      <li class="nav-item"><a class="nav-link" href="other-photo.html">Photos</a></li>
+    </ul>
+
+    <!-- About Info Section -->
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <div class="profile-card">
+          <h4>About Jane Smith</h4>
+
+          <div class="info-item d-flex">
+            <i class="fas fa-briefcase mt-1"></i>
+            <div class="ms-3">
+              <h6 class="mb-0">Works at</h6>
+              <p class="text-muted mb-0">Creative Studio</p>
+            </div>
+          </div>
+
+          <div class="info-item d-flex">
+            <i class="fas fa-graduation-cap mt-1"></i>
+            <div class="ms-3">
+              <h6 class="mb-0">Studied at</h6>
+              <p class="text-muted mb-0">UCLA</p>
+            </div>
+          </div>
+
+          <div class="info-item d-flex">
+            <i class="fas fa-home mt-1"></i>
+            <div class="ms-3">
+              <h6 class="mb-0">Lives in</h6>
+              <p class="text-muted mb-0">Los Angeles, CA</p>
+            </div>
+          </div>
+
+          <div class="info-item d-flex">
+            <i class="fas fa-map-marker-alt mt-1"></i>
+            <div class="ms-3">
+              <h6 class="mb-0">From</h6>
+              <p class="text-muted mb-0">Seattle, WA</p>
+            </div>
+          </div>
+
+          <div class="info-item d-flex">
+            <i class="fas fa-heart mt-1"></i>
+            <div class="ms-3">
+              <h6 class="mb-0">Relationship</h6>
+              <p class="text-muted mb-0">Single</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | SocialNet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .admin-nav {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .admin-nav .nav-link {
+            color: #555;
+            font-weight: 500;
+            padding: 12px 20px;
+        }
+
+        .admin-nav .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background-color: var(--light-bg);
+            color: var(--dark-color);
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .stats-card h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .stats-card p {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .report-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .report-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .stats-card {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="timeline-page.html"><i class="fas fa-users"></i> SocialNet</a>
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <div class="nav-item me-3">
+                    <input type="search" class="form-control" placeholder="Search..." style="width: 250px;">
+                </div>
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge badge bg-danger position-absolute" style="top: -8px; right: -8px;">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <div class="notification-item unread p-3">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Sarah Johnson</strong> reported a post
+                                    <div class="text-muted small">2 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="user-profile.html"><i class="fas fa-user me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="setting1.html"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Admin Header -->
+        <div class="admin-card">
+            <h2 class="mb-0">Admin Panel</h2>
+            <p class="text-muted">Manage users, posts, reports, and platform settings</p>
+        </div>
+
+        <!-- Admin Navigation -->
+        <ul class="nav admin-nav mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#dashboard" data-section="dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#users" data-section="users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#posts" data-section="posts">Posts</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#reports" data-section="reports">Reports</a>
+            </li>
+        </ul>
+
+        <!-- Dynamic Content Area -->
+        <div id="content-area">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3>3,245</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3>12,890</h3>
+                            <p>Total Posts</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3>1,204</h3>
+                            <p>Friend Requests</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3>45</h3>
+                            <p>Pending Reports</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <h4 class="mb-4">Recent Activity</h4>
+                    <div class="report-item">
+                        <div class="d-flex align-items-center">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                            <div>
+                                <strong>Sarah Johnson</strong> reported a post for inappropriate content
+                                <div class="text-muted small">2 hours ago</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="d-flex align-items-center">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                            <div>
+                                <strong>Mike Chen</strong> was banned for violating community guidelines
+                                <div class="text-muted small">Yesterday</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="d-none">
+                <div class="admin-card">
+                    <h4 class="mb-4">Manage Users</h4>
+                    <input type="search" class="form-control mb-3" placeholder="Search users...">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2</td>
+                                <td>abdulaziz</td>
+                                <td>abdulazizkhan1997@gmail.com</td>
+                                <td>Active</td>
+                                <td>User</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="banUser(2)">Ban</button>
+                                    <button class="btn btn-sm btn-primary" onclick="editUser(2)">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>abdulazizkhan</td>
+                                <td>abdulazizkhan.web@gmail.com</td>
+                                <td>Active</td>
+                                <td>User</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="banUser(3)">Ban</button>
+                                    <button class="btn btn-sm btn-primary" onclick="editUser(3)">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>mamun</td>
+                                <td>mamun@gmail.com</td>
+                                <td>Active</td>
+                                <td>User</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="banUser(4)">Ban</button>
+                                    <button class="btn btn-sm btn-primary" onclick="editUser(4)">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Posts Section -->
+            <div id="posts-section" class="d-none">
+                <div class="admin-card">
+                    <h4 class="mb-4">Manage Posts</h4>
+                    <input type="search" class="form-control mb-3" placeholder="Search posts...">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Post ID</th>
+                                <th>User</th>
+                                <th>Content</th>
+                                <th>Visibility</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>abdulaziz</td>
+                                <td>Just launched a new project!</td>
+                                <td>Public</td>
+                                <td>2025-05-26 10:30:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="deletePost(1)">Delete</button>
+                                    <button class="btn btn-sm btn-primary" onclick="viewPost(1)">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>mamun</td>
+                                <td>Happy birthday to my friend!</td>
+                                <td>Friends</td>
+                                <td>2025-05-25 15:45:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="deletePost(2)">Delete</button>
+                                    <button class="btn btn-sm btn-primary" onclick="viewPost(2)">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports-section" class="d-none">
+                <div class="admin-card">
+                    <h4 class="mb-4">Manage Reports</h4>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Report ID</th>
+                                <th>Reporter</th>
+                                <th>Reported Item</th>
+                                <th>Reason</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Sarah Johnson</td>
+                                <td>Post #1</td>
+                                <td>Inappropriate content</td>
+                                <td>2025-05-26 08:15:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success me-2" onclick="dismissReport(1)">Dismiss</button>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="deleteReportedContent(1)">Delete Content</button>
+                                    <button class="btn btn-sm btn-primary" onclick="viewReport(1)">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Mike Chen</td>
+                                <td>User: mamun</td>
+                                <td>Spam</td>
+                                <td>2025-05-25 14:20:00</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success me-2" onclick="dismissReport(2)">Dismiss</button>
+                                    <button class="btn btn-sm btn-danger me-2" onclick="banUserFromReport(2)">Ban User</button>
+                                    <button class="btn btn-sm btn-primary" onclick="viewReport(2)">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Handle admin navigation
+        document.querySelectorAll('.admin-nav .nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+
+                // Update active navigation
+                document.querySelectorAll('.admin-nav .nav-link').forEach(navLink => {
+                    navLink.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                // Show/hide sections
+                document.querySelectorAll('#content-area > div').forEach(sectionDiv => {
+                    sectionDiv.classList.add('d-none');
+                });
+                document.querySelector(`#${section}-section`).classList.remove('d-none');
+            });
+        });
+
+        // User management functions
+        function banUser(userId) {
+            if (confirm(`Are you sure you want to ban user ID ${userId}?`)) {
+                alert(`User ID ${userId} banned.`);
+                // Future: Send AJAX request to update user status in the database
+            }
+        }
+
+        function editUser(userId) {
+            alert(`Edit user ID ${userId} (Feature not implemented).`);
+            // Future: Open a modal to edit user details
+        }
+
+        // Post management functions
+        function deletePost(postId) {
+            if (confirm(`Are you sure you want to delete post ID ${postId}?`)) {
+                alert(`Post ID ${postId} deleted.`);
+                // Future: Send AJAX request to delete post
+            }
+        }
+
+        function viewPost(postId) {
+            alert(`Viewing post ID ${postId} (Feature not implemented).`);
+            // Future: Redirect to post view page or open modal
+        }
+
+        // Report management functions
+        function dismissReport(reportId) {
+            if (confirm(`Dismiss report ID ${reportId}?`)) {
+                alert(`Report ID ${reportId} dismissed.`);
+                // Future: Send AJAX request to update report status
+            }
+        }
+
+        function deleteReportedContent(reportId) {
+            if (confirm(`Delete reported content for report ID ${reportId}?`)) {
+                alert(`Content for report ID ${reportId} deleted.`);
+                // Future: Send AJAX request to delete reported post or comment
+            }
+        }
+
+        function banUserFromReport(reportId) {
+            if (confirm(`Ban user associated with report ID ${reportId}?`)) {
+                alert(`User banned for report ID ${reportId}.`);
+                // Future: Send AJAX request to ban user
+            }
+        }
+
+        function viewReport(reportId) {
+            alert(`Viewing report ID ${reportId} (Feature not implemented).`);
+            // Future: Redirect to detailed report view or open modal
+        }
+
+        // Logout function
+        function handleLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                console.log('Logging out...');
+                window.location.href = 'login.html'; // Replace with actual login page
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialNet - Connect with Friends</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background: white;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 70px; /* Adjust for fixed navbar */
+        }
+
+        .dark-mode {
+            background: #2c3e50;
+            color: #ffffff;
+        }
+
+        .dark-mode .post-card,
+        .dark-mode .sidebar,
+        .dark-mode .modal-content,
+        .dark-mode .navbar {
+            background: rgba(50, 50, 50, 0.95) !important;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(15px);
+            background: #ffffff; /* Fallback */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .post-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-pic-lg {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), #4267B2);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(24, 119, 242, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--secondary-color), #36A2EB);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .message-sent {
+            background: linear-gradient(45deg, var(--primary-color), #4267B2);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 8px;
+        }
+
+        .message-received {
+            background: rgba(233, 236, 239, 0.9);
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 8px;
+        }
+
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid rgba(238, 238, 238, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+
+        .notification-item:hover {
+            background: rgba(248, 249, 250, 0.8);
+            transform: translateX(5px);
+        }
+
+        .notification-item.unread {
+            background: rgba(227, 242, 253, 0.8);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .friend-request-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .friend-request-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .online-status {
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .chat-container {
+            height: 450px;
+            overflow-y: auto;
+            border: 1px solid rgba(221, 221, 221, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            background: #ffffff;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            background: #ffffff;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            z-index: 1050; /* Ensure modals appear above fixed navbar */
+        }
+
+        .modal-header, .modal-footer {
+            border: none;
+        }
+
+        .like-btn {
+            color: #666;
+            transition: all 0.3s ease;
+            border-radius: 20px;
+        }
+
+        .like-btn.liked {
+            color: var(--danger-color);
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .like-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .comment-section {
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .admin-badge {
+            background: linear-gradient(45deg, var(--danger-color), #e74c3c);
+            color: white;
+            font-size: 0.8em;
+            padding: 4px 12px;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .form-control {
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            background: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(24, 119, 242, 0.25);
+        }
+
+        .list-group-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .list-group-item:hover, .list-group-item.active {
+            background: rgba(24, 119, 242, 0.1);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .fade-in, .pulse {
+                animation: none;
+            }
+        }
+
+        /* Adjust dropdown z-index to appear above navbar */
+        .dropdown-menu {
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand pulse" href="#"><i class="fas fa-users"></i> Social-talk</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                    <div class="nav-item me-3">
+                        <input type="search" class="form-control" placeholder="Search friends..." aria-label="Search friends">
+                    </div>
+                    <div class="nav-item dropdown me-3">
+                        <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell fa-lg" aria-hidden="true"></i>
+                            <span class="notification-badge badge bg-danger position-absolute pulse" style="top: -8px; right: -8px;">3</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                            <h6 class="dropdown-header">Notifications</h6>
+                            <div class="notification-item unread">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Sarah Johnson profile">
+                                    <div>
+                                        <strong>Sarah Johnson</strong> liked your post
+                                        <div class="text-muted small">2 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="notification-item unread">
+                                <div class="d-flex align-items-center">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Mike Chen profile">
+                                    <div>
+                                        <strong>Mike Chen</strong> sent you a friend request
+                                        <div class="text-muted small">5 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic" alt="User profile">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="#" onclick="socialNet.showProfile()"><i class="fas fa-user me-2"></i>My Profile</a>
+                            <a class="dropdown-item" href="#" onclick="socialNet.showSettings()"><i class="fas fa-cog me-2"></i>Settings</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" onclick="socialNet.showAdminPanel()"><i class="fas fa-shield-alt me-2"></i>Admin Panel</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" onclick="socialNet.logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Login/Register Modal -->
+        <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="authModalLabel">Welcome to SocialNet</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs mb-3" id="list">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#loginTab">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="dropdown-item" data-bs-toggle="tab" href="#registerTab">Register</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="loginTab">
+                                <form id="loginForm">
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" placeholder="Email" required aria-label="Email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" placeholder="Password" required aria-label="Password">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                                    <div class="text-center mt-3">
+                                        <a href="#" class="text-decoration-none">Forgot Password?</a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="registerTab">
+                                <form id="registerForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <input type="text" class="form-control" placeholder="First Name" required aria-label="First Name">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <input type="text" class="form-control" placeholder="Last Name" required aria-label="Last Name">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="email" class="form-control" placeholder="Email" required aria-label="Email">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" placeholder="Password" required aria-label="Password">
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" placeholder="Confirm Password" required aria-label="Confirm Password">
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">Create Account</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Modal -->
+        <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="chatModalTitle">Chat with Friend</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="chat-container" id="chatContainer"></div>
+                        <div class="mt-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." aria-label="Type your message">
+                                <button class="btn btn-primary" onclick="socialNet.sendMessage()" aria-label="Send message">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Post Modal -->
+        <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="John Doe profile">
+                            <div>
+                                <h6 class="mb-0">John Doe</h6>
+                            </div>
+                        </div>
+                        <textarea class="form-control mb-3" rows="4" placeholder="What's on your mind?" id="postContent" aria-label="Post content"></textarea>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button class="btn btn-light me-2" onclick="socialNet.openImageUpload()" aria-label="Upload photo">
+                                    <i class="fas fa-image me-1"></i>Photo
+                                </button>
+                                <button class="btn btn-light" aria-label="Upload video">
+                                    <i class="fas fa-video me-1"></i>Video
+                                </button>
+                            </div>
+                            <button class="btn btn-primary" onclick="socialNet.createPost()">Post</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" class="profile-pic-lg mb-3" alt="John Doe profile">
+                            <h4>John Doe</h4>
+                            <p class="text-muted">Software Developer</p>
+                            <button class="btn btn-primary" aria-label="Edit profile">Edit Profile</button>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="border-end">
+                                    <h5>245</h5>
+                                    <small class="text-muted">Friends</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border-end">
+                                    <h5>89</h5>
+                                    <small class="text-muted">Posts</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h5>1.2K</h5>
+                                <small class="text-muted">Likes</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="list-group">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Privacy Settings</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Notification Settings</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Security</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Theme Settings</span>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="darkModeSwitch" aria-label="Toggle dark mode">
+                                    <label class="form-check-label" for="darkModeSwitch">Dark Mode</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel Modal -->
+        <div class="modal fade" id="adminModal" tabindex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="adminModalLabel">
+                            <i class="fas fa-shield-alt me-2"></i>Admin Panel
+                            <span class="admin-badge ms-2">ADMIN</span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title">1,247</h5>
+                                        <p class="card-text">Total Users</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title">3,891</h5>
+                                        <p class="card-text">Total Posts</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title">156</h5>
+                                        <p class="card-text">Active Today</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h5 class="card-title">23</h5>
+                                        <p class="card-text">Reports</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h6>Recent Reports</h6>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Mike Chen</td>
+                                            <td>Spam Post</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success me-1" aria-label="Approve report">Approve</button>
+                                                <button class="btn btn-sm btn-danger" aria-label="Block user">Block</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sarah Johnson</td>
+                                            <td>Harassment</td>
+                                            <td><span class="badge bg-danger">High Priority</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success me-1" aria-label="Approve report">Approve</button>
+                                                <button class="btn btn-sm btn-danger" aria-label="Block user">Block</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row" id="mainContent">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar fade-in">
+                    <div class="text-center mb-4">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" class="profile-pic-lg mb-3" alt="John Doe profile">
+                        <h5>John Doe</h5>
+                        <p class="text-muted">Software Developer</p>
+                        <div class="d-flex justify-content-around">
+                            <div class="text-center">
+                                <div class="fw-bold">245</div>
+                                <small class="text-muted">Friends</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold">89</div>
+                                <small class="text-muted">Posts</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item active" onclick="socialNet.showFeed()" aria-current="true">
+                            <i class="fas fa-home me-2"></i>News Feed
+                        </a>
+                        <a href="#" class="list-group-item" onclick="socialNet.showFriends()">
+                            <i class="fas fa-users me-2"></i>Friends
+                        </a>
+                        <a href="#" class="list-group-item" onclick="socialNet.showMessages()">
+                            <i class="fas fa-envelope me-2"></i>Messages
+                            <span class="badge bg-primary text-dark">2</span>
+                        </a>
+                        <a href="#" class="list-group-item" onclick="socialNet.showFriendRequests()">
+                            <i class="fas fa-user-plus me-2"></i>Friend Requests
+                            <span class="badge bg-success">3</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Feed -->
+            <div class="col-lg-6">
+                <!-- Create Post -->
+                <div class="post-card p-4 fade-in" id="feedSection">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="John Doe profile">
+                        <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="socialNet.openCreatePost()" aria-label="Create a new post">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-light flex-fill me-2" onclick="socialNet.openCreatePost()" aria-label="Create text post">
+                            <i class="fas fa-edit me-2"></i>Post
+                        </button>
+                        <button class="btn btn-light flex-fill me-2" onclick="socialNet.openImageUpload()" aria-label="Upload photo">
+                            <i class="fas fa-image me-2"></i>Photo
+                        </button>
+                        <button class="btn btn-light flex-fill" aria-label="Upload video">
+                            <i class="fas fa-video me-2"></i>Video
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Posts Feed -->
+                <div id="postsContainer">
+                    <div class="post-card fade-in">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Sarah Johnson profile">
+                                <div>
+                                    <h6 class="mb-0">Sarah Johnson</h6>
+                                    <small class="text-muted">2 hours ago</small>
+                                </div>
+                                <div class="ms-auto dropdown">
+                                    <button class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="#">Save Post</a>
+                                        <a class="dropdown-item" href="#">Report Post</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="card-text">Just finished my morning hike! The view was absolutely breathtaking. Can't wait to do it again next weekend. 🏞️ #nature #hiking</p>
+                            <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="img-fluid rounded mb-3" alt="Hiking view">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <span class="me-2"><i class="fas fa-thumbs-up me-1"></i> 24</span>
+                                    <span><i class="fas fa-comment me-1"></i> 8</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted">12 shares</span>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top border-bottom py-2 mb-3">
+                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="socialNet.toggleLike(this)" aria-label="Like post">
+                                    <i class="fas fa-thumbs-up me-2"></i>Like
+                                </button>
+                                <button class="btn btn-light flex-fill me-2" onclick="socialNet.focusComment(this)" aria-label="Comment on post">
+                                    <i class="fas fa-comment me-2"></i>Comment
+                                </button>
+                                <button class="btn btn-light flex-fill" onclick="socialNet.sharePost(this)" aria-label="Share post">
+                                    <i class="fas fa-share me-2"></i>Share
+                                </button>
+                            </div>
+                            <div class="comment-section">
+                                <div class="d-flex mb-3">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="Profile picture">
+                                    <div class="flex-grow-1">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Write a comment..." aria-label="Write a comment">
+                                            <button class="btn btn-outline-primary" aria-label="Post comment">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex mb-3">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="Mike Chen profile">
+                                    <div>
+                                        <div class="bg-light p-3 rounded">
+                                            <strong>Mike Chen</strong>
+                                            <p class="mb-1">Looks amazing! Where is this?</p>
+                                            <small class="text-muted">1 hour ago</small>
+                                        </div>
+                                        <div class="d-flex mt-2">
+                                            <a href="#" class="text-decoration-none me-3">Like</a>
+                                            <a href="#" class="text-decoration-none">Reply</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-card fade-in">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Mike Chen profile">
+                                <div>
+                                    <h6 class="mb-0">Mike Chen</h6>
+                                    <small class="text-muted">Yesterday</small>
+                                </div>
+                                <div class="ms-auto dropdown">
+                                    <button class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="#">Save Post</a>
+                                        <a class="dropdown-item" href="#">Report Post</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="card-text">Just launched my new website! Check it out and let me know what you think. Big thanks to everyone who supported me through this journey. 🙏</p>
+                            <div class="bg-light p-3 rounded mb-3">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <img src="https://via.placeholder.com/80" class="rounded" width="80" alt="Portfolio preview">
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Mike's Portfolio</h6>
+                                        <p class="text-muted small mb-1">mikechen.dev</p>
+                                        <p class="small">Personal portfolio showcasing my latest projects and design work.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <span class="me-2"><i class="fas fa-thumbs-up me-1"></i> 42</span>
+                                    <span><i class="fas fa-comment me-1"></i> 15</span>
+                                </div>
+                                <div>
+                                    <span class="text-muted">7 shares</span>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top border-bottom py-2 mb-3">
+                                <button class="btn btn-light flex-fill me-2 like-btn" onclick="socialNet.toggleLike(this)" aria-label="Like post">
+                                    <i class="fas fa-thumbs-up me-2"></i>Like
+                                </button>
+                                <button class="btn btn-light flex-fill me-2" onclick="socialNet.focusComment(this)" aria-label="Comment on post">
+                                    <i class="fas fa-comment me-2"></i>Comment
+                                </button>
+                                <button class="btn btn-light flex-fill" onclick="socialNet.sharePost(this)" aria-label="Share post">
+                                    <i class="fas fa-share me-2"></i>Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <h6 class="mb-3">Friend Suggestions</h6>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="Alex Rodriguez profile">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" style="font-size: 0.9em;">Alex Rodriguez</h6>
+                                <small class="text-muted">2 mutual friends</small>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="socialNet.sendFriendRequest(this)" aria-label="Add Alex Rodriguez as friend">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="Lisa Park profile">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0" style="font-size: 0.9em;">Lisa Park</h6>
+                                <small class="text-muted">5 mutual friends</small>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="socialNet.sendFriendRequest(this)" aria-label="Add Lisa Park as friend">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar fade-in">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Upcoming Events</h5>
+                        <a href="#" class="text-decoration-none">See All</a>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary text-white rounded p-2 me-3 text-center" style="width: 40px;">
+                                    <div class="fw-bold">15</div>
+                                    <small>JUN</small>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Tech Conference</h6>
+                                    <small class="text-muted">San Francisco</small>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success text-white rounded p-2 me-3 text-center" style="width: 40px;">
+                                    <div class="fw-bold">22</div>
+                                    <small>JUN</small>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">Birthday Party</h6>
+                                    <small class="text-muted">Sarah's House</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="sidebar fade-in">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Suggested Groups</h5>
+                        <a href="#" class="text-decoration-none">See All</a>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/40" class="rounded me-3" width="40" alt="Web Developers group">
+                                <div>
+                                    <h6 class="mb-0">Web Developers</h6>
+                                    <small class="text-muted">245K members</small>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <img src="https://via.placeholder.com/40" class="rounded me-3" width="40" alt="Photography Enthusiasts group">
+                                <div>
+                                    <h6 class="mb-0">Photography Enthusiasts</h6>
+                                    <small class="text-muted">189K members</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friends Page (Hidden by default) -->
+        <div class="row hidden" id="friendsPage">
+            <div class="col-12">
+                <div class="post-card p-4 fade-in">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Friends</h4>
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" placeholder="Search friends..." aria-label="Search friends">
+                            <button class="btn btn-outline-secondary" aria-label="Search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <ul class="nav nav-tabs mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">All Friends</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Recently Added</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Birthdays
+</a>
+                        </li>
+                    </ul>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="friend-request-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=80&h=80&fit=crop&crop=face" class="profile-pic me-3" alt="Sarah Johnson profile picture">
+                                    <div>
+                                        <h6 class="mb-0">Sarah Johnson</h6>
+                                        <small class="text-muted">12 mutual friends</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-primary btn-sm flex-fill me-2" aria-label="Message Sarah Johnson">Message</button>
+                                    <button class="btn btn-outline-secondary btn-sm flex-fill" aria-label="Remove Sarah Johnson">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="friend-request-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" class="profile-pic me-3" alt="Mike Chen profile">
+                                    <div>
+                                        <h6 class="mb-0">Mike Chen</h6>
+                                        <small class="text-muted">8 mutual friends</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-primary btn-sm flex-fill me-2" aria-label="Message Mike Chen">Message</button>
+                                    <button class="btn btn-outline-secondary btn-sm flex-fill" aria-label="Remove Mike Chen">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="friend-request-card">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face" class="profile-pic me-3" alt="Emma Wilson profile">
+                                    <div>
+                                        <h6 class="mb-0">Emma Wilson</h6>
+                                        <small class="text-muted">5 mutual friends</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <button class="btn btn-primary btn-sm flex-fill me-2" aria-label="Message Emma Wilson">Message</button>
+                                    <button class="btn btn-outline-secondary btn-sm flex-fill" aria-label="Remove Emma Wilson">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Page (Hidden by default) -->
+        
+<div class="row hidden" id="messagesPage">
+    <div class="col-md-4">
+        <div class="post-card p-4 fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Messages</h4>
+                <button class="btn btn-primary btn-sm" aria-label="Start new message">
+                    <i class="fas fa-plus"></i> New Message
+                </button>
+            </div>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Search messages..." aria-label="Search messages">
+                <button class="btn btn-outline-secondary" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item active" onclick="socialNet.openChat('Sarah Johnson')" aria-current="true">
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative me-3">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic" alt="Sarah Johnson profile">
+                            <div class="online-status"></div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Sarah Johnson</h6>
+                            <small>Hey, how are you doing?</small>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <small class="text-muted">2 min ago</small>
+                            <span class="badge bg-primary rounded-pill">3</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="#" class="list-group-item" onclick="socialNet.openChat('Mike Chen')">
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative me-3">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic" alt="Mike Chen profile">
+                            <div class="online-status"></div>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">Mike Chen</h6>
+                            <small>Check out this new framework!</small>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <small class="text-muted">1 hour ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="post-card p-4 fade-in">
+            <div class="text-center py-5">
+                <i class="fas fa-comments fa-2x text-muted mb-3"></i>
+                <h4>Select a conversation</h4>
+                <p class="text-muted">Choose an existing conversation or start a new one</p>
+                <button class="btn btn-primary" aria-label="Start new message">
+                    <i class="fas fa-plus me-2"></i> New Message
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Friend Requests Page (Hidden by default) -->
+        <div class="row hidden" id="friendRequestsPage">
+            <div class="col-12">
+                <div class="post-card p-4 fade-in">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Friend Requests</h4>
+                        <span class="badge bg-primary">3 new</span>
+                    </div>
+                    <div class="mb-4">
+                        <h6>Pending Requests</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="friend-request-card">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop&crop=face" class="profile-pic me-3" alt="David Miller profile">
+                                        <div>
+                                        <h6 class="mb-0">David Miller</h6>
+                                        <small class="text-muted">5 mutual friends</small>
+                                    </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <button class="btn btn-primary btn-sm flex-fill me-2" onclick="socialNet.acceptFriendRequest(this)" aria-label="Accept friend David Miller friend request">Confirm</button>
+                                        <button class="btn btn-outline-secondary btn-sm flex-fill" onclick="socialNet.declineFriendRequest(this)" aria-label="Decline friend David Miller friend request">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="friend-request-card">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=80&h=80&fit=crop&crop=face" class="profile-pic me-3" alt="Sophia Garcia profile">
+                                        <div>
+                                            <h6 class="mb-0">Sophia Garcia</h6>
+                                            <small class="text-muted">2 mutual friends</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex">
+                                        <button class="btn btn-primary btn-sm flex-fill me-2" onclick="socialNet.acceptFriendRequest(this)" aria-label="Accept friend Sophia Garcia friend request">Confirm</button>
+                                        <button class="btn btn-outline-secondary btn-sm flex-fill" onclick="socialNet.declineFriendRequest(this)" aria-label="Decline friend Sophia Garcia friend request">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h6>People You May Know</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="friend-request-card">
+                                    <img src="https://images.unsplash.com/photo-1528892952291-009c663ce843?w=300&h=150&fit=crop" class="img-fluid rounded-top mb-3" alt="James Wilson cover">
+                                    <div class="text-center">
+                                        <img src="https://images.unsplash.com/photo-1528892952291-009c663ce843?w=80&h=80&fit=crop&crop=face" class="profile-pic mb-2" style="margin-top: -50px;" alt="James Wilson profile picture">
+                                        <h6 class="mb-1">James Wilson</h6>
+                                        <small class="text-muted d-block mb-2">block mutual friends</small>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="socialNet.sendFriendRequest(this)" aria-label="Add friend James Wilson as friend">Add Friend</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="friend-request-card">
+                                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=150&fit=crop" class="img-fluid rounded-top mb-3" alt="David Kim cover">
+                                    <div class="text-center">
+                                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop&crop=face" class="profile-pic mb-2" style="margin-top: -50px;" alt="David Kim profile picture">
+                                        <h6 class="mb-1">David Kim</h6>
+                                        <small class="text-muted d-block mb-2">7 mutual friends</small>
+                                        <button class="btn btn-primary btn-sm w-100" onclick="socialNet.sendFriendRequest(this)" aria-label="Add friend David Kim as friend">Add Friend</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function() {
+            // Initialize modals
+            const modals = {
+                auth: new bootstrap.Modal(document.getElementById('authModal'), { keyboard: true }),
+                chat: new bootstrap.Modal(document.getElementById('chatModal'), { keyboard: true }),
+                createPost: new bootstrap.Modal(document.getElementById('createPostModal'), { keyboard: true }),
+                profile: new bootstrap.Modal(document.getElementById('profileModal'), { keyboard: true }),
+                settings: new bootstrap.Modal(document.getElementById('settingsModal'), { keyboard: true }),
+                admin: new bootstrap.Modal(document.getElementById('adminModal'), { keyboard: true })
+            };
+
+            // Basic input sanitization
+            function sanitizeInput(input) {
+                const div = document.createElement('div');
+                div.textContent = input;
+                return div.innerHTML.replace(/[<>&]/g, '');
+            }
+
+            // SocialNet object to encapsulate functionality
+            const socialNet = {
+                toggleLike(button) {
+                    button.classList.toggle('liked');
+                    button.innerHTML = button.classList.contains('liked')
+                        ? '<i class="fas fa-thumbs-up me-2"></i>Liked'
+                        : '<i class="fas fa-thumbs-up me-2"></i>Like';
+                },
+
+                focusComment(button) {
+                    const postCard = button.closest('.post-card');
+                    const commentInput = postCard?.querySelector('.comment-section input');
+                    if (commentInput) {
+                        commentInput.focus();
+                    } else {
+                        console.error('Comment input not found');
+                    }
+                },
+
+                sharePost() {
+                    alert('Post shared successfully!');
+                },
+
+                openCreatePost() {
+                    modals.createPost.show();
+                },
+
+                createPost() {
+                    const postContent = document.getElementById('postContent');
+                    if (!postContent) {
+                        console.error('Post content element not found');
+                        return;
+                    }
+                    const content = sanitizeInput(postContent.value.trim());
+                    if (content === '') {
+                        alert('Please write something to post!');
+                        return;
+                    }
+                    alert('Post created: ' + content);
+                    modals.createPost.hide();
+                    postContent.value = '';
+                },
+
+                openImageUpload() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            alert('Image selected: ' + file.name);
+                            // Handle file upload logic here
+                        }
+                    };
+                    input.click();
+                },
+
+                showProfile() {
+                    modals.profile.show();
+                },
+
+                showSettings() {
+                    modals.settings.show();
+                },
+
+                showAdminPanel() {
+                    modals.admin.show();
+                },
+
+                logout() {
+                    alert('You have been logged out');
+                    // Redirect to logout URL in a real app
+                },
+
+                showFeed() {
+                    document.querySelector('#mainContent').classList.remove('hidden');
+                    document.querySelector('#friendsPage').classList.add('hidden');
+                    document.querySelector('#messagesPage').classList.add('hidden');
+                    document.querySelector('#friendRequestsPage').classList.add('hidden');
+                },
+
+                showFriends() {
+                    document.querySelector('#mainContent').classList.add('hidden');
+                    document.querySelector('#friendsPage').classList.remove('hidden');
+                    document.querySelector('#messagesPage').classList.add('hidden');
+                    document.querySelector('#friendRequestsPage').classList.add('hidden');
+                },
+
+                showMessages() {
+                    document.querySelector('#mainContent').classList.add('hidden');
+                    document.querySelector('#friendsPage').classList.add('hidden');
+                    document.querySelector('#messagesPage').classList.remove('hidden');
+                    document.querySelector('#friendRequestsPage').classList.add('hidden');
+                },
+
+                showFriendRequests() {
+                    document.querySelector('#mainContent').classList.add('hidden');
+                    document.querySelector('#friendsPage').classList.add('hidden');
+                    document.querySelector('#messagesPage').classList.add('hidden');
+                    document.querySelector('#friendRequestsPage').classList.remove('hidden');
+                },
+
+                openChat(friendName) {
+                    const chatTitle = document.querySelector('#chatModalTitle');
+                    const chatContainer = document.querySelector('#chatContainer');
+                    if (!chatTitle || !chatContainer) {
+                        console.error('Chat elements not found');
+                        return;
+                    }
+                    chatTitle.textContent = 'Chat with ' + sanitizeInput(friendName);
+                    chatContainer.innerHTML = '';
+                    const messages = [
+                        { sender: 'them', text: 'Hey there! How are you doing?' },
+                        { sender: 'me', text: 'I\'m good, thanks! Just working on some new projects.' },
+                        { sender: 'them', text: 'That sounds interesting! What kind of projects?' },
+                        { sender: 'me', text: 'Mostly web development stuff. Building a new social network template actually!' }
+                    ];
+                    messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message-bubble message-${msg.sender === 'me' ? 'sent' : 'received'}`;
+                        messageDiv.textContent = msg.text;
+                        chatContainer.appendChild(messageDiv);
+                    });
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    modals.chat.show();
+                },
+
+                sendMessage() {
+                    const input = document.querySelector('#messageInput');
+                    const chatContainer = document.querySelector('#chatContainer');
+                    if (!input || !chatContainer) {
+                        console.error('Message input or chat container not found');
+                        return;
+                    }
+                    const text = sanitizeInput(input.value.trim());
+                    if (text === '') return;
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message-bubble message-sent';
+                    messageDiv.textContent = text;
+                    chatContainer.appendChild(messageDiv);
+                    input.value = '';
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    setTimeout(() => {
+                        const replies = [
+                            'That sounds great!',
+                            'Interesting, tell me more.',
+                            'I see what you mean.',
+                            'Let me think about that.',
+                            'Thanks for letting me know!'
+                        ];
+                        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                        const replyDiv = document.createElement('div');
+                        replyDiv.className = 'message-bubble message-received';
+                        replyDiv.textContent = randomReply;
+                        chatContainer.appendChild(replyDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }, 1000);
+                },
+
+                acceptFriendRequest(button) {
+                    const card = button.closest('.friend-request-card');
+                    if (card) {
+                        card.innerHTML = '<div class="text-center py-3"><i class="fas fa-check-circle fa-2x text-success mb-2"></i><p>Friend request accepted</p></div>';
+                    }
+                },
+
+                declineFriendRequest(button) {
+                    const card = button.closest('.friend-request-card');
+                    if (card) {
+                        card.style.opacity = '0';
+                        setTimeout(() => card.remove(), 300);
+                    }
+                },
+
+                sendFriendRequest(button) {
+                    button.innerHTML = '<i class="fas fa-user-clock me-1"></i> Request Sent';
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-secondary');
+                    button.disabled = true;
+                }
+            };
+
+            // Form submission handlers
+            document.querySelector('#loginForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = e.target.querySelector('input[type="email"]').value;
+                const password = e.target.querySelector('input[type="password"]').value;
+                alert(`Logging in with ${sanitizeInput(email)}`);
+                modals.auth.hide();
+            });
+
+            document.querySelector('#registerForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const firstName = e.target.querySelector('input[placeholder="First Name"]').value;
+                const lastName = e.target.querySelector('input[placeholder="Last Name"]').value;
+                const email = e.target.querySelector('input[type="email"]').value;
+                alert(`Registering ${sanitizeInput(firstName)} ${sanitizeInput(lastName)} with ${sanitizeInput(email)}`);
+                modals.auth.hide();
+            });
+
+            // Dark mode toggle
+            document.querySelector('#darkModeSwitch')?.addEventListener('change', (e) => {
+                document.body.classList.toggle('dark-mode', e.target.checked);
+            });
+
+            // Initialize tooltips
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+
+            // Expose socialNet to global scope for onclick handlers
+            window.socialNet = socialNet;
+        })();
+    </script>
+</body>
+</html>

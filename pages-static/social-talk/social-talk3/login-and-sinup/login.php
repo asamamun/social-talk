@@ -3,20 +3,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+include_once '../includes/header.php';
+include_once '../includes/db.php';
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social-Talk - Login</title>
-    <link rel="icon" type="image/x-icon" href="assets/logo/logo1.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
+
 <div class="container d-flex justify-content-center">
     <div class="login-container row g-0">
         <!-- Left Side - Branding -->
@@ -117,7 +108,7 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/main.js"></script>
-</body>
-</html>
+
+<?php
+include_once '../includes/footer.php';
+?>

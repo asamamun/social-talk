@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialNet - Notifications</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .mark-all-read, .clear-all {
+            transition: opacity 0.2s;
+        }
+
+        .mark-all-read:hover, .clear-all:hover {
+            opacity: 0.8;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .notification-item.remove {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; height: 0; padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-users"></i> SocialNet</a>
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <div class="nav-item me-3">
+                    <input type="search" class="form-control" placeholder="Search friends..." style="width: 250px;" aria-label="Search for friends">
+                </div>
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative active" href="notifications.html" aria-label="Notifications">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge badge bg-danger position-absolute" style="top: -8px; right: -8px;" aria-label="4 new notifications">4</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Sarah Johnson">
+                                <div>
+                                    <strong>Sarah Johnson</strong> liked your post
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-label="User profile">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic" alt="Profile picture of John Doe">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="#" onclick="showProfile()"><i class="fas fa-user me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="#" onclick="showSettings()"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="sidebar">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Notifications</h4>
+                        <div>
+                            <button class="btn btn-link text-decoration-none mark-all-read me-2" onclick="markAllAsRead()" aria-label="Mark all notifications as read">Mark All as Read</button>
+                            <button class="btn btn-link text-decoration-none clear-all text-danger" onclick="clearAllNotifications()" aria-label="Clear all notifications">Clear All</button>
+                        </div>
+                    </div>
+                    <div id="notificationsContainer" aria-live="polite">
+                        <div class="notification-item unread" onclick="handleNotificationClick('post', '123', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Sarah Johnson">
+                                <div>
+                                    <strong>Sarah Johnson</strong> liked your post
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item unread" onclick="handleNotificationClick('friend-request', 'Mike Chen', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Mike Chen">
+                                <div>
+                                    <strong>Mike Chen</strong> sent you a friend request
+                                    <div class="text-muted small">5 minutes ago</div>
+                                    <div class="mt-2">
+                                        <button class="btn btn-primary btn-sm me-2" onclick="acceptFriendRequest(this)" aria-label="Accept friend request from Mike Chen">Accept</button>
+                                        <button class="btn btn-secondary btn-sm" onclick="declineFriendRequest(this)" aria-label="Decline friend request from Mike Chen">Decline</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item" onclick="handleNotificationClick('post', '456', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Emma Wilson">
+                                <div>
+                                    <strong>Emma Wilson</strong> commented on your post
+                                    <div class="text-muted small">1 hour ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item" onclick="handleNotificationClick('post', '789', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Alex Rodriguez">
+                                <div>
+                                    <strong>Alex Rodriguez</strong> shared your post
+                                    <div class="text-muted small">Yesterday</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item" onclick="handleNotificationClick('profile', 'Lisa Park', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Lisa Park">
+                                <div>
+                                    <strong>Lisa Park</strong> updated their profile picture
+                                    <div class="text-muted small">2 days ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="noNotificationsMessage" class="text-center text-muted hidden" tabindex="0">
+                        <p>No new notifications.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function handleNotificationClick(type, id, element) {
+            element.classList.remove('unread');
+            checkNoNotifications();
+            if (type === 'post') {
+                alert(`Navigating to post ID ${id}`);
+                // Example: window.location.href = `post.html?id=${id}`;
+            } else if (type === 'friend-request') {
+                alert(`Navigating to friend request for ${id}`);
+                window.location.href = 'friend-request.html';
+            } else if (type === 'profile') {
+                alert(`Navigating to profile of ${id}`);
+                // Example: window.location.href = `profile.html?user=${id}`;
+            }
+        }
+
+        function acceptFriendRequest(btn) {
+            const notification = btn.closest('.notification-item');
+            notification.classList.add('remove');
+            setTimeout(() => {
+                notification.remove();
+                checkNoNotifications();
+            }, 300);
+            alert("Friend request accepted!");
+            event.stopPropagation();
+        }
+
+        function declineFriendRequest(btn) {
+            const notification = btn.closest('.notification-item');
+            notification.classList.add('remove');
+            setTimeout(() => {
+                notification.remove();
+                checkNoNotifications();
+            }, 300);
+            alert("Friend request declined.");
+            event.stopPropagation();
+        }
+
+        function markAllAsRead() {
+            const notifications = document.querySelectorAll('.notification-item.unread');
+            notifications.forEach(notification => {
+                notification.classList.remove('unread');
+            });
+            checkNoNotifications();
+        }
+
+        function clearAllNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            const notifications = container.querySelectorAll('.notification-item');
+            notifications.forEach(notification => {
+                notification.classList.add('remove');
+                setTimeout(() => notification.remove(), 300);
+            });
+            setTimeout(checkNoNotifications, 300);
+        }
+
+        function checkNoNotifications() {
+            const container = document.getElementById('notificationsContainer');
+            const noNotificationsMessage = document.getElementById('noNotificationsMessage');
+            if (container.children.length === 0) {
+                noNotificationsMessage.classList.remove('hidden');
+                noNotificationsMessage.focus();
+            }
+        }
+
+        function showProfile() {
+            alert("Go to profile page");
+        }
+
+        function showSettings() {
+            alert("Open settings");
+        }
+
+        function logout() {
+            alert("Logging out...");
+        }
+    </script>
+</body>
+</html>

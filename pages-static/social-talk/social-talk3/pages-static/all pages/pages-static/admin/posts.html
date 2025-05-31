@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | SocialNet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="posts-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Post Management</h2>
+        <div>
+            <button class="btn btn-primary">
+                <i class="fas fa-download me-2"></i>Export
+            </button>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search posts...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="postFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postFilterDropdown">
+                                <li><a class="dropdown-item" href="#">All Posts</a></li>
+                                <li><a class="dropdown-item" href="#">Published</a></li>
+                                <li><a class="dropdown-item" href="#">Reported</a></li>
+                                <li><a class="dropdown-item" href="#">Deleted</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="postSortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-sort me-1"></i>Sort
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postSortDropdown">
+                                <li><a class="dropdown-item" href="#">Newest First</a></li>
+                                <li><a class="dropdown-item" href="#">Oldest First</a></li>
+                                <li><a class="dropdown-item" href="#">Most Liked</a></li>
+                                <li><a class="dropdown-item" href="#">Most Commented</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Post</th>
+                            <th>Author</th>
+                            <th>Likes</th>
+                            <th>Comments</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Just finished an amazing hiking trip!</td>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Sarah Johnson
+                            </td>
+                            <td>24</td>
+                            <td>8</td>
+                            <td><span class="badge bg-success">Published</span></td>
+                            <td>2 hours ago</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="View" onclick="viewPost('1')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger action-btn" title="Delete" onclick="deletePost('1')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Excited to announce that I just got accepted into...</td>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Mike Chen
+                            </td>
+                            <td>15</td>
+                            <td>12</td>
+                            <td><span class="badge bg-success">Published</span></td>
+                            <td>4 hours ago</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="View" onclick="viewPost('2')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger action-btn" title="Delete" onclick="deletePost('2')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Check out this amazing deal I found!</td>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Emma Wilson
+                            </td>
+                            <td>32</td>
+                            <td>5</td>
+                            <td><span class="badge bg-warning">Reported</span></td>
+                            <td>1 day ago</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="View" onclick="viewPost('3')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger action-btn" title="Delete" onclick="deletePost('3')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>This is an inappropriate post that was removed</td>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Alex Rodriguez
+                            </td>
+                            <td>2</td>
+                            <td>0</td>
+                            <td><span class="badge bg-danger">Deleted</span></td>
+                            <td>2 days ago</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="View" onclick="viewPost('4')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success action-btn" title="Restore" onclick="restorePost('4')">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+     <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="charts.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>

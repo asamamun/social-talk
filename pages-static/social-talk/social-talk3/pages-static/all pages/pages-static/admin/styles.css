@@ -1,0 +1,178 @@
+:root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: var(--dark-color);
+            color: white;
+            width: 250px;
+            transition: all 0.3s;
+            position: fixed;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar ul.components {
+            padding: 20px 0;
+        }
+
+        .sidebar ul li a {
+            padding: 12px 20px;
+            font-size: 1em;
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+        }
+
+        .sidebar ul li.active > a {
+            color: white;
+            background-color: var(--primary-color);
+        }
+
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        .navbar {
+            padding: 15px 10px;
+            background: #fff;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 40px;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-btn {
+            box-shadow: none;
+            outline: none !important;
+            border: none;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .stat-card {
+            border-left: 4px solid;
+            border-radius: 8px;
+        }
+
+        .stat-card.primary {
+            border-left-color: var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success-color);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--danger-color);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .badge-admin {
+            background-color: var(--danger-color);
+        }
+
+        .badge-user {
+            background-color: var(--primary-color);
+        }
+
+        .badge-banned {
+            background-color: var(--warning-color);
+        }
+
+        .badge-deleted {
+            background-color: var(--dark-color);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+            .content {
+                margin-left: 0;
+            }
+            .content.active {
+                margin-left: 250px;
+            }
+        }

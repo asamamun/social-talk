@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Doe's Friends | SocialNet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .friend-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .friend-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .friend-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .friend-card h6 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .friend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-light {
+            background-color: #fff;
+            border-color: #ddd;
+        }
+
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .navbar-nav .dropdown-menu {
+            width: 350px;
+        }
+
+        .notification-badge {
+            top: -8px;
+            right: -8px;
+        }
+
+        .online-status {
+            width: 12px;
+            height: 12px;
+            background-color: #28a745;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="timeline-page.html"><i class="fas fa-users"></i> SocialNet</a>
+            
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <div class="nav-item me-3">
+                    <input type="search" class="form-control" placeholder="Search friends..." style="width: 250px;">
+                </div>
+                
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge badge bg-danger position-absolute">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Sarah Johnson</strong> liked your post
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Mike Chen</strong> sent you a friend request
+                                    <div class="text-muted small">5 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="user-profile.html"><i class="fas fa-user me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#"><i class="fas fa-shield-alt me-2"></i>Admin Panel</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Friends Section -->
+    <div class="container mt-4">
+        <div class="friend-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">John Doe's Friends (245)</h4>
+                <div>
+                   <a href="find-friend.html"class="btn btn-primary me-2"><i class="fas fa-user-plus me-2"></i>Find Friends</a>
+                    <a href="user-profile.html" class="btn btn-light"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+                </div>
+            </div>
+            <div class="friend-grid">
+                <div class="friend-card position-relative">
+                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=100&h=100&fit=crop&crop=face" alt="Friend">
+                    <div class="online-status"></div>
+                    <h6>Sarah Johnson</h6>
+                    <button class="btn btn-success btn-sm"><i class="fas fa-user-friends me-2"></i>Friends</button>
+                </div>
+                <div class="friend-card position-relative">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Friend">
+                    <h6>Mike Chen</h6>
+                    <button class="btn btn-success btn-sm"><i class="fas fa-user-friends me-2"></i>Friends</button>
+                </div>
+                <div class="friend-card position-relative">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Friend">
+                    <div class="online-status"></div>
+                    <h6>Emma Wilson</h6>
+                    <button class="btn btn-success btn-sm"><i class="fas fa-user-friends me-2"></i>Friends</button>
+                </div>
+                <div class="friend-card position-relative">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face" alt="Friend">
+                    <h6>Alex Rodriguez</h6>
+                    <button class="btn btn-success btn-sm"><i class="fas fa-user-friends me-2"></i>Friends</button>
+                </div>
+                <div class="friend-card position-relative">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face" alt="Friend">
+                    <div class="online-status"></div>
+                    <h6>Laura Smith</h6>
+                    <button class="btn btn-success btn-sm"><i class="fas fa-user-friends me-2"></i>Friends</button>
+                </div>
+                <div class="friend-card position-relative">
+                    <img src="https://images.unsplash.com/photo-1506794778202-d4c18e0b24c4?w=100&h=100&fit=crop&crop=face" alt="Friend">
+                    <h6>James Lee</h6>
+                    <button class="btn btn-success btn-sm"><i class="fas fa-user-friends me-2"></i>Friends</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Optional: Add interactivity for friend card clicks
+        document.querySelectorAll('.friend-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    // Future implementation: Navigate to friend's profile
+                    console.log('Friend card clicked:', this.querySelector('h6').textContent);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

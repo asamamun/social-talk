@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialNet - Messages</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .online-status {
+            width: 12px;
+            height: 12px;
+            background-color: #28a745;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 2px solid white;
+        }
+
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message-sent {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-received {
+            background-color: #e9ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .conversation-item {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .conversation-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .conversation-item.active {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .input-group {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-users"></i> SocialNet</a>
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <div class="nav-item me-3">
+                    <input type="search" class="form-control" placeholder="Search friends..." style="width: 250px;" aria-label="Search for friends">
+                </div>
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown" aria-label="Notifications">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge badge bg-danger position-absolute" style="top: -8px; right: -8px;" aria-label="3 new notifications">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Sarah Johnson">
+                                <div>
+                                    <strong>Sarah Johnson</strong> liked your post
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-label="User profile">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic" alt="Profile picture of John Doe">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="#" onclick="showProfile()"><i class="fas fa-user me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="#" onclick="showSettings()"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Conversations List -->
+            <div class="col-lg-4">
+                <div class="sidebar">
+                    <h4 class="mb-4">Messages</h4>
+                    <div class="list-group">
+                        <div class="list-group-item list-group-item-action conversation-item" onclick="openChat('Sarah Johnson', this)">
+                            <div class="d-flex align-items-center">
+                                <div class="position-relative">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Sarah Johnson">
+                                    <div class="online-status"></div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">Sarah Johnson</h6>
+                                        <small class="text-muted">2:30 PM</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">Hey! How was your weekend?</p>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">2</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item list-group-item-action conversation-item" onclick="openChat('Mike Chen', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Mike Chen">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">Mike Chen</h6>
+                                        <small class="text-muted">Yesterday</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">Thanks for the advice!</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item list-group-item-action conversation-item" onclick="openChat('Emma Wilson', this)">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Emma Wilson">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-1">Emma Wilson</h6>
+                                        <small class="text-muted">Yesterday</small>
+                                    </div>
+                                    <p class="mb-1 text-muted">Let's catch up soon!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Window -->
+            <div class="col-lg-8">
+                <div class="sidebar">
+                    <div id="chatHeader" class="d-flex align-items-center mb-3 hidden">
+                        <img src="" class="profile-pic me-3" id="chatProfilePic" alt="Profile picture">
+                        <h5 class="mb-0" id="chatName"></h5>
+                    </div>
+                    <div class="chat-container" id="chatContainer">
+                        <!-- Messages will be dynamically added here -->
+                    </div>
+                    <div class="input-group mt-3 hidden" id="messageInput">
+                        <input type="text" class="form-control" placeholder="Type a message..." aria-label="Type a message">
+                        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentChat = null;
+
+        function openChat(name, element) {
+            // Remove active class from all conversation items
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            // Add active class to clicked item
+            element.classList.add('active');
+
+            // Update chat header
+            currentChat = name;
+            const chatHeader = document.getElementById('chatHeader');
+            const chatName = document.getElementById('chatName');
+            const chatProfilePic = document.getElementById('chatProfilePic');
+            const chatContainer = document.getElementById('chatContainer');
+            const messageInput = document.getElementById('messageInput');
+
+            chatName.textContent = name;
+            chatProfilePic.src = element.querySelector('.profile-pic').src;
+            chatProfilePic.alt = `Profile picture of ${name}`;
+            chatHeader.classList.remove('hidden');
+            messageInput.classList.remove('hidden');
+
+            // Clear previous messages
+            chatContainer.innerHTML = '';
+
+            // Sample messages for demonstration
+            const sampleMessages = {
+                'Sarah Johnson': [
+                    { sender: 'Sarah Johnson', text: 'Hey! How was your weekend?', time: '2:30 PM' },
+                    { sender: 'You', text: 'It was great, thanks for asking! How about yours?', time: '2:32 PM' }
+                ],
+                'Mike Chen': [
+                    { sender: 'Mike Chen', text: 'Thanks for the advice!', time: 'Yesterday' },
+                    { sender: 'You', text: 'No problem! Glad I could help.', time: 'Yesterday' }
+                ],
+                'Emma Wilson': [
+                    { sender: 'Emma Wilson', text: "Let's catch up soon!", time: 'Yesterday' },
+                    { sender: 'You', text: 'Definitely, how about this weekend?', time: 'Yesterday' }
+                ]
+            };
+
+            // Display sample messages
+            (sampleMessages[name] || []).forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message-bubble ${msg.sender === 'You' ? 'message-sent' : 'message-received'}`;
+                messageDiv.innerHTML = `
+                    <p class="mb-0">${msg.text}</p>
+                    <small class="text-muted">${msg.time}</small>
+                `;
+                chatContainer.appendChild(messageDiv);
+            });
+
+            // Scroll to bottom of chat
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.querySelector('#messageInput input');
+            const text = input.value.trim();
+            if (!text || !currentChat) return;
+
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-bubble message-sent';
+            messageDiv.innerHTML = `
+                <p class="mb-0">${text}</p>
+                <small class="text-muted">Just now</small>
+            `;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            input.value = '';
+        }
+
+        function showProfile() {
+            alert("Go to profile page");
+        }
+
+        function showSettings() {
+            alert("Open settings");
+        }
+
+        function logout() {
+            alert("Logging out...");
+        }
+    </script>
+</body>
+</html>

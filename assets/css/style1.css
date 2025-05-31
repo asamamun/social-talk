@@ -1,0 +1,630 @@
+:root {
+    /* From the first snippet */
+    --primary-color: #1877f2; /* Used for buttons, links, logo, etc. */
+    --secondary-color: #42b883; /* Used for hover effects, buttons */
+    --success-color: #198754; /* Not directly used yet, but defined */
+    --danger-color: #dc3545; /* Used for liked button, errors */
+    --dark-color: #2c3e50; /* Used for text in friend cards, section titles */
+    --light-bg: #f8f9fa; /* Used for body background, some hover effects */
+    --dark-bg: #1e1e2f; /* Dark mode background */
+    --dark-text: #ccc; /* Dark mode text */
+    --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Profile header, progress bar */
+
+    /* From the second snippet */
+    --white: #fff; /* Container background, buttons */
+    --text-dark: #333; /* Label text */
+    --border-light: #ddd; /* Input borders, button borders */
+    --primary-blue-hover: #165eab; /* Button hover effect */
+    --error-red: #e63946; /* Error messages */
+    --shadow-dark: rgba(0, 0, 0, 0.1); /* Box shadows */
+    --focus-shadow: rgba(24, 119, 242, 0.3); /* Focus shadow for inputs */
+    --input-bg: #e9ecef; /* Form input background, message received */
+    --modal-bg: rgba(255, 255, 255, 0.95); /* Modal background */
+    --semi-transparent-white: rgba(255, 255, 255, 0.9); /* Used in buttons, overlays */
+    --online-gradient: linear-gradient(45deg, #28a745, #20c997); /* Online status dot */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--light-bg);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 70px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+.dark-mode .post-card,
+.dark-mode .sidebar,
+.dark-mode .modal-content,
+.dark-mode .navbar,
+.dark-mode .settings-card {
+    background: rgba(50, 50, 50, 0.95) !important;
+    color: var(--dark-text);
+}
+
+.navbar {
+    background: var(--modal-bg);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px var(--shadow-dark);
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: var(--primary-color) !important;
+    font-size: 1.5rem;
+}
+
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--semi-transparent-white);
+    box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+.profile-pic-lg {
+    width: 120px;
+    height: 120px;
+    border: 4px solid var(--semi-transparent-white);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.profile-pic-xl {
+    width: 180px;
+    height: 180px;
+    border: 5px solid var(--white);
+    position: absolute;
+    bottom: -90px;
+    left: 40px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.profile-pic-edit {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid var(--white);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-pic-container {
+    position: relative;
+    display: inline-block;
+}
+
+.pic-upload-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: var(--primary-color);
+    color: var(--white);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.pic-upload-overlay:hover {
+    background: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+.profile-header, .cover-photo-section {
+    background: var(--gradient-bg);
+    height: 300px;
+    border-radius: 15px;
+    position: relative;
+    margin-bottom: 100px;
+    box-shadow: 0 4px 20px var(--shadow-dark);
+}
+
+.cover-photo-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cover-photo-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.cover-photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.cover-photo-section:hover .cover-photo-overlay {
+    opacity: 1;
+}
+
+.cover-upload-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.cover-upload-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cover-actions {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.cover-action-btn {
+    background: var(--semi-transparent-white);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.cover-action-btn:hover {
+    background: var(--white);
+    transform: scale(1.1);
+}
+
+.profile-actions {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.post-card, .profile-card, .friend-request-card, .friend-card, .photo-card, .settings-card, .sidebar, .profile-nav, .search-card {
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 2px 10px var(--shadow-dark);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+}
+
+.post-card:hover, .friend-card:hover, .friend-request-card:hover, .profile-card:hover {
+    transform: translateY(-2px);
+}
+
+.sidebar {
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-color), #4267B2);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--focus-shadow);
+}
+
+.btn-success {
+    background: linear-gradient(45deg, var(--secondary-color), #36A2EB);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 600;
+}
+
+.btn-light, .btn-secondary {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 25px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    background: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.notification-item {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.3s;
+    border-radius: 10px;
+}
+
+.notification-item:hover {
+    background: var(--light-bg);
+    transform: translateX(5px);
+}
+
+.notification-item.unread {
+    background: #e3f2fd;
+    border-left: 4px solid var(--primary-color);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.chat-container {
+    height: 450px;
+    overflow-y: auto;
+    border: 1px solid rgba(221, 221, 221, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    background: var(--white);
+    backdrop-filter: blur(10px);
+}
+
+.message-bubble {
+    max-width: 70%;
+    margin-bottom: 15px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    animation: fadeInUp 0.3s ease;
+}
+
+.message-sent {
+    background: linear-gradient(45deg, var(--primary-color), #4267B2);
+    color: var(--white);
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.message-received {
+    background: var(--input-bg);
+    color: var(--text-dark);
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.online-status {
+    width: 12px;
+    height: 12px;
+    background: var(--online-gradient);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    border: 2px solid var(--white);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.modal-content {
+    background: var(--modal-bg);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+}
+
+.modal-header, .modal-footer {
+    border: none;
+}
+
+.like-btn {
+    color: #666;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+
+.like-btn.liked {
+    color: var(--danger-color);
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.like-btn:hover {
+    transform: scale(1.05);
+}
+
+.comment-section {
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.form-control, .form-select {
+    border-radius: 12px;
+    border: 2px solid var(--input-bg);
+    background: var(--modal-bg);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem var(--focus-shadow);
+}
+
+.list-group-item {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover, .list-group-item.active {
+    background: rgba(24, 119, 242, 0.1);
+    border-color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.profile-nav .nav-link {
+    color: #555;
+    font-weight: 500;
+    padding: 12px 20px;
+}
+
+.profile-nav .nav-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.friend-grid, .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.photo-grid img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 5px var(--shadow-dark);
+}
+
+.photo-grid img:hover {
+    transform: scale(1.03);
+}
+
+.friend-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid var(--white);
+    box-shadow: 0 2px 5px var(--shadow-dark);
+}
+
+.friend-card h6 {
+    margin-bottom: 10px;
+    color: var(--dark-color);
+}
+
+.navbar-nav .dropdown-menu {
+    width: 350px;
+    z-index: 1001;
+}
+
+.notification-badge {
+    top: -8px;
+    right: -8px;
+}
+
+.conversation-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.conversation-item:hover {
+    background: var(--light-bg);
+}
+
+.conversation-item.active {
+    background: #e3f2fd;
+    border-left: 4px solid var(--primary-color);
+}
+
+.settings-section h5 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.section-title {
+    color: var(--dark-color);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.form-section {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.blood-group-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.blood-group-option {
+    background: var(--light-bg);
+    border: 2px solid var(--input-bg);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.blood-group-option:hover {
+    background: var(--input-bg);
+    transform: scale(1.05);
+}
+
+.blood-group-option.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.gender-selector {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.gender-option {
+    flex: 1;
+    background: var(--light-bg);
+    border: 2px solid var(--input-bg);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.alert {
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+}
+
+.character-count {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+.progress-bar {
+    height: 4px;
+    background: var(--gradient-bg);
+    border-radius: 2px;
+    margin-bottom: 2rem;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; height: 0; padding: 0; margin: 0; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.fade-in {
+    animation: fadeInUp 0.5s ease;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fade-in, .pulse {
+        animation: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-pic-xl {
+        width: 120px;
+        height: 120px;
+        bottom: -60px;
+        left: 20px;
+    }
+    .profile-header, .cover-photo-section {
+        height: 200px;
+        margin-bottom: 70px;
+    }
+    .photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .blood-group-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .gender-selector {
+        flex-direction: column;
+    }
+    .profile-pic-edit {
+        width: 120px;
+        height: 120px;
+    }
+}

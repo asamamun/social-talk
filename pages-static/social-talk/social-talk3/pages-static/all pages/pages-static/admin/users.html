@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | SocialNet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="users-section">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>User Management</h2>
+        <div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="fas fa-plus me-2"></i>Add User
+            </button>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search users...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-filter me-1"></i>Filter
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown">
+                                <li><a class="dropdown-item" href="#">All Users</a></li>
+                                <li><a class="dropdown-item" href="#">Active</a></li>
+                                <li><a class="dropdown-item" href="#">Banned</a></li>
+                                <li><a class="dropdown-item" href="#">Admins</a></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-sort me-1"></i>Sort
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
+                                <li><a class="dropdown-item" href="#">Newest First</a></li>
+                                <li><a class="dropdown-item" href="#">Oldest First</a></li>
+                                <li><a class="dropdown-item" href="#">A-Z</a></li>
+                                <li><a class="dropdown-item" href="#">Z-A</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                John Doe
+                            </td>
+                            <td>john.doe@example.com</td>
+                            <td><span class="badge badge-admin">Admin</span></td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>Jan 15, 2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="Edit" onclick="editUser('1')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger me-1 action-btn" title="Ban" onclick="banUser('1')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary action-btn" title="Delete" onclick="deleteUser('1')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Sarah Johnson
+                            </td>
+                            <td>sarah.j@example.com</td>
+                            <td><span class="badge badge-user">User</span></td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>Feb 3, 2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="Edit" onclick="editUser('2')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger me-1 action-btn" title="Ban" onclick="banUser('2')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary action-btn" title="Delete" onclick="deleteUser('2')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Mike Chen
+                            </td>
+                            <td>mike.chen@example.com</td>
+                            <td><span class="badge badge-user">User</span></td>
+                            <td><span class="badge badge-banned">Banned</span></td>
+                            <td>Mar 10, 2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="Edit" onclick="editUser('3')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success me-1 action-btn" title="Unban" onclick="unbanUser('3')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary action-btn" title="Delete" onclick="deleteUser('3')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Emma Wilson
+                            </td>
+                            <td>emma.w@example.com</td>
+                            <td><span class="badge badge-user">User</span></td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>Apr 5, 2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="Edit" onclick="editUser('4')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger me-1 action-btn" title="Ban" onclick="banUser('4')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary action-btn" title="Delete" onclick="deleteUser('4')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" class="user-avatar me-2">
+                                Alex Rodriguez
+                            </td>
+                            <td>alex.r@example.com</td>
+                            <td><span class="badge badge-deleted">Deleted</span></td>
+                            <td><span class="badge bg-secondary">Inactive</span></td>
+                            <td>May 12, 2023</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary me-1 action-btn" title="Edit" onclick="editUser('5')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-success me-1 action-btn" title="Restore" onclick="restoreUser('5')">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary action-btn" title="Delete" onclick="deleteUser('5')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+     <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="charts.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>

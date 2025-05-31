@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Doe's Photos | SocialNet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1877f2;
+            --secondary-color: #42b883;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --dark-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .photo-grid img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .photo-grid img:hover {
+            transform: scale(1.03);
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-light {
+            background-color: #fff;
+            border-color: #ddd;
+        }
+
+        .navbar-nav .dropdown-menu {
+            width: 350px;
+        }
+
+        .notification-badge {
+            top: -8px;
+            right: -8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="timeline-page.html"><i class="fas fa-users"></i> SocialNet</a>
+            
+            <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+                <div class="nav-item me-3">
+                    <input type="search" class="form-control" placeholder="Search friends..." style="width: 250px;">
+                </div>
+                
+                <div class="nav-item dropdown me-3">
+                    <a class="nav-link position-relative" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge badge bg-danger position-absolute">3</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Sarah Johnson</strong> liked your post
+                                    <div class="text-muted small">2 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="notification-item unread">
+                            <div class="d-flex align-items-center">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
+                                <div>
+                                    <strong>Mike Chen</strong> sent you a friend request
+                                    <div class="text-muted small">5 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="user-profile.html"><i class="fas fa-user me-2"></i>My Profile</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#"><i class="fas fa-shield-alt me-2"></i>Admin Panel</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Photos Section -->
+    <div class="container mt-4">
+        <div class="photo-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">John Doe's videos</h4>
+                <div>
+                    <button class="btn btn-primary me-2"><i class="fas fa-plus me-2"></i>Upload video</button>
+                    <a href="user-profile.html" class="btn btn-light"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+                </div>
+            </div>
+            <div class="photo-grid">
+                <video src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1470114716159-e389f8712fda?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=300&h=300&fit=crop" alt="video">
+                <video src="https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=300&h=300&fit=crop" alt="video">
+                </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Optional: Add interactivity for photo clicks (e.g., open modal)
+        document.querySelectorAll('.photo-grid img').forEach(img => {
+            img.addEventListener('click', function() {
+                // Future implementation: Open a modal or lightbox to view the full-size image
+                console.log('Photo clicked:', this.src);
+            });
+        });
+    </script>
+</body>
+</html>
