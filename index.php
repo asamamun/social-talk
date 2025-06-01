@@ -15,15 +15,13 @@ if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
 $db = new MysqliDb();
 $db->where ("user_id", $_SESSION['user_id']);
 $user = $db->getOne ("users");
-// var_dump($user);
-
 
 
 /* 
 create post script
 */
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'createPost') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_post') {
+    
     // 1. Retrieve user ID
     $userId = $_SESSION['user_id'];
 
@@ -187,54 +185,6 @@ $current_user = getCurrentUser($db, $current_user_id);
 // Get posts for feed
 $posts = getFeedPosts($db, $current_user_id);
 // Handle AJAX requests for likes and comments
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    header('Content-Type: application/json');
-    
-    switch ($_POST['action']) {
-        case 'like_post':
-            $post_id = intval($_POST['post_id']);
-            
-            // Check if already liked
-            $existing_like_query = "SELECT like_id FROM likes WHERE post_id = ? AND user_id = ?";
-            $existing_like = $db->rawQuery($existing_like_query, array($post_id, $current_user_id));
-            
-            if ($existing_like) {
-                // Unlike
-                $unlike_query = "DELETE FROM likes WHERE post_id = ? AND user_id = ?";
-                $db->rawQuery($unlike_query, array($post_id, $current_user_id));
-                echo json_encode(['status' => 'unliked']);
-            } else {
-                // Like
-                $like_query = "INSERT INTO likes (post_id, user_id, created_at) VALUES (?, ?, NOW())";
-                $db->rawQuery($like_query, array($post_id, $current_user_id));
-                echo json_encode(['status' => 'liked']);
-            }
-            exit();
-            
-        case 'add_comment':
-            $post_id = intval($_POST['post_id']);
-            $comment = trim($_POST['comment']);
-            
-            if (!empty($comment)) {
-                $comment_query = "INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, NOW())";
-                $db->rawQuery($comment_query, array($post_id, $current_user_id, $comment));
-                echo json_encode(['status' => 'success']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Comment cannot be empty']);
-            }
-            exit();
-            
-        case 'load_comments':
-            $post_id = intval($_POST['post_id']);
-            $comments = getPostComments($db, $post_id);
-            echo json_encode(['status' => 'success', 'comments' => $comments]);
-            exit();
-    }
-}
-//////
-
-
-
 include_once 'includes/header1.php';
 
 ?>
@@ -286,7 +236,16 @@ include_once 'includes/header1.php';
                 <!-- Create Post -->
                  <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="createPostForm" name="createPostForm" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="create_post">
+
+                    
                 <div class="post-card p-4" id="feedSection">
+                    <div class="d-flex mb-3 justify-content-end">
+                    <select name="privacy" id="privacy">
+                        <option value="public" selected>Public</option>
+                        <option value="private">Private</option>
+                        <option value="friends">Friends Only</option>
+                    </select>
+                    </div>
                     <div class="d-flex align-items-center mb-3">
                         <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3">
                         <!-- <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()"> -->

@@ -1,3 +1,9 @@
+<?php
+//if no session start start session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +14,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
    <link rel="stylesheet" href="assets/css/style1.css">
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    
 </head>
 <body>
@@ -99,3 +106,18 @@
             </div>
         </div>
     </div>
+    <?php
+    if(isset($_SESSION['message'])) {
+        //show message in sweetalert and unset msg
+        echo '<script>Swal.fire({
+  position: "top-end",
+  icon: "success",
+  title: "'.$_SESSION['message'].'",
+  showConfirmButton: false,
+  timer: 1500
+});</script>';
+        unset($_SESSION['message']);
+    }
+    ?>
+
+?>
