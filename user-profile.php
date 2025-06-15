@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
+$profileId = isset($_GET['id']) ? $_GET['id'] : $_SESSION['user_id'];
 include_once 'includes/header1.php';
 
 ?>
@@ -363,7 +363,7 @@ include_once 'includes/header1.php';
     </div>
 
     
-
-<?php
-include_once 'includes/footer1.php';
-?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+</body>
+</html>

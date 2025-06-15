@@ -3,11 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require __DIR__ . "/vendor/autoload.php";
-include_once 'includes/header1.php';
 
-// Initialize MysqliDb
-$db = new MysqliDb();
+include_once 'includes/db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -24,101 +21,37 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Fetch user profile data
-$profile_data = $db->where('user_id', $user_id)->getOne('user_profile');
-if (!$profile_data) {
-    echo "<div class='alert alert-danger'>Error fetching profile: " . $db->getLastError() . "</div>";
+$query = "SELECT * FROM user_profile WHERE user_id = " . (int)$user_id;
+$result = $conn->query($query);
+if ($result) {
+    $profile_data = $result->fetch_assoc();
+} else {
+    echo "<div class='alert alert-danger'>Error fetching profile: " . $conn->error . "</div>";
 }
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $first_name = $db->escape($_POST['first_name'] ?? '');
-    $last_name = $db->escape($_POST['last_name'] ?? '');
+    $first_name = mysqli_real_escape_string($conn, $_POST['first_name'] ?? '');
+    $last_name = mysqli_real_escape_string($conn, $_POST['last_name'] ?? '');
     $date_of_birth = $_POST['date_of_birth'] ?? null;
-    $phone_number = $db->escape($_POST['phone_number'] ?? '');
-    $gender = $db->escape($_POST['gender'] ?? '');
-    $blood_group = $db->escape($_POST['blood_group'] ?? '');
-    $bio = $db->escape($_POST['bio'] ?? '');
-    $address_line1 = $db->escape($_POST['address_line1'] ?? '');
-    $address_line2 = $db->escape($_POST['address_line2'] ?? '');
-    $city = $db->escape($_POST['city'] ?? '');
-    $state = $db->escape($_POST['state'] ?? '');
-    $postal_code = $db->escape($_POST['postal_code'] ?? '');
-    $country = $db->escape($_POST['country'] ?? '');
+    $phone_number = mysqli_real_escape_string($conn, $_POST['phone_number'] ?? '');
+    $gender = mysqli_real_escape_string($conn, $_POST['gender'] ?? '');
+    $blood_group = mysqli_real_escape_string($conn, $_POST['blood_group'] ?? '');
+    $bio = mysqli_real_escape_string($conn, $_POST['bio'] ?? '');
+    $address_line1 = mysqli_real_escape_string($conn, $_POST['address_line1'] ?? '');
+    $address_line2 = mysqli_real_escape_string($conn, $_POST['address_line2'] ?? '');
+    $city = mysqli_real_escape_string($conn, $_POST['city'] ?? '');
+    $state = mysqli_real_escape_string($conn, $_POST['state'] ?? '');
+    $postal_code = mysqli_real_escape_string($conn, $_POST['postal_code'] ?? '');
+    $country = mysqli_real_escape_string($conn, $_POST['country'] ?? '');
 
-    // Handle profile picture upload
-$profile_picture = $profile_data['profile_picture'] ?? '';
-$old_profile_picture = $profile_picture;
-
-if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-    $upload_dir = 'Uploads/';
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-    $max_size = 2 * 1024 * 1024; // 2MB
-    if (in_array($_FILES['profile_picture']['type'], $allowed_types) && $_FILES['profile_picture']['size'] <= $max_size) {
-        $new_filename = uniqid() . '_' . basename($_FILES['profile_picture']['name']);
-        $destination = $upload_dir . $new_filename;
-        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $destination)) {
-            $profile_picture = $new_filename; // Store filename only
-        } else {
-            $error_message = "Failed to move profile picture.";
-        }
-    } else {
-        $error_message = "Invalid profile picture format or size (max 2MB, JPG/PNG/GIF only).";
-    }
-} elseif (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] !== UPLOAD_ERR_NO_FILE) {
-    $error_message = "Profile picture upload error: " . $_FILES['profile_picture']['error'];
-}
-
-// Proceed with database update
-if (!isset($error_message)) {
-    $data = [
-        'first_name' => $first_name,
-        'last_name' => $last_name,
-        'date_of_birth' => $date_of_birth,
-        'phone_number' => $phone_number,
-        'gender' => $gender,
-        'blood_group' => $blood_group,
-        'bio' => $bio,
-        'address_line1' => $address_line1,
-        'address_line2' => $address_line2,
-        'city' => $city,
-        'state' => $state,
-        'postal_code' => $postal_code,
-        'country' => $country,
-        'profile_picture' => $profile_picture
-    ];
-
-    $db->where('user_id', $user_id);
-    if ($db->has('user_profile')) {
-        if ($db->update('user_profile', $data)) {
-            // Delete old profile picture if a new one was uploaded
-            if ($profile_picture !== $old_profile_picture && $old_profile_picture && file_exists($upload_dir . $old_profile_picture)) {
-                unlink($upload_dir . $old_profile_picture);
-            }
-            $success_message = "Profile updated successfully!";
-            $profile_data = $db->where('user_id', $user_id)->getOne('user_profile');
-        } else {
-            $error_message = "Error updating profile: " . $db->getLastError();
-        }
-    } else {
-        $data['user_id'] = $user_id;
-        if ($db->insert('user_profile', $data)) {
-            $success_message = "Profile created successfully!";
-            $profile_data = $db->where('user_id', $user_id)->getOne('user_profile');
-        } else {
-            $error_message = "Error creating profile: " . $db->getLastError();
-        }
-    }
-}
-
-    /* // Handle profile picture upload
+    // Handle file uploads
     $profile_picture = $profile_data['profile_picture'] ?? '';
-    $old_profile_picture = $profile_picture;
+    $cover_photo = $profile_data['cover_photo'] ?? '';
 
+    // Profile picture upload
     if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = 'Uploads/';
+        $upload_dir = 'uploads/';
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
@@ -127,7 +60,7 @@ if (!isset($error_message)) {
         if (in_array($_FILES['profile_picture']['type'], $allowed_types) && $_FILES['profile_picture']['size'] <= $max_size) {
             $profile_picture = $upload_dir . uniqid() . '_' . basename($_FILES['profile_picture']['name']);
             if (!move_uploaded_file($_FILES['profile_picture']['tmp_name'], $profile_picture)) {
-                $error_message = "Failed to move profile picture.";
+                $error_message = "Failed to move profile picture to $profile_picture.";
             }
         } else {
             $error_message = "Invalid profile picture format or size (max 2MB, JPG/PNG/GIF only).";
@@ -136,49 +69,81 @@ if (!isset($error_message)) {
         $error_message = "Profile picture upload error: " . $_FILES['profile_picture']['error'];
     }
 
-    // Proceed with database update if no errors
-    if (!isset($error_message)) {
-        $data = [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'date_of_birth' => $date_of_birth,
-            'phone_number' => $phone_number,
-            'gender' => $gender,
-            'blood_group' => $blood_group,
-            'bio' => $bio,
-            'address_line1' => $address_line1,
-            'address_line2' => $address_line2,
-            'city' => $city,
-            'state' => $state,
-            'postal_code' => $postal_code,
-            'country' => $country,
-            'profile_picture' => $profile_picture
-        ];
-
-        $db->where('user_id', $user_id);
-        if ($db->has('user_profile')) {
-            if ($db->update('user_profile', $data)) {
-                // Delete old profile picture if a new one was uploaded
-                if ($profile_picture !== $old_profile_picture && $old_profile_picture && file_exists($old_profile_picture)) {
-                    unlink($old_profile_picture);
-                }
-                $success_message = "Profile updated successfully!";
-                $profile_data = $db->where('user_id', $user_id)->getOne('user_profile');
-            } else {
-                $error_message = "Error updating profile: " . $db->getLastError();
+/*     // Cover photo upload
+    if (isset($_FILES['cover_photo']) && $_FILES['cover_photo']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'uploads/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+        $max_size = 5 * 1024 * 1024; // 5MB
+        if (in_array($_FILES['cover_photo']['type'], $allowed_types) && $_FILES['cover_photo']['size'] <= $max_size) {
+            $cover_photo = $upload_dir . uniqid() . '_' . basename($_FILES['cover_photo']['name']);
+            if (!move_uploaded_file($_FILES['cover_photo']['tmp_name'], $cover_photo)) {
+                $error_message = "Failed to move cover photo to $cover_photo.";
             }
         } else {
-            $data['user_id'] = $user_id;
-            if ($db->insert('user_profile', $data)) {
-                $success_message = "Profile created successfully!";
-                $profile_data = $db->where('user_id', $user_id)->getOne('user_profile');
-            } else {
-                $error_message = "Error creating profile: " . $db->getLastError();
-            }
+            $error_message = "Invalid cover photo format or size (max 5MB, JPG/PNG/GIF only).";
         }
+    } elseif (isset($_FILES['cover_photo']) && $_FILES['cover_photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $error_message = "Cover photo upload error: " . $_FILES['cover_photo']['error'];
+    }  */
+      // Cover photo upload
+if (isset($_FILES['cover_photo']) && $_FILES['cover_photo']['error'] === UPLOAD_ERR_OK) {
+    $upload_dir = 'uploads/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
     }
-        */
-} 
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+    $max_size = 2 * 1024 * 1024; // 2MB
+    if (in_array($_FILES['cover_photo']['type'], $allowed_types) && $_FILES['cover_photo']['size'] <= $max_size) {
+        $cover_photo = $upload_dir . uniqid() . '_' . basename($_FILES['cover_photo']['name']);
+        if (!move_uploaded_file($_FILES['cover_photo']['tmp_name'], $cover_photo)) {
+            $error_message = "Failed to move cover photo to $cover_photo.";
+        }
+    } else {
+        $error_message = "Invalid cover photo format or size (max 2MB, JPG/PNG/GIF only).";
+    }
+}
+
+
+    // Proceed with database update if no errors
+    if (!isset($error_message)) {
+        // Use prepared statements for security
+        if ($profile_data) {
+            $stmt = $conn->prepare("UPDATE user_profile SET 
+                first_name = ?, last_name = ?, date_of_birth = ?, phone_number = ?, 
+                gender = ?, blood_group = ?, bio = ?, address_line1 = ?, address_line2 = ?, 
+                city = ?, state = ?, postal_code = ?, country = ?, profile_picture = ?, cover_photo = ? 
+                WHERE user_id = ?");
+            $stmt->bind_param("sssssssssssssssi", $first_name, $last_name, $date_of_birth, $phone_number, 
+                $gender, $blood_group, $bio, $address_line1, $address_line2, 
+                $city, $state, $postal_code, $country, $profile_picture, $cover_photo, $user_id);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO user_profile (
+                user_id, first_name, last_name, date_of_birth, phone_number, 
+                gender, blood_group, bio, address_line1, address_line2, 
+                city, state, postal_code, country, profile_picture, cover_photo
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isssssssssssssss", $user_id, $first_name, $last_name, $date_of_birth, $phone_number, 
+                $gender, $blood_group, $bio, $address_line1, $address_line2, 
+                $city, $state, $postal_code, $country, $profile_picture, $cover_photo);
+        }
+
+        if ($stmt->execute()) {
+            $success_message = "Profile updated successfully!";
+            // Refresh profile data
+            $result = $conn->query("SELECT * FROM user_profile WHERE user_id = " . (int)$user_id);
+            if ($result) {
+                $profile_data = $result->fetch_assoc();
+            }
+        } else {
+            $error_message = "Error updating profile: " . $stmt->error;
+        }
+        $stmt->close();
+    }
+}
+include_once 'includes/header1.php';
 ?>
 
 <div class="container">
@@ -187,10 +152,15 @@ if (!isset($error_message)) {
 
     <!-- Success/Error Messages -->
     <?php if (isset($success_message)): ?>
-        <div id="successAlert" class="alert alert-success">
-            <i class="fas fa-check-circle me-2"></i>
-            <span id="successMessage"><?php echo htmlspecialchars($success_message); ?></span>
-        </div>
+        <script>
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: '<?php echo htmlspecialchars($success_message); ?>',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>
     <?php endif; ?>
     <?php if (isset($error_message)): ?>
         <div id="errorAlert" class="alert alert-danger">
@@ -198,46 +168,42 @@ if (!isset($error_message)) {
             <span id="errorMessage"><?php echo htmlspecialchars($error_message); ?></span>
         </div>
     <?php endif; ?>
-    <div id="coverPhotoAlert" class="alert d-none">
-        <span id="coverPhotoMessage"></span>
-    </div>
-
-    <form id="profileForm" enctype="multipart/form-data" method="POST">
-        <input type="hidden" name="MAX_FILE_SIZE" value="2097152"> <!-- 2MB for profile picture -->
-
-        <!-- Cover Photo Section -->
-        <div class="cover-photo-section">
-            <div class="cover-photo-container">
-                <img id="coverPhotoPreview" src="<?php echo htmlspecialchars($profile_data['cover_photo'] ? 'Uploads/' . $profile_data['cover_photo'] : 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop'); ?>" class="cover-photo-preview" alt="Cover Photo">
-                <div class="cover-photo-overlay" onclick="document.getElementById('coverPhotoInput').click()">
-                    <button type="button" class="cover-upload-btn">
-                        <i class="fas fa-camera me-2"></i>Change Cover Photo
-                    </button>
+<form id="profileForm" enctype="multipart/form-data" method="POST">
+        <input type="hidden" name="MAX_FILE_SIZE" value="5242880"> <!-- 5MB -->
+    <!-- Cover Photo Section -->
+    <div class="cover-photo-section">
+        <div class="cover-photo-container">
+            <img id="coverPhotoPreview" src="<?php echo htmlspecialchars($profile_data['cover_photo'] ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop'); ?>" class="cover-photo-preview" alt="Cover Photo">
+            <div class="cover-photo-overlay" onclick="document.getElementById('coverPhotoInput').click()">
+                <button class="cover-upload-btn">
+                    <i class="fas fa-camera me-2"></i>Change Cover Photo
+                </button>
+            </div>
+            <div class="cover-actions">
+                <div class="cover-action-btn" onclick="document.getElementById('coverPhotoInput').click()" title="Upload Cover Photo">
+                    <i class="fas fa-camera"></i>
                 </div>
-                <div class="cover-actions">
-                    <div class="cover-action-btn" onclick="document.getElementById('coverPhotoInput').click()" title="Upload Cover Photo">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <div class="cover-action-btn" onclick="removeCoverPhoto()" title="Remove Cover Photo">
-                        <i class="fas fa-trash"></i>
-                    </div>
+                <div class="cover-action-btn" onclick="removeCoverPhoto()" title="Remove Cover Photo">
+                    <i class="fas fa-trash"></i>
                 </div>
             </div>
-            <input type="file" id="coverPhotoInput" accept="image/*" style="display: none;">
-            
         </div>
+        <input type="hidden" name="MAX_FILE_SIZE" value="5242880"> <!-- 5MB -->
+        <input type="file" id="coverPhotoInput" name="cover_photo" accept="image/*" style="display: none;">
+    </div>
 
-        <!-- Cover Photo Tips -->
-        <div class="cover-photo-tips">
-            <h6><i class="fas fa-lightbulb me-2"></i>Cover Photo Tips</h6>
-            <ul>
-                <li>Recommended size: 1200x300 pixels for best quality</li>
-                <li>Accepted formats: JPG, PNG, GIF (max 5MB)</li>
-                <li>Choose an image that represents your personality or interests</li>
-                <li>Avoid text-heavy images as they may be hard to read</li>
-            </ul>
-        </div>
+    <!-- Cover Photo Tips -->
+    <div class="cover-photo-tips">
+        <h6><i class="fas fa-lightbulb me-2"></i>Cover Photo Tips</h6>
+        <ul>
+            <li>Recommended size: 1200x300 pixels for best quality</li>
+            <li>Accepted formats: JPG, PNG, GIF (max 5MB)</li>
+            <li>Choose an image that represents your personality or interests</li>
+            <li>Avoid text-heavy images as they may be hard to read</li>
+        </ul>
+    </div>
 
+    
         <div class="row">
             <!-- Left Column -->
             <div class="col-lg-4">
@@ -245,7 +211,7 @@ if (!isset($error_message)) {
                 <div class="form-section text-center">
                     <h4 class="section-title">Profile Picture</h4>
                     <div class="profile-pic-container mb-3">
-                         <img id="profilePicPreview" src="<?php echo htmlspecialchars($profile_data['profile_picture'] ? 'Uploads/' . $profile_data['profile_picture'] : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'); ?>" class="profile-pic-edit" alt="Profile Picture">
+                        <img id="profilePicPreview" src="<?php echo htmlspecialchars($profile_data['profile_picture'] ?? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'); ?>" class="profile-pic-edit" alt="Profile Picture">
                         <div class="pic-upload-overlay" onclick="document.getElementById('profilePicInput').click()">
                             <i class="fas fa-camera"></i>
                         </div>
@@ -390,6 +356,7 @@ if (!isset($error_message)) {
                                     <option value="">Select Country</option>
                                     <?php
                                     $countries = [
+                                        'BD' => 'Bangladesh',
                                         'US' => 'United States',
                                         'CA' => 'Canada',
                                         'UK' => 'United Kingdom',
@@ -399,7 +366,7 @@ if (!isset($error_message)) {
                                         'IN' => 'India',
                                         'JP' => 'Japan',
                                         'BR' => 'Brazil',
-                                        'MX' => 'Mexico'
+                                        'MX' => 'Mexico'                                        
                                     ];
                                     foreach ($countries as $code => $name) {
                                         $selected = ($profile_data['country'] ?? '') === $code ? 'selected' : '';
@@ -429,7 +396,7 @@ if (!isset($error_message)) {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
-// JavaScript to handle gender, blood group, file inputs, and AJAX cover photo upload
+// JavaScript to handle gender, blood group, and file inputs
 document.addEventListener('DOMContentLoaded', function() {
     // Gender selection
     const genderOptions = document.querySelectorAll('.gender-option');
@@ -463,136 +430,63 @@ document.addEventListener('DOMContentLoaded', function() {
     // Profile picture input
     const profilePicInput = document.getElementById('profilePicInput');
     const profilePicPreview = document.getElementById('profilePicPreview');
-    profilePicInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 2 * 1024 * 1024) {
-                alert('Profile picture must be less than 2MB');
-                e.target.value = '';
-                return;
+    if (profilePicInput) {
+        profilePicInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Profile picture must be less than 2MB');
+                    e.target.value = '';
+                    return;
+                }
+                if (!file.type.match(/^image\/(jpeg|png|gif)$/)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    e.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePicPreview.src = e.target.result;
+                    console.log('Profile picture selected:', file.name);
+                };
+                reader.readAsDataURL(file);
             }
-            if (!file.type.match(/^image\/(jpeg|png|gif)$/)) {
-                alert('Please select a valid image file (JPG, PNG, or GIF)');
-                e.target.value = '';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                profilePicPreview.src = e.target.result;
-                console.log('Profile picture selected:', file.name);
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+        });
+    }
 
-    // Cover photo input with AJAX upload
+    // Cover photo input
     const coverPhotoInput = document.getElementById('coverPhotoInput');
     const coverPhotoPreview = document.getElementById('coverPhotoPreview');
-    const coverPhotoAlert = document.getElementById('coverPhotoAlert');
-    const coverPhotoMessage = document.getElementById('coverPhotoMessage');
-
-    coverPhotoInput.addEventListener('change', async function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        // Client-side validation
-        if (file.size > 5 * 1024 * 1024) {
-            showCoverPhotoAlert('Cover photo must be less than 5MB', 'danger');
-            e.target.value = '';
-            return;
-        }
-        if (!file.type.match(/^image\/(jpeg|png|gif)$/)) {
-            showCoverPhotoAlert('Please select a valid image file (JPG, PNG, or GIF)', 'danger');
-            e.target.value = '';
-            return;
-        }
-
-        // Preview the image
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            coverPhotoPreview.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-
-        // Upload via AJAX
-        const formData = new FormData();
-        formData.append('cover_photo', file);
-
-        try {
-            const response = await fetch('update_cover_photo.php', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                showCoverPhotoAlert(result.message, 'success');
-                coverPhotoPreview.src = result.cover_photo_url;
-            } else {
-                showCoverPhotoAlert(result.message, 'danger');
-                coverPhotoPreview.src = '<?php echo htmlspecialchars($profile_data['cover_photo'] ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop'); ?>';
+    if (coverPhotoInput) {
+        coverPhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Cover photo must be less than 5MB');
+                    e.target.value = '';
+                    return;
+                }
+                if (!file.type.match(/^image\/(jpeg|png|gif)$/)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    e.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    coverPhotoPreview.src = e.target.result;
+                    console.log('Cover photo selected:', file.name);
+                };
+                reader.readAsDataURL(file);
             }
-        } catch (error) {
-            showCoverPhotoAlert('Error uploading cover photo: ' + error.message, 'danger');
-            coverPhotoPreview.src = '<?php echo htmlspecialchars($profile_data['cover_photo'] ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop'); ?>';
-        }
-
-        e.target.value = ''; // Reset input
-    });
-
-    // Show cover photo alert
-    function showCoverPhotoAlert(message, type) {
-        coverPhotoAlert.classList.remove('d-none', 'alert-success', 'alert-danger');
-        coverPhotoAlert.classList.add(`alert-${type}`);
-        coverPhotoMessage.textContent = message;
-        setTimeout(() => {
-            coverPhotoAlert.classList.add('d-none');
-        }, 5000);
-    }
-
-/*     // Handle cover photo removal
-    window.removeCoverPhoto = async function() {
-        try {
-            const response = await fetch('update_cover_photo.php', {
-                method: 'POST',
-                body: new FormData() // Empty FormData to indicate removal
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                coverPhotoPreview.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop';
-                showCoverPhotoAlert(result.message, 'success');
-            } else {
-                showCoverPhotoAlert(result.message, 'danger');
-            }
-        } catch (error) {
-            showCoverPhotoAlert('Error removing cover photo: ' + error.message, 'danger');
-        }
-    }; */
-    // Update JavaScript to handle cover photo removal
-window.removeCoverPhoto = async function() {
-    try {
-        const response = await fetch('update_cover_photo.php', {
-            method: 'POST',
-            body: new FormData()
         });
-        const result = await response.json();
-
-        if (result.success) {
-            coverPhotoPreview.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop';
-            
-            showCoverPhotoAlert(result.message, 'success');
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
-            
-        } else {
-            showCoverPhotoAlert(result.message, 'danger');
-        }
-    } catch (error) {
-        showCoverPhotoAlert('Error removing cover photo: ' + error.message, 'danger');
     }
-};
+
+    // Handle cover photo removal
+    window.removeCoverPhoto = function() {
+        coverPhotoPreview.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop';
+        coverPhotoInput.value = '';
+        console.log('Cover photo removed.');
+    };
 
     // Handle form reset
     window.resetForm = function() {
@@ -602,6 +496,7 @@ window.removeCoverPhoto = async function() {
         genderInput.value = '<?php echo htmlspecialchars($profile_data['gender'] ?? ''); ?>';
         bloodGroupInput.value = '<?php echo htmlspecialchars($profile_data['blood_group'] ?? ''); ?>';
         bioCount.textContent = '<?php echo strlen($profile_data['bio'] ?? ''); ?>';
+        coverPhotoPreview.src = '<?php echo htmlspecialchars($profile_data['cover_photo'] ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=300&fit=crop'); ?>';
         profilePicPreview.src = '<?php echo htmlspecialchars($profile_data['profile_picture'] ?? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'); ?>';
     };
 

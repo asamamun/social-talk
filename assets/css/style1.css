@@ -641,3 +641,38 @@ body {
         height: 120px;
     }
 }
+
+
+/* Assuming this is in your stylesheet (e.g., styles.css) */
+.gender-selector {
+    display: flex;
+    gap: 15px;
+    justify-content: start;
+}
+
+.gender-option {
+    padding: 10px;
+    border: 2px solid #dee2e6; /* Bootstrap's default border color */
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gender-option.selected {
+    border-color: #0d6efd; /* Bootstrap primary color */
+    background-color: #e7f1ff; /* Light primary background */
+    color: #0d6efd; /* Primary text color */
+}
+
+.gender-option:hover {
+    background-color: #f8f9fa; /* Light hover effect */
+}
+
+.gender-option i {
+    color: #6c757d; /* Default icon color */
+}
+
+.gender-option.selected i {
+    color: #0d6efd; /* Primary color for icon when selected */
+}
