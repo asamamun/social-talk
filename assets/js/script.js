@@ -460,16 +460,7 @@
         });
     });
 
-    // Gender selection
-    document.querySelectorAll('.gender-option').forEach((option) => {
-        option.addEventListener('click', function () {
-            document.querySelectorAll('.gender-option').forEach((opt) => opt.classList.remove('selected'));
-            this.classList.add('selected');
-            document.getElementById('genderInput').value = this.dataset.value;
-            socialTalk.updateProfileCompletion();
-        });
-    });
-
+  
     // Bio character counter
     const bioInput = document.getElementById('bio');
     if (bioInput) {
@@ -484,7 +475,7 @@
         });
     }
 
-    // Profile form submission
+    // Profile form submission start
     const profileForm = document.getElementById('profileForm');
     if (profileForm) {
         profileForm.addEventListener('submit', function (e) {
@@ -502,16 +493,30 @@
             }
 
             const formData = new FormData(this);
+/*             console.log(formData.getAll('bio'));
+            return; */
             fetch('update_profile.php', {
                 method: 'POST',
-                body: formData,
+                body: formData,//all form values including files
             })
-                .then((response) => response.text())
+                .then((response) => response.json())
                 .then((data) => {
-                    if (data === 'success') {
-                        alert('Profile updated successfully!');
+                    console.log(data);
+                    if (data.status === 'success') {
+                       swal.fire({
+                           icon: 'success',
+                           title: data.message,
+                           showConfirmButton: false,
+                           timer: 1500
+                       })
                     } else {
-                        alert(data || 'Something went wrong. Please try again.');
+                        // alert(data || 'Something went wrong. Please try again.');
+                        swal.fire({
+                            icon: 'error',
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
                     }
                     if (submitBtn) {
                         submitBtn.disabled = false;
@@ -520,7 +525,13 @@
                 })
                 .catch((error) => {
                     console.error('Error:', error);
-                    alert('Network error. Please try again later.');
+                    // alert('Network error. Please try again later.');
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Network error. Please try again later.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Save Changes';
@@ -528,6 +539,7 @@
                 });
         });
     }
+    // Profile form submission end
 
     // Initialize tooltips
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
@@ -692,3 +704,20 @@ function timeAgoJS(datetime) {
 }
 
 //post actions for index.php end
+// Handle privacy dropdown selection
+document.querySelectorAll('.dropdown-item[data-value]').forEach(item => {
+    item.addEventListener('click', function() {
+        const value = this.getAttribute('data-value');
+        const text = this.textContent.trim();
+        const icon = this.querySelector('i').outerHTML;
+        
+        document.getElementById('selectedPrivacy').value = value;
+        document.getElementById('privacyDropdown').innerHTML = `${icon} ${text}`;
+        
+        // Update active state
+        document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+// Handle privacy dropdown selection
+// edit profile js start

@@ -1,27 +1,47 @@
 :root {
     /* From the first snippet */
-    --primary-color: #1877f2; /* Used for buttons, links, logo, etc. */
-    --secondary-color: #42b883; /* Used for hover effects, buttons */
-    --success-color: #198754; /* Not directly used yet, but defined */
-    --danger-color: #dc3545; /* Used for liked button, errors */
-    --dark-color: #2c3e50; /* Used for text in friend cards, section titles */
-    --light-bg: #f8f9fa; /* Used for body background, some hover effects */
-    --dark-bg: #1e1e2f; /* Dark mode background */
-    --dark-text: #ccc; /* Dark mode text */
-    --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Profile header, progress bar */
+    --primary-color: #1877f2;
+    /* Used for buttons, links, logo, etc. */
+    --secondary-color: #42b883;
+    /* Used for hover effects, buttons */
+    --success-color: #198754;
+    /* Not directly used yet, but defined */
+    --danger-color: #dc3545;
+    /* Used for liked button, errors */
+    --dark-color: #2c3e50;
+    /* Used for text in friend cards, section titles */
+    --light-bg: #f8f9fa;
+    /* Used for body background, some hover effects */
+    --dark-bg: #1e1e2f;
+    /* Dark mode background */
+    --dark-text: #ccc;
+    /* Dark mode text */
+    --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Profile header, progress bar */
 
     /* From the second snippet */
-    --white: #fff; /* Container background, buttons */
-    --text-dark: #333; /* Label text */
-    --border-light: #ddd; /* Input borders, button borders */
-    --primary-blue-hover: #165eab; /* Button hover effect */
-    --error-red: #e63946; /* Error messages */
-    --shadow-dark: rgba(0, 0, 0, 0.1); /* Box shadows */
-    --focus-shadow: rgba(24, 119, 242, 0.3); /* Focus shadow for inputs */
-    --input-bg: #e9ecef; /* Form input background, message received */
-    --modal-bg: rgba(255, 255, 255, 0.95); /* Modal background */
-    --semi-transparent-white: rgba(255, 255, 255, 0.9); /* Used in buttons, overlays */
-    --online-gradient: linear-gradient(45deg, #28a745, #20c997); /* Online status dot */
+    --white: #fff;
+    /* Container background, buttons */
+    --text-dark: #333;
+    /* Label text */
+    --border-light: #ddd;
+    /* Input borders, button borders */
+    --primary-blue-hover: #165eab;
+    /* Button hover effect */
+    --error-red: #e63946;
+    /* Error messages */
+    --shadow-dark: rgba(0, 0, 0, 0.1);
+    /* Box shadows */
+    --focus-shadow: rgba(24, 119, 242, 0.3);
+    /* Focus shadow for inputs */
+    --input-bg: #e9ecef;
+    /* Form input background, message received */
+    --modal-bg: rgba(255, 255, 255, 0.95);
+    /* Modal background */
+    --semi-transparent-white: rgba(255, 255, 255, 0.9);
+    /* Used in buttons, overlays */
+    --online-gradient: linear-gradient(45deg, #28a745, #20c997);
+    /* Online status dot */
 }
 
 * {
@@ -131,24 +151,26 @@ body {
 .profile-name {
     margin: 0;
     color: var(--text-dark);
-       align-items: center;
+    align-items: center;
     position: absolute;
-     bottom: -50px;
+    bottom: -50px;
     left: 300px;
     gap: 20px;
 }
 
 
 
-.profile-header, .cover-photo-section {
+.profile-header,
+.cover-photo-section {
     background: var(--gradient-bg);
     height: 300px;
     border-radius: 15px;
     position: relative;
     margin-bottom: 100px;
     box-shadow: 0 4px 20px var(--shadow-dark);
-    padding: 20px;
+
 }
+
 .cover-photo-container {
     position: relative;
     width: 100%;
@@ -232,7 +254,15 @@ body {
     right: 20px;
 }
 
-.post-card, .profile-card, .friend-request-card, .friend-card, .photo-card, .settings-card, .sidebar, .profile-nav, .search-card {
+.post-card,
+.profile-card,
+.friend-request-card,
+.friend-card,
+.photo-card,
+.settings-card,
+.sidebar,
+.profile-nav,
+.search-card {
     background: var(--white);
     border-radius: 15px;
     box-shadow: 0 2px 10px var(--shadow-dark);
@@ -241,7 +271,10 @@ body {
     transition: transform 0.2s ease;
 }
 
-.post-card:hover, .friend-card:hover, .friend-request-card:hover, .profile-card:hover {
+.post-card:hover,
+.friend-card:hover,
+.friend-request-card:hover,
+.profile-card:hover {
     transform: translateY(-2px);
 }
 
@@ -272,7 +305,8 @@ body {
     font-weight: 600;
 }
 
-.btn-light, .btn-secondary {
+.btn-light,
+.btn-secondary {
     background: var(--white);
     border: 1px solid var(--border-light);
     border-radius: 25px;
@@ -366,7 +400,8 @@ body {
     z-index: 1050;
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
     border: none;
 }
 
@@ -392,14 +427,16 @@ body {
     margin-top: 15px;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     border-radius: 12px;
     border: 2px solid var(--input-bg);
     background: var(--modal-bg);
     transition: all 0.3s ease;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem var(--focus-shadow);
 }
@@ -410,7 +447,8 @@ body {
     transition: all 0.3s ease;
 }
 
-.list-group-item:hover, .list-group-item.active {
+.list-group-item:hover,
+.list-group-item.active {
     background: rgba(24, 119, 242, 0.1);
     border-color: var(--primary-color);
     transform: translateX(5px);
@@ -427,7 +465,8 @@ body {
     border-bottom: 3px solid var(--primary-color);
 }
 
-.friend-grid, .photo-grid {
+.friend-grid,
+.photo-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 15px;
@@ -545,6 +584,7 @@ body {
     margin-top: 10px;
 }
 
+
 .gender-option {
     flex: 1;
     background: var(--light-bg);
@@ -555,6 +595,17 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+}
+
+.gender-option:hover {
+    background: var(--input-bg);
+    transform: scale(1.05);
+}
+
+.gender-option.selected {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
 }
 
 .alert {
@@ -588,18 +639,38 @@ body {
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fadeOut {
-    to { opacity: 0; height: 0; padding: 0; margin: 0; }
+    to {
+        opacity: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+    }
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .fade-in {
@@ -611,7 +682,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .fade-in, .pulse {
+
+    .fade-in,
+    .pulse {
         animation: none;
     }
 }
@@ -623,56 +696,27 @@ body {
         bottom: -60px;
         left: 20px;
     }
-    .profile-header, .cover-photo-section {
+
+    .profile-header,
+    .cover-photo-section {
         height: 200px;
         margin-bottom: 70px;
     }
+
     .photo-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
     .blood-group-selector {
         grid-template-columns: repeat(2, 1fr);
     }
+
     .gender-selector {
         flex-direction: column;
     }
+
     .profile-pic-edit {
         width: 120px;
         height: 120px;
     }
-}
-
-
-/* Assuming this is in your stylesheet (e.g., styles.css) */
-.gender-selector {
-    display: flex;
-    gap: 15px;
-    justify-content: start;
-}
-
-.gender-option {
-    padding: 10px;
-    border: 2px solid #dee2e6; /* Bootstrap's default border color */
-    border-radius: 5px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.gender-option.selected {
-    border-color: #0d6efd; /* Bootstrap primary color */
-    background-color: #e7f1ff; /* Light primary background */
-    color: #0d6efd; /* Primary text color */
-}
-
-.gender-option:hover {
-    background-color: #f8f9fa; /* Light hover effect */
-}
-
-.gender-option i {
-    color: #6c757d; /* Default icon color */
-}
-
-.gender-option.selected i {
-    color: #0d6efd; /* Primary color for icon when selected */
 }
