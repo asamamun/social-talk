@@ -460,16 +460,7 @@
         });
     });
 
-    // Gender selection
-    document.querySelectorAll('.gender-option').forEach((option) => {
-        option.addEventListener('click', function () {
-            document.querySelectorAll('.gender-option').forEach((opt) => opt.classList.remove('selected'));
-            this.classList.add('selected');
-            document.getElementById('genderInput').value = this.dataset.value;
-            socialTalk.updateProfileCompletion();
-        });
-    });
-
+  
     // Bio character counter
     const bioInput = document.getElementById('bio');
     if (bioInput) {
@@ -692,3 +683,20 @@ function timeAgoJS(datetime) {
 }
 
 //post actions for index.php end
+// Handle privacy dropdown selection
+document.querySelectorAll('.dropdown-item[data-value]').forEach(item => {
+    item.addEventListener('click', function() {
+        const value = this.getAttribute('data-value');
+        const text = this.textContent.trim();
+        const icon = this.querySelector('i').outerHTML;
+        
+        document.getElementById('selectedPrivacy').value = value;
+        document.getElementById('privacyDropdown').innerHTML = `${icon} ${text}`;
+        
+        // Update active state
+        document.querySelectorAll('.dropdown-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+// Handle privacy dropdown selection
+// edit profile js start

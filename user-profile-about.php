@@ -82,7 +82,7 @@ include_once 'includes/db.php';
                     <a class="nav-link" href="user-profile.php" data-section="posts">Posts</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="user-about.php" data-section="about">About</a>
+                    <a class="nav-link active" href="user-profile-about.php" data-section="about">About</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="friend.php" data-section="friends">Friends</a>
@@ -90,9 +90,7 @@ include_once 'includes/db.php';
                 <li class="nav-item">
                     <a class="nav-link" href="photo.php" data-section="photos">Photos</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="video.php" data-section="videos">Videos</a>
-                </li>
+                
             </ul>
 
             <!-- About Section -->

@@ -69,11 +69,11 @@ if (session_status() === PHP_SESSION_NONE) {
                     </div>
                     <!-- User Profile Dropdown -->
                     <div class="nav-item dropdown">
-                        <a class="nav-link" href="user-profile/user-profile.php" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User profile">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic" alt="User profile picture">
+                        <a class="nav-link" href="user-profile.php" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User profile">
+                            <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic" alt="User profile picture">
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="user-profile.php"><i class="fas fa-user me-2"></i>My Profile</a>
+                            <a class="dropdown-item" href="user-profile.php?id=<?php echo $_SESSION['user_id']; ?>"><i class="fas fa-user me-2"></i>My Profile</a>
                             <a class="dropdown-item" href="setting.php" onclick="showSettings()"><i class="fas fa-cog me-2"></i>Settings</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
@@ -119,3 +119,5 @@ if (session_status() === PHP_SESSION_NONE) {
         unset($_SESSION['message']);
     }
     ?>
+
+
