@@ -27,9 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     // 2. Retrieve post content
     $content = ($_POST['postContent']);
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
 
+
+    
     // 3. Prepare upload path
     $uploadDir = "assets/contentimages/$userId/";
     if (!is_dir($uploadDir)) {
@@ -61,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $imagesCSV = implode(',', $uploadedImages);
 
     // 6. Set default visibility
+<<<<<<< HEAD
     // Retrieve and validate post content
     $content = ($_POST['postContent'] ?? '');
     $visibility = $_POST['privacy'] ?? 'public';
@@ -78,7 +84,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit();
     }
 
+=======
+   // Retrieve and validate post content
+    $content = ($_POST['postContent'] ?? '');
+    $visibility = $_POST['privacy'] ?? 'public';
+    $allowed_visibilities = ['public', 'friends', 'private'];
+>>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
 
+ // Validate inputs
+    if (empty($content) || strlen($content) < 30) {
+        $_SESSION['error'] = "Post content must be at least 30 characters long.";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+        }
+    if (!in_array($visibility, $allowed_visibilities)) {
+        $_SESSION['error'] = "Invalid visibility setting.";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    }
+
+ 
     // 7. Insert post into database
     // $stmt = $pdo->prepare("INSERT INTO posts (user_id, content, images, visibility) VALUES (?, ?, ?, ?)");
     $data = [
@@ -87,8 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'images' => $imagesCSV,
         'visibility' => $visibility
     ];
+<<<<<<< HEAD
     if ($db->insert('posts', $data)) {
         $_SESSION['message'] = "Post created successfully";
+=======
+    if($db->insert('posts', $data)){
+        $_SESSION['message'] = "Post created successfully"; 
+>>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
@@ -219,7 +249,11 @@ include_once 'includes/header1.php';
             <div class="col-lg-3">
                 <div class="sidebar fade-in">
                     <div class="text-center mb-4">
+<<<<<<< HEAD
                         <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic-lg mb-3" alt="<?= $user['username'] ?>">
+=======
+                        <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic-lg mb-3" alt="John Doe profile">
+>>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
                         <h5><?= $user['username'] ?></h5>
                         <p class="text-muted">Software Developer</p>
                         <div class="d-flex justify-content-around">
@@ -258,6 +292,7 @@ include_once 'includes/header1.php';
                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="createPostForm" name="createPostForm" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="create_post">
 
+<<<<<<< HEAD
 
                     <div class="post-card p-4" id="feedSection">
                         <!-- Privacy Dropdown (Custom Implementation) -->
@@ -308,6 +343,58 @@ include_once 'includes/header1.php';
                             </button>
                         </div>
                     </div>
+=======
+                    
+                <div class="post-card p-4" id="feedSection">
+                    <!-- Privacy Dropdown (Custom Implementation) -->
+    <div class="d-flex mb-3 justify-content-end">
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" id="privacyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-globe-americas me-2"></i> Public
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <button class="dropdown-item d-flex align-items-center active" type="button" data-value="public">
+                        <i class="fas fa-globe-americas me-2"></i> Public
+                    </button>
+                </li>
+                <li>
+                    <button class="dropdown-item d-flex align-items-center" type="button" data-value="friends">
+                        <i class="fas fa-user-friends me-2"></i> Friends Only
+                    </button>
+                </li>
+                <li>
+                    <button class="dropdown-item d-flex align-items-center" type="button" data-value="private">
+                        <i class="fas fa-lock me-2"></i> Only Me
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <input type="hidden" name="privacy" id="selectedPrivacy" value="public">
+    </div>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic me-3">
+                        <!-- <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()"> -->
+                        <textarea name="postContent" id="" class="form-control" placeholder="What's on your mind, <?= $user['username'] ?>?" required minlength="30"></textarea>
+                    </div>
+                    
+                    
+                    <div class="d-flex justify-content-between"> 
+                        <input type="file" name="media[]" id="media" class="d-none" multiple> 
+                        <div id="selectedImages"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end mt-3">
+                        <label for="media" class="btn btn-light flex-fill me-2">
+                            <i class="fas fa-image me-2"></i>Add Image
+                        </label>
+                        <button class="btn btn-light flex-fill me-2" type="submit" name="createPost" id="createPost">
+                            <i class="fas fa-edit me-2"></i>Create Post
+                        </button>
+                    </div>
+                </div>
+>>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
                 </form>
                 <!-- Create Post end -->
 

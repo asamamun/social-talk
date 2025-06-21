@@ -475,7 +475,7 @@
         });
     }
 
-    // Profile form submission
+    // Profile form submission start
     const profileForm = document.getElementById('profileForm');
     if (profileForm) {
         profileForm.addEventListener('submit', function (e) {
@@ -493,16 +493,30 @@
             }
 
             const formData = new FormData(this);
+/*             console.log(formData.getAll('bio'));
+            return; */
             fetch('update_profile.php', {
                 method: 'POST',
-                body: formData,
+                body: formData,//all form values including files
             })
-                .then((response) => response.text())
+                .then((response) => response.json())
                 .then((data) => {
-                    if (data === 'success') {
-                        alert('Profile updated successfully!');
+                    console.log(data);
+                    if (data.status === 'success') {
+                       swal.fire({
+                           icon: 'success',
+                           title: data.message,
+                           showConfirmButton: false,
+                           timer: 1500
+                       })
                     } else {
-                        alert(data || 'Something went wrong. Please try again.');
+                        // alert(data || 'Something went wrong. Please try again.');
+                        swal.fire({
+                            icon: 'error',
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
                     }
                     if (submitBtn) {
                         submitBtn.disabled = false;
@@ -511,7 +525,13 @@
                 })
                 .catch((error) => {
                     console.error('Error:', error);
-                    alert('Network error. Please try again later.');
+                    // alert('Network error. Please try again later.');
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Network error. Please try again later.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Save Changes';
@@ -519,6 +539,7 @@
                 });
         });
     }
+    // Profile form submission end
 
     // Initialize tooltips
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
