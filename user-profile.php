@@ -8,33 +8,20 @@ if (!isset($_SESSION['logged_in'])) {
     header("Location: login.php");
     exit;
 }
-<<<<<<< HEAD
 if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
-=======
-if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     header("Location: admin/");
     exit;
 }
 $db = new MysqliDb();
-<<<<<<< HEAD
 $db->where("user_id", $_SESSION['user_id']);
 $user = $db->getOne("users");
-=======
-$db->where ("user_id", $_SESSION['user_id']);
-$user = $db->getOne ("users");
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
 
 
 /* 
 create post script
 */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_post') {
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     // 1. Retrieve user ID
     $userId = $_SESSION['user_id'];
 
@@ -42,11 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $content = ($_POST['postContent']);
 
 
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     // 3. Prepare upload path
     $uploadDir = "assets/contentimages/$userId/";
     if (!is_dir($uploadDir)) {
@@ -55,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     // 4. Handle image uploads
     $uploadedImages = [];
-<<<<<<< HEAD
     if (!empty($_FILES['media']['name'][0])) {
         foreach ($_FILES['media']['name'] as $key => $name) {
             $tmpName = $_FILES['media']['tmp_name'][$key];
@@ -73,65 +55,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
         }
     }
-=======
-   if (!empty($_FILES['media']['name'][0])) {
-    foreach ($_FILES['media']['name'] as $key => $name) {
-        $tmpName = $_FILES['media']['tmp_name'][$key];
-        $error = $_FILES['media']['error'][$key];
-
-        if ($error === UPLOAD_ERR_OK) {
-            $ext = pathinfo($name, PATHINFO_EXTENSION);
-            $randomName = uniqid('img_', true) . '.' . $ext;
-            $targetFile = $uploadDir . $randomName;
-
-            if (move_uploaded_file($tmpName, $targetFile)) {
-                $uploadedImages[] = $randomName;
-                //TODO: resize the image
-            }
-        }
-    }
-}
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
 
 
     // 5. Convert image names to CSV
     $imagesCSV = implode(',', $uploadedImages);
 
     // 6. Set default visibility
-<<<<<<< HEAD
     // Retrieve and validate post content
-=======
-   // Retrieve and validate post content
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     $content = ($_POST['postContent'] ?? '');
     $visibility = $_POST['privacy'] ?? 'public';
     $allowed_visibilities = ['public', 'friends', 'private'];
 
-<<<<<<< HEAD
     // Validate inputs
-=======
- // Validate inputs
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     if (empty($content) || strlen($content) < 30) {
         $_SESSION['error'] = "Post content must be at least 30 characters long.";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
-<<<<<<< HEAD
     }
-=======
-        }
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     if (!in_array($visibility, $allowed_visibilities)) {
         $_SESSION['error'] = "Invalid visibility setting.";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
 
-<<<<<<< HEAD
 
-=======
- 
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
     // 7. Insert post into database
     // $stmt = $pdo->prepare("INSERT INTO posts (user_id, content, images, visibility) VALUES (?, ?, ?, ?)");
     $data = [
@@ -140,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'images' => $imagesCSV,
         'visibility' => $visibility
     ];
-<<<<<<< HEAD
     if ($db->insert('posts', $data)) {
         $_SESSION['message'] = "Post created successfully";
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -216,17 +162,6 @@ function getFeedPosts($db, $user_id)
 
 
 }
-=======
-    if($db->insert('posts', $data)){
-        $_SESSION['message'] = "Post created successfully"; 
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
-    }
-
-}
-
-
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
 /* 
 create post script end
 */
@@ -235,7 +170,6 @@ include_once 'includes/header1.php';
 ?>
 
 
-<<<<<<< HEAD
 <div class="container mt-4">
     <!-- Profile Header -->
     <div class="profile-header">
@@ -250,16 +184,6 @@ include_once 'includes/header1.php';
             <a href="edit-about.php" class="btn btn-primary">
                 <i class="fas fa-pencil-alt me-2"></i>Edit Profile
             </a>
-=======
-    <div class="container mt-4">
-        <!-- Profile Header -->
-   <div class="profile-header">
-    <div class="profile-header-content">
-        <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic-xl" alt="John Doe">
-        <div class="profile-info">
-            <h1 class="profile-name">John Doe</h1>
-            <!-- You can add additional profile info here if needed -->
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
         </div>
     </div>
 
@@ -571,275 +495,6 @@ include_once 'includes/header1.php';
 
 
 
-<<<<<<< HEAD
-=======
-            <!-- Right Column -->
-            <div class="col-lg-8">
-                <!-- Profile Navigation -->
-                <ul class="nav profile-nav mb-4">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#posts" data-section="posts">Posts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="user-profile-about.php" data-section="about">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="friend.php" data-section="friends">Friends</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="photo.php" data-section="photos">Photos</a>
-                    </li>
-                   
-                </ul>
-
-                <!-- Dynamic Content Area -->
-                <div id="content-area">
-                    <!-- Create Post -->
-                 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" id="createPostForm" name="createPostForm" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="create_post">
-
-                    
-                <div class="post-card p-4" id="feedSection">
-                    <!-- Privacy Dropdown (Custom Implementation) -->
-    <div class="d-flex mb-3 justify-content-end">
-        <div class="dropdown">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" id="privacyDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-globe-americas me-2"></i> Public
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                    <button class="dropdown-item d-flex align-items-center active" type="button" data-value="public">
-                        <i class="fas fa-globe-americas me-2"></i> Public
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item d-flex align-items-center" type="button" data-value="friends">
-                        <i class="fas fa-user-friends me-2"></i> Friends Only
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item d-flex align-items-center" type="button" data-value="private">
-                        <i class="fas fa-lock me-2"></i> Only Me
-                    </button>
-                </li>
-            </ul>
-        </div>
-        <input type="hidden" name="privacy" id="selectedPrivacy" value="public">
-    </div>
-
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic me-3">
-                        <!-- <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()"> -->
-                        <textarea name="postContent" id="" class="form-control" placeholder="What's on your mind, <?= $user['username'] ?>?" required minlength="30"></textarea>
-                    </div>
-                    
-                    
-                    <div class="d-flex justify-content-between"> 
-                        <input type="file" name="media[]" id="media" class="d-none" multiple> 
-                        <div id="selectedImages"></div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-end mt-3">
-                        <label for="media" class="btn btn-light flex-fill me-2">
-                            <i class="fas fa-image me-2"></i>Add Image
-                        </label>
-                        <button class="btn btn-light flex-fill me-2" type="submit" name="createPost" id="createPost">
-                            <i class="fas fa-edit me-2"></i>Create Post
-                        </button>
-                    </div>
-                </div>
-                </form>
-                <!-- Create Post end -->
-                       <!-- Create Post Modal -->
-        <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="John Doe profile">
-                            <div>
-                                <h6 class="mb-0">John Doe</h6>
-                            </div>
-                        </div>
-                        <textarea class="form-control mb-3" rows="4" placeholder="What's on your mind?" id="postContent" aria-label="Post content"></textarea>
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <button class="btn btn-light me-2" onclick="socialTalk.openImageUpload()" aria-label="Upload photo">
-                                    <i class="fas fa-image me-1"></i>Photo
-                                </button>
-                             
-                            </div>
-                            <button class="btn btn-primary" onclick="socialTalk.createPost()">Post</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-                    <!-- Posts Section -->
-                    <div id="posts-section">
-                        <div class="post-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="John Doe">
-                                    <div>
-                                        <h6 class="mb-0">John Doe</h6>
-                                        <small class="text-muted">Yesterday at 5:30 PM</small>
-                                    </div>
-                                    <div class="ms-auto dropdown">
-                                        <button class="btn btn-sm" data-bs-toggle="dropdown" aria-label="Post options">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="editPost(this)">Edit</a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="deletePost(this)">Delete</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <p>Just launched a new project I've been working on for months! So excited to share it with everyone. Check it out and let me know what you think!</p>
-                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" class="img-fluid rounded mb-3" alt="Project launch">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <span class="text-muted">42 likes • 15 comments</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-light flex-fill me-2" onclick="toggleLike(this)">
-                                        <i class="fas fa-heart me-1"></i>Like
-                                    </button>
-                                    <button class="btn btn-light flex-fill me-2" onclick="addComment(this)">
-                                        <i class="fas fa-comment me-1"></i>Comment
-                                    </button>
-                                    <button class="btn btn-light flex-fill" onclick="sharePost(this)">
-                                        <i class="fas fa-share me-1"></i>Share
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-card">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="John Doe">
-                                    <div>
-                                        <h6 class="mb-0">John Doe</h6>
-                                        <small class="text-muted">3 days ago</small>
-                                    </div>
-                                    <div class="ms-auto dropdown">
-                                        <button class="btn btn-sm" data-bs-toggle="dropdown" aria-label="Post options">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="editPost(this)">Edit</a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="deletePost(this)">Delete</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <p>Happy birthday to my amazing partner! So grateful to have you in my life. Here's to many more years together! ❤️</p>
-                                <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&h=400&fit=crop" class="img-fluid rounded mb-3" alt="Birthday celebration">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <span class="text-muted">128 likes • 24 comments</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-light flex-fill me-2" onclick="toggleLike(this)">
-                                        <i class="fas fa-heart me-1"></i>Like
-                                    </button>
-                                    <button class="btn btn-light flex-fill me-2" onclick="addComment(this)">
-                                        <i class="fas fa-comment me-1"></i>Comment
-                                    </button>
-                                    <button class="btn btn-light flex-fill" onclick="sharePost(this)">
-                                        <i class="fas fa-share me-1"></i>Share
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- About Section (Hidden by Default) -->
-                    <div id="about-section" class="d-none">
-                        <div class="profile-card">
-                            <h4 class="mb-4">About John Doe</h4>
-                            <p>Hi, I'm John Doe, a software developer at Tech Solutions Inc. I graduated from Stanford University with a degree in Computer Science. Originally from New York, I now live in San Francisco. I love hiking, photography, and building innovative projects in my free time.</p>
-                            <div class="info-item d-flex">
-                                <i class="fas fa-briefcase mt-1"></i>
-                                <div>
-                                    <h6 class="mb-0">Works at</h6>
-                                    <p class="text-muted">Tech Solutions Inc.</p>
-                                </div>
-                            </div>
-                            <div class="info-item d-flex">
-                                <i class="fas fa-graduation-cap mt-1"></i>
-                                <div>
-                                    <h6 class="mb-0">Studied at</h6>
-                                    <p class="text-muted">Stanford University</p>
-                                </div>
-                            </div>
-                            <div class="info-item d-flex">
-                                <i class="fas fa-home mt-1"></i>
-                                <div>
-                                    <h6 class="mb-0">Lives in</h6>
-                                    <p class="text-muted">San Francisco, CA</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Friends Section (Hidden by Default) -->
-                    <div id="friends-section" class="d-none">
-                        <div class="profile-card">
-                            <h4 class="mb-4">Friends (245)</h4>
-                            <div class="row">
-                                <div class="col-6 friend-card">
-                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=100&h=100&fit=crop&crop=face" alt="Sarah Johnson">
-                                    <h6>Sarah Johnson</h6>
-                                    <div class="online-status"></div>
-                                </div>
-                                <div class="col-6 friend-card">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Mike Chen">
-                                    <h6>Mike Chen</h6>
-                                </div>
-                                <div class="col-6 friend-card">
-                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face" alt="Emma Wilson">
-                                    <h6>Emma Wilson</h6>
-                                    <div class="online-status"></div>
-                                </div>
-                                <div class="col-6 friend-card">
-                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face" alt="Alex Rodriguez">
-                                    <h6>Alex Rodriguez</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Photos Section (Hidden by Default) -->
-                    <div id="photos-section" class="d-none">
-                        <div class="profile-card">
-                            <h4 class="mb-4">Photos</h4>
-                            <div class="photo-grid">
-                                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=300&fit=crop" alt="Photo 1">
-                                <img src="https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?w=300&h=300&fit=crop" alt="Photo 2">
-                                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&h=300&fit=crop" alt="Photo 3">
-                                <img src="https://images.unsplash.com/photo-1470114716159-e389f8712fda?w=300&h=300&fit=crop" alt="Photo 4">
-                                <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&h=300&fit=crop" alt="Photo 5">
-                                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&h=300&fit=crop" alt="Photo 6">
-                            </div>
-                        </div>
-                    </div>
-
-                   
-                </div>
-            </div>
-        </div>
-    </div>
-
-    
-
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
 <?php
 include_once 'includes/footer1.php';
 ?>

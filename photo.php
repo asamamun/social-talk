@@ -54,13 +54,9 @@ $photos = $db->get("posts");
         <div class="photo-grid">
             <?php if ($photos): ?>
                 <?php foreach ($photos as $photo): ?>
-<<<<<<< HEAD
                  
                     <img src="assets/contentimages/<?php echo $user['user_id']; ?>/<?php echo htmlspecialchars($photo['images']); ?>" alt="Photo" >
 
-=======
-                    <img src="<?php echo htmlspecialchars($photo['images']); ?>" alt="Photo" style="width: 300px; height: 300px; object-fit: cover;">
->>>>>>> 4a39ba01efff9cf6a4220d8e1a890dd52b8bcbd1
                 <?php endforeach; ?>
             <?php else: ?>
                 <p>No photos uploaded yet.</p>
