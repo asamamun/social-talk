@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $allowed_visibilities = ['public', 'friends', 'private'];
 
     // Validate inputs
-    if (empty($content) || strlen($content) < 5) {
-        $_SESSION['error'] = "Post content must be at least 5 characters long.";
+    if (empty($content) || strlen($content) < 30) {
+        $_SESSION['error'] = "Post content must be at least 30 characters long.";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     // 3. Prepare upload path
     $uploadDir = "assets/contentimages/$userId/";
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
+        mkdir($uploadDir, 0755, true); // Changed from 0777 for security
     }
 
     // 4. Handle image uploads
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if (!empty($_FILES['media']['name'][0])) {
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         $maxFileSize = 5 * 1024 * 1024; // 5MB
-
+        
         foreach ($_FILES['media']['name'] as $key => $name) {
             $tmpName = $_FILES['media']['tmp_name'][$key];
             $error = $_FILES['media']['error'][$key];
@@ -77,27 +77,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     $_SESSION['error'] = "File size too large. Maximum 5MB allowed.";
                     continue;
                 }
-
+                
                 $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-
+                
                 // Validate file extension
                 if (!in_array($ext, $allowedExtensions)) {
                     $_SESSION['error'] = "Invalid file type. Only JPG, PNG, GIF, WEBP allowed.";
                     continue;
                 }
-
+                
                 // Validate file is actually an image
                 $imageInfo = getimagesize($tmpName);
                 if ($imageInfo === false) {
                     $_SESSION['error'] = "Invalid image file.";
                     continue;
                 }
-
+                
                 $randomName = uniqid('img_', true) . '.' . $ext;
                 $targetFile = $uploadDir . $randomName;
 
                 if (move_uploaded_file($tmpName, $targetFile)) {
                     $uploadedImages[] = $randomName;
+                    //TODO: resize the image for optimization
                 }
             }
         }
@@ -114,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'visibility' => $visibility,
         'created_at' => date('Y-m-d H:i:s')
     ];
-
+    
     if ($db->insert('posts', $data)) {
         $_SESSION['message'] = "Post created successfully";
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -139,10 +140,30 @@ function timeAgo($datetime)
     return floor($time / 31536000) . ' years ago';
 }
 
-// Function to get ONLY the current user's posts
-function getUserPosts($db, $user_id)
+// Function to get posts for the current user's feed
+function getFeedPosts($db, $user_id)
 {
-    // Get posts from only the current user with proper column names
+    // Get user's friends using the actual friendship structure
+    $friends_query = "
+        SELECT CASE 
+            WHEN user1_id = ? THEN user2_id 
+            ELSE user1_id 
+        END as friend_id
+        FROM friendships 
+        WHERE (user1_id = ? OR user2_id = ?) AND status = 'accepted'
+    ";
+
+    $friends = $db->rawQuery($friends_query, array($user_id, $user_id, $user_id));
+    $friend_ids = array($user_id); // Include current user's posts
+
+    foreach ($friends as $friend) {
+        $friend_ids[] = (int)$friend['friend_id']; // Ensure integer
+    }
+
+    // Convert array to comma-separated string for IN clause
+    $friend_ids_str = implode(',', array_map('intval', $friend_ids));
+
+    // Get posts from friends and current user with proper column names
     $posts_query = "
         SELECT 
             p.post_id,
@@ -159,7 +180,10 @@ function getUserPosts($db, $user_id)
         FROM posts p
         JOIN users u ON p.user_id = u.user_id
         LEFT JOIN user_profile up ON p.user_id = up.user_id
-        WHERE p.user_id = ?
+        WHERE 
+            (p.visibility = 'public') OR 
+            (p.visibility = 'friends' AND p.user_id IN ($friend_ids_str)) OR
+            (p.user_id = ?)
         ORDER BY p.created_at DESC
         LIMIT 50
     ";
@@ -167,9 +191,9 @@ function getUserPosts($db, $user_id)
     return $db->rawQuery($posts_query, array($user_id, $user_id));
 }
 
-// Get posts for the user's profile (only their own posts)
+// Get posts for the feed
 $current_user_id = $_SESSION['user_id'];
-$posts = getUserPosts($db, $current_user_id);
+$posts = getFeedPosts($db, $current_user_id);
 
 include_once 'includes/header1.php';
 ?>
@@ -194,25 +218,18 @@ include_once 'includes/header1.php';
 
     <!-- Profile Header -->
     <div class="profile-header">
-        <div class="profile-header-content" >
-
-            <!-- Cover Photo as Image -->
-          
-            <img  src="<?= htmlspecialchars($current_user['cover_photo']) ?>" 
-            class="cover-photo-section" alt="<?= htmlspecialchars($user['username']) ?>">
-          
-
+        <div class="profile-header-content">
+            <img src="<?= htmlspecialchars($cover) ?>" class="cover-pic" alt="Cover Photo">
             <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic-xl" alt="<?= htmlspecialchars($user['username']) ?>">
             <div class="profile-info">
                 <h1 class="profile-name"><?= htmlspecialchars($user['username']) ?></h1>
                 <!-- You can add additional profile info here if needed -->
             </div>
         </div>
+        <div class="profile-actions">
 
-        <!-- Edit Profile Button -->
-        <div class="profile-actions" style="margin-top: 60px;">
             <a href="edit-about.php" class="btn btn-primary">
-                <i class="fas fa-pencil-alt me-2"></i> Edit Profile
+                <i class="fas fa-pencil-alt me-2"></i>Edit Profile
             </a>
         </div>
     </div>
@@ -320,7 +337,7 @@ include_once 'includes/header1.php';
                     <h4 class="mb-0">Friends</h4>
                     <a href="friend.php" class="text-primary" data-section="friends">See All</a>
                 </div>
-
+                
                 <?php
                 // Get actual friend count
                 $friends_count_query = "
@@ -331,9 +348,9 @@ include_once 'includes/header1.php';
                 $friend_count_result = $db->rawQuery($friends_count_query, array($_SESSION['user_id'], $_SESSION['user_id']));
                 $friend_count = $friend_count_result[0]['count'] ?? 0;
                 ?>
-
+                
                 <p class="text-muted mb-4"><?= $friend_count ?> friends</p>
-
+                
                 <?php
                 // Get some friends to display
                 $sample_friends_query = "
@@ -346,7 +363,7 @@ include_once 'includes/header1.php';
                 ";
                 $sample_friends = $db->rawQuery($sample_friends_query, array($_SESSION['user_id'], $_SESSION['user_id'], $_SESSION['user_id']));
                 ?>
-
+                
                 <div class="row">
                     <?php if (!empty($sample_friends)): ?>
                         <?php foreach ($sample_friends as $friend): ?>
@@ -434,6 +451,7 @@ include_once 'includes/header1.php';
                         </div>
                     </div>
                 </form>
+                <!-- Create Post end -->
 
                 <!-- Posts Feed -->
                 <div class="container mt-4">
@@ -442,7 +460,8 @@ include_once 'includes/header1.php';
                             <div class="card-body text-center">
                                 <i class="fas fa-users fa-3x text-muted mb-3"></i>
                                 <h5>No posts to show</h5>
-                                <p class="text-muted">Create your first post!</p>
+                                <p class="text-muted">Start following friends or create your first post!</p>
+                                <a href="find_friends.php" class="btn btn-primary">Find Friends</a>
                             </div>
                         </div>
                     <?php else: ?>
@@ -455,6 +474,7 @@ include_once 'includes/header1.php';
                                             <h6 class="mb-0"><?= htmlspecialchars($post['username']) ?></h6>
                                             <small class="text-muted"><?= timeAgo($post['created_at']); ?></small>
                                         </div>
+                                        <?php if ($post['user_id'] == $_SESSION['user_id']): ?>
                                         <div class="ms-auto dropdown">
                                             <button class="btn btn-sm" data-bs-toggle="dropdown" aria-label="Post options">
                                                 <i class="fas fa-ellipsis-h"></i>
@@ -464,20 +484,21 @@ include_once 'includes/header1.php';
                                                 <li><a class="dropdown-item" href="#" onclick="deletePost(<?= $post['post_id'] ?>)">Delete</a></li>
                                             </ul>
                                         </div>
+                                        <?php endif; ?>
                                     </div>
 
                                     <p><?= nl2br(htmlspecialchars($post['content'])); ?></p>
 
                                     <?php if (!empty($post['images'])):
                                         $images = array_filter(explode(',', $post['images']));
-                                        foreach ($images as $img):
+                                        foreach ($images as $img): 
                                             $img = trim($img);
                                             if (!empty($img)):
                                     ?>
-                                                <img src="assets/contentimages/<?= $post['user_id']; ?>/<?= htmlspecialchars($img); ?>" class="img-fluid rounded mb-3" alt="Post image">
-                                    <?php
+                                        <img src="assets/contentimages/<?= $post['user_id']; ?>/<?= htmlspecialchars($img); ?>" class="img-fluid rounded mb-3" alt="Post image">
+                                    <?php 
                                             endif;
-                                        endforeach;
+                                        endforeach; 
                                     endif; ?>
 
                                     <div class="mb-2">
@@ -537,210 +558,87 @@ include_once 'includes/header1.php';
 </div>
 
 <script>
-    // Privacy dropdown functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const privacyDropdown = document.getElementById('privacyDropdown');
-        const selectedPrivacy = document.getElementById('selectedPrivacy');
-        const dropdownItems = document.querySelectorAll('.dropdown-item[data-value]');
-
-        dropdownItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const value = this.getAttribute('data-value');
-                const text = this.textContent.trim();
-                const icon = this.querySelector('i').className;
-
-                // Update button
-                privacyDropdown.innerHTML = `<i class="${icon} me-2"></i> ${text.split(' ').slice(1).join(' ')}`;
-
-                // Update hidden input
-                selectedPrivacy.value = value;
-
-                // Update active state
-                dropdownItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // File input preview
-        const mediaInput = document.getElementById('media');
-        const selectedImages = document.getElementById('selectedImages');
-
-        mediaInput.addEventListener('change', function() {
-            selectedImages.innerHTML = '';
-            if (this.files.length > 0) {
-                const fileText = this.files.length === 1 ? '1 image selected' : `${this.files.length} images selected`;
-                selectedImages.innerHTML = `<small class="text-muted">${fileText}</small>`;
-            }
+// Privacy dropdown functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const privacyDropdown = document.getElementById('privacyDropdown');
+    const selectedPrivacy = document.getElementById('selectedPrivacy');
+    const dropdownItems = document.querySelectorAll('.dropdown-item[data-value]');
+    
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const value = this.getAttribute('data-value');
+            const text = this.textContent.trim();
+            const icon = this.querySelector('i').className;
+            
+            // Update button
+            privacyDropdown.innerHTML = `<i class="${icon} me-2"></i> ${text.split(' ').slice(1).join(' ')}`;
+            
+            // Update hidden input
+            selectedPrivacy.value = value;
+            
+            // Update active state
+            dropdownItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
         });
     });
+    
+    // File input preview
+    const mediaInput = document.getElementById('media');
+    const selectedImages = document.getElementById('selectedImages');
+    
+    mediaInput.addEventListener('change', function() {
+        selectedImages.innerHTML = '';
+        if (this.files.length > 0) {
+            const fileText = this.files.length === 1 ? '1 image selected' : `${this.files.length} images selected`;
+            selectedImages.innerHTML = `<small class="text-muted">${fileText}</small>`;
+        }
+    });
+});
 
-    // Placeholder functions for social interactions
-    function toggleLike(postId) {
-        fetch('user-profile.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=like_post&post_id=${postId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'liked' || data.status === 'unliked') {
-                    const likeBtn = document.querySelector(`button[onclick="toggleLike(${postId})"]`);
-                    const likeText = likeBtn.querySelector('.like-text');
-                    const likeCount = likeBtn.querySelector('.like-count');
-                    const currentCount = parseInt(likeCount.textContent.replace(/[^0-9]/g, '')) || 0;
+// Placeholder functions for social interactions
+function toggleLike(postId) {
+    // Implementation for like functionality
+    console.log('Toggle like for post:', postId);
+}
 
-                    if (data.status === 'liked') {
-                        likeBtn.classList.add('text-danger');
-                        likeText.textContent = 'Liked';
-                        likeCount.textContent = `(${currentCount + 1})`;
-                    } else {
-                        likeBtn.classList.remove('text-danger');
-                        likeText.textContent = 'Like';
-                        likeCount.textContent = `(${Math.max(0, currentCount - 1)})`;
-                    }
-
-                    // Update the summary text
-                    const summaryText = likeBtn.closest('.post-card').querySelector('.text-muted');
-                    if (summaryText) {
-                        const commentCount = likeBtn.closest('.post-card').querySelector('.comment-count').textContent.replace(/[^0-9]/g, '');
-                        summaryText.textContent = `${likeCount.textContent.replace(/[()]/g, '')} likes • ${commentCount} comments`;
-                    }
-                }
-            })
-            .catch(error => console.error('Error:', error));
+function toggleComments(postId) {
+    const commentsSection = document.getElementById('comments-' + postId);
+    if (commentsSection.style.display === 'none') {
+        commentsSection.style.display = 'block';
+        // Load comments here
+    } else {
+        commentsSection.style.display = 'none';
     }
+}
 
-    function toggleComments(postId) {
-        const commentsSection = document.getElementById('comments-' + postId);
-        if (commentsSection.style.display === 'none') {
-            commentsSection.style.display = 'block';
-            loadComments(postId);
-        } else {
-            commentsSection.style.display = 'none';
+function sharePost(postId) {
+    // Implementation for share functionality
+    console.log('Share post:', postId);
+}
+
+function editPost(postId) {
+    // Implementation for edit functionality
+    console.log('Edit post:', postId);
+}
+
+function deletePost(postId) {
+    if (confirm('Are you sure you want to delete this post?')) {
+        // Implementation for delete functionality
+        console.log('Delete post:', postId);
+    }
+}
+
+function handleCommentSubmit(event, postId) {
+    if (event.key === 'Enter') {
+        const comment = event.target.value.trim();
+        if (comment) {
+            // Implementation for comment submission
+            console.log('Submit comment for post:', postId, 'Comment:', comment);
+            event.target.value = '';
         }
     }
-
-    function loadComments(postId) {
-        fetch('user-profile.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=load_comments&post_id=${postId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const commentsList = document.getElementById('comments-list-' + postId);
-                    commentsList.innerHTML = '';
-
-                    data.comments.forEach(comment => {
-                        const commentHtml = `
-                    <div class="comment-item d-flex mb-2">
-                        <img src="${comment.profile_picture || 'assets/default-avatar.png'}" 
-                             alt="Profile" class="profile-img-sm me-2">
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between">
-                                <strong class="small">${comment.username}</strong>
-                                <small class="text-muted">${timeAgoJS(comment.created_at)}</small>
-                            </div>
-                            <p class="mb-0 small">${comment.content}</p>
-                        </div>
-                    </div>
-                `;
-                        commentsList.innerHTML += commentHtml;
-                    });
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    function sharePost(postId) {
-        fetch('user-profile.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=share_post&post_id=${postId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'shared') {
-                    alert('Post shared successfully!');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    function editPost(postId) {
-        // Implementation for edit functionality
-        console.log('Edit post:', postId);
-        // You would typically show a modal with the post content to edit
-    }
-
-    function deletePost(postId) {
-        if (confirm('Are you sure you want to delete this post?')) {
-            fetch('user-profile.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=delete_post&post_id=${postId}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // Remove the post from the DOM
-                        document.querySelector(`.post-card[data-post-id="${postId}"]`)?.remove();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    }
-
-    function handleCommentSubmit(event, postId) {
-        if (event.key === 'Enter') {
-            const comment = event.target.value.trim();
-            if (comment) {
-                fetch('user-profile.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `action=add_comment&post_id=${postId}&comment=${encodeURIComponent(comment)}`
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            event.target.value = '';
-                            loadComments(postId);
-
-                            // Update comment count
-                            const commentCountElements = document.querySelectorAll(`.comment-count`);
-                            commentCountElements.forEach(element => {
-                                const currentCount = parseInt(element.textContent.replace(/[^0-9]/g, '')) || 0;
-                                element.textContent = `(${currentCount + 1})`;
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-        }
-    }
-
-    function timeAgoJS(datetime) {
-        const time = Math.floor((new Date() - new Date(datetime)) / 1000);
-
-        if (time < 60) return 'just now';
-        if (time < 3600) return Math.floor(time / 60) + ' minutes ago';
-        if (time < 86400) return Math.floor(time / 3600) + ' hours ago';
-        if (time < 2592000) return Math.floor(time / 86400) + ' days ago';
-        if (time < 31536000) return Math.floor(time / 2592000) + ' months ago';
-        return Math.floor(time / 31536000) + ' years ago';
-    }
+}
 </script>
 
 <?php

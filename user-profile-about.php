@@ -2,20 +2,61 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require __DIR__ . '/vendor/autoload.php';
+
+if (!isset($_SESSION['logged_in'])) {
+    header("Location: login.php");
+    exit;
+}
+if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
+    header("Location: admin/");
+    exit;
+}
+
+$db = new MysqliDb();
+$db->where("user_id", $_SESSION['user_id']);
+$user = $db->getOne("users");
+
+// Get current user profile data
+$db->where("user_id", $_SESSION['user_id']);
+$current_user_profile = $db->getOne("user_profile");
+
+// Merge user data with profile data
+$current_user = array_merge($user, $current_user_profile ?: []);
+
+// Set default profile picture if not exists
+if (empty($current_user['profile_picture'])) {
+    $current_user['profile_picture'] = 'assets/default-avatar.png';
+}
 
 include_once 'includes/header1.php';
-include_once 'includes/db.php';
+
 
 ?>
 
 
 <div class="container mt-4">
-    <!-- Profile Header -->
+     <!-- Profile Header -->
     <div class="profile-header">
-        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=180&h=180&fit=crop&crop=face" class="profile-pic-xl" alt="John Doe">
-        <div class="profile-actions">
+        <div class="profile-header-content" >
+
+            <!-- Cover Photo as Image -->
+          
+            <img  src="<?= htmlspecialchars($current_user['cover_photo']) ?>" 
+            class="cover-photo-section" alt="<?= htmlspecialchars($user['username']) ?>">
+          
+
+            <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic-xl" alt="<?= htmlspecialchars($user['username']) ?>">
+            <div class="profile-info">
+                <h1 class="profile-name"><?= htmlspecialchars($user['username']) ?></h1>
+                <!-- You can add additional profile info here if needed -->
+            </div>
+        </div>
+
+        <!-- Edit Profile Button -->
+        <div class="profile-actions" style="margin-top: 60px;">
             <a href="edit-about.php" class="btn btn-primary">
-                <i class="fas fa-pencil-alt me-2"></i>Edit Profile
+                <i class="fas fa-pencil-alt me-2"></i> Edit Profile
             </a>
         </div>
     </div>

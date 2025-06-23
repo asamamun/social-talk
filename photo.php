@@ -4,27 +4,29 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require __DIR__ . '/vendor/autoload.php';
 
-// Redirect if not logged in
 if (!isset($_SESSION['logged_in'])) {
     header("Location: login.php");
     exit;
 }
-
-// Redirect if user is admin
 if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
     header("Location: admin/");
     exit;
 }
 
-// Database connection
 $db = new MysqliDb();
-
-// Fetch user data
 $db->where("user_id", $_SESSION['user_id']);
 $user = $db->getOne("users");
 
-if (!$user) {
-    die("User not found.");
+// Get current user profile data
+$db->where("user_id", $_SESSION['user_id']);
+$current_user_profile = $db->getOne("user_profile");
+
+// Merge user data with profile data
+$current_user = array_merge($user, $current_user_profile ?: []);
+
+// Set default profile picture if not exists
+if (empty($current_user['profile_picture'])) {
+    $current_user['profile_picture'] = 'assets/default-avatar.png';
 }
 
 // Fetch user's photos from posts table

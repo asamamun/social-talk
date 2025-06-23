@@ -173,7 +173,8 @@ body {
 .cover-photo-section {
     background: var(--gradient-bg);
     height: 300px;
-    border-radius: 15px;
+    width: 100%;
+    border-radius: 5px;
     position: relative;
     margin-bottom: 100px;
     box-shadow: 0 4px 20px var(--shadow-dark);
@@ -729,3 +730,4 @@ body {
         height: 120px;
     }
 }
+

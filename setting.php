@@ -2,9 +2,35 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require __DIR__ . '/vendor/autoload.php';
+
+if (!isset($_SESSION['logged_in'])) {
+    header("Location: login.php");
+    exit;
+}
+if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
+    header("Location: admin/");
+    exit;
+}
+
+$db = new MysqliDb();
+$db->where("user_id", $_SESSION['user_id']);
+$user = $db->getOne("users");
+
+// Get current user profile data
+$db->where("user_id", $_SESSION['user_id']);
+$current_user_profile = $db->getOne("user_profile");
+
+// Merge user data with profile data
+$current_user = array_merge($user, $current_user_profile ?: []);
+
+// Set default profile picture if not exists
+if (empty($current_user['profile_picture'])) {
+    $current_user['profile_picture'] = 'assets/default-avatar.png';
+}
 
 include_once 'includes/header1.php';
-include_once 'includes/db.php';
+
 
 ?>
 
