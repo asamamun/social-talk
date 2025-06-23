@@ -367,7 +367,7 @@ include_once 'includes/header1.php';
             <!-- Profile Navigation -->
             <ul class="nav profile-nav mb-4">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#posts" data-section="posts">Posts</a>
+                    <a class="nav-link active" href="user-profile.php" data-section="posts">Posts</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="user-profile-about.php" data-section="about">About</a>

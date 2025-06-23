@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="signup-container">
         <div class="signup-header">
          <a href="index.php"><img src="assets/logo/logo.png" alt="Social-Talk Logo" style="height: 65px; width: 150px;"></a>
-            <p style="padding-top: 10px;">Create your account to get started</p>
+            <p style="padding: 5px;">Create your account to get started</p>
         </div>
 
         <!-- show dismissible alert -->

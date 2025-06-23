@@ -83,16 +83,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                     <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
                     <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
                     <button type="button" class="password-toggle" id="togglePassword">
-                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
-                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
-                        </svg>
-                        <svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                            <path d="m1 1 22 22" stroke="currentColor" stroke-width="2"/>
-                            <path d="M6.71 6.71C4.68 8.1 3 10.5 3 12s1.68 3.9 3.71 5.29" stroke="currentColor" stroke-width="2" fill="none"/>
-                            <path d="M17.29 17.29C19.32 15.9 21 13.5 21 12s-1.68-3.9-3.71-5.29" stroke="currentColor" stroke-width="2" fill="none"/>
-                            <path d="m9.88 9.88a3 3 0 1 0 4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
-                        </svg>
+                      <!-- Eye Icon (Visible) -->
+<svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" stroke-width="2" fill="none"/>
+    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+</svg>
+
+<!-- Eye Off Icon (Hidden Initially) -->
+<svg class="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <path d="M1 1l22 22" stroke="currentColor" stroke-width="2"/>
+    <path d="M6.71 6.71C4.68 8.1 3 10.5 3 12s1.68 3.9 3.71 5.29" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M17.29 17.29C19.32 15.9 21 13.5 21 12s-1.68-3.9-3.71-5.29" stroke="currentColor" stroke-width="2" fill="none"/>
+    <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
+</svg>
+
                     </button>
                 </div>
 
@@ -148,5 +152,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/main.js"></script>
+
+
+
+    <!-- FontAwesome for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = toggleBtn.querySelector('.eye-icon');
+        const eyeOffIcon = toggleBtn.querySelector('.eye-off-icon');
+
+        toggleBtn.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle icons
+            eyeIcon.style.display = (type === 'text') ? 'none' : 'inline';
+            eyeOffIcon.style.display = (type === 'text') ? 'inline' : 'none';
+        });
+</script>
+
 </body>
 </html>

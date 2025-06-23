@@ -173,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" aria-label="Main navigation">
         <div class="container">
-            <a class="navbar-brand pulse" href="timeline.php">
+            <a class="navbar-brand pulse" href="index.php">
                 <img src="assets/logo/logo.png" alt="Social-Talk Logo" style="height: 50px; width: 120px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 

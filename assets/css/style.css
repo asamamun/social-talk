@@ -118,7 +118,7 @@ body {
 .form-control,
 .form-group input {
     width: 100%;
-    padding: 1rem;
+    padding: 10px;
     border-radius: 12px;
     border: 2px solid var(--input-border);
     font-size: 1rem;
@@ -258,8 +258,8 @@ body {
 .signup-link,
 .login-link {
     text-align: center;
-    margin-top: 2rem;
-    padding-top: 2rem;
+    margin-top: 1rem;
+    padding: 1rem;
     border-top: 1px solid #e9ecef;
     color: var(--text-secondary);
 }
@@ -322,11 +322,15 @@ body {
     color: #4267B2;
 }
 
+
+
+
 /* Signup container */
 .signup-container {
     background: var(--background-light);
     backdrop-filter: blur(10px);
-    padding: 20px;
+    margin:  auto;
+    padding: 5px;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     width: 100%;
@@ -336,7 +340,7 @@ body {
 
 .signup-header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
 }
 
 .signup-header h1 {
@@ -354,8 +358,8 @@ body {
 .form-group label {
     display: block;
     color: var(--text-label);
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-weight: 500;
+    margin-bottom: 5px;
     font-size: 0.9rem;
 }
 

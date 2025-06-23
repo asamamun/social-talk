@@ -45,7 +45,7 @@ include_once 'includes/header1.php';
                         <div class="list-group-item list-group-item-action conversation-item" onclick="openChat('Sarah Johnson', this)">
                             <div class="d-flex align-items-center">
                                 <div class="position-relative">
-                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Sarah Johnson">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" class="profile-pic me-3" alt="Profile picture of Sarah Johnson">
                                     <div class="online-status"></div>
                                 </div>
                                 <div class="flex-grow-1">
@@ -90,7 +90,7 @@ include_once 'includes/header1.php';
             <div class="col-lg-8">
                 <div class="sidebar">
                     <div id="chatHeader" class="d-flex align-items-center mb-3 hidden">
-                        <img src="" class="profile-pic me-3" id="chatProfilePic" alt="Profile picture">
+                        <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic me-3" id="chatProfilePic" alt="Profile picture">
                         <h5 class="mb-0" id="chatName"></h5>
                     </div>
                     <div class="chat-container" id="chatContainer">

@@ -56,9 +56,15 @@ $photos = $db->get("posts");
         <div class="photo-grid">
             <?php if ($photos): ?>
                 <?php foreach ($photos as $photo): ?>
-                 
-                    <img src="assets/contentimages/<?php echo $user['user_id']; ?>/<?php echo htmlspecialchars($photo['images']); ?>" alt="Photo" >
-
+                    <?php
+                    // Split the CSV string into an array of image filenames
+                    $imageArray = array_filter(explode(',', $photo['images']));
+                    foreach ($imageArray as $image):
+                        // Construct the correct path using user_id and image filename
+                        $imagePath = "assets/contentimages/{$user['user_id']}/" . htmlspecialchars(trim($image));
+                    ?>
+                        <img src="<?php echo $imagePath; ?>" alt="Photo" class="img-fluid rounded">
+                    <?php endforeach; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <p>No photos uploaded yet.</p>

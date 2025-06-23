@@ -237,7 +237,7 @@ include_once 'includes/header1.php';
                         <a href="timeline.php" class="list-group-item active" onclick="socialTalk.showFeed()" aria-current="true">
                             <i class="fas fa-home me-2"></i>News Feed
                         </a>
-                        <a href="user-profile/friend.php" class="list-group-item" onclick="socialTalk.showFriends()">
+                        <a href="friend.php" class="list-group-item" onclick="socialTalk.showFriends()">
                             <i class="fas fa-users me-2"></i>Friends
                         </a>
                         <a href="messages.php" class="list-group-item" onclick="socialTalk.showMessages()">

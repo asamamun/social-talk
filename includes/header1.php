@@ -35,8 +35,8 @@ if (session_status() === PHP_SESSION_NONE) {
                     </div>
                     <!-- Chat Trigger -->
                     <div class="nav-item me-3">
-                        <a class="nav-link" href="messages.php" data-bs-toggle="modal" data-bs-target="#chatModal">
-                            <i class="fas fa-comments fa-lg" aria-label="Open chat"></i>
+                        <a class="nav-link" href="messages.php"  >
+                            <i class="fas fa-comments fa-lg" ></i>
                         </a>
                     </div>
                     <!-- Notifications Dropdown -->
