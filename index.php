@@ -375,37 +375,49 @@ include_once 'includes/header1.php';
                                         </div>
                                     <?php endif; ?>
 
-                                    <!-- Post Actions -->
-                                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <button class="btn btn-action like-btn <?php echo $post['user_liked'] ? 'text-danger' : 'text-muted'; ?>"
-                                                onclick="toggleLike(<?php echo $post['post_id']; ?>)">
-                                                <i class="fas fa-heart me-1"></i>
-                                                <span class="like-count fw-medium"><?php echo $post['like_count']; ?></span>
-                                            </button>
-                                            <button class="btn btn-action comment-btn text-muted"
-                                                onclick="toggleComments(<?php echo $post['post_id']; ?>)">
-                                                <i class="fas fa-comment me-1"></i>
-                                                <span class="comment-count fw-medium"><?php echo $post['comment_count']; ?></span>
-                                            </button>
-                                        </div>
-                                        <small class="text-muted">
-                                            <?php echo $post['like_count']; ?> likes · <?php echo $post['comment_count']; ?> comments
-                                        </small>
+                                    
+                                    <div class="mb-2">
+                                        <span class="text-muted">
+                                            <?= $post['like_count']; ?> likes • <?= $post['comment_count']; ?> comments
+                                        </span>
                                     </div>
+
+                                    <!-- Post Actions -->
+                                    <div class="d-flex justify-content-between border-top pt-2">
+                                        <!-- Like -->
+                                        <button class="btn btn-light flex-fill me-2 <?= $post['user_liked'] ? 'text-danger' : ''; ?>"
+                                            onclick="toggleLike(<?= $post['post_id']; ?>)">
+                                            <i class="fas fa-heart me-1"></i>
+                                            <span class="like-text">Like</span>
+                                            <span class="like-count">(<?= $post['like_count']; ?>)</span>
+                                        </button>
+
+                                        <!-- Comment -->
+                                        <button class="btn btn-light flex-fill me-2" onclick="toggleComments(<?= $post['post_id']; ?>)">
+                                            <i class="fas fa-comment me-1"></i>
+                                            <span class="comment-text">Comment</span>
+                                            <span class="comment-count">(<?= $post['comment_count']; ?>)</span>
+                                        </button>
+
+                                        <!-- Share -->
+                                        <button class="btn btn-light flex-fill" onclick="sharePost(<?= $post['post_id']; ?>)">
+                                            <i class="fas fa-share me-1"></i>Share
+                                        </button>
+                                    </div>
+
                                     <!-- Comment Section -->
-                                    <div class="comment-section mt-3" id="comments-<?php echo $post['post_id']; ?>" style="display: none;">
+                                    <div class="comment-section mt-3" id="comments-<?= $post['post_id']; ?>" style="display: none;">
                                         <div class="border-top pt-3">
                                             <div class="d-flex mb-3">
-                                                <img src="<?php echo htmlspecialchars($current_user['profile_picture'] ?: 'assets/default-avatar.png'); ?>"
+                                                <img src="<?= htmlspecialchars($current_user['profile_picture']); ?>"
                                                     alt="Your Profile" class="profile-img me-2">
                                                 <div class="flex-grow-1">
                                                     <input type="text" class="form-control form-control-sm comment-input"
                                                         placeholder="Write a comment..."
-                                                        onkeypress="handleCommentSubmit(event, <?php echo $post['post_id']; ?>)">
+                                                        onkeypress="handleCommentSubmit(event, <?= $post['post_id']; ?>)">
                                                 </div>
                                             </div>
-                                            <div class="comments-list" id="comments-list-<?php echo $post['post_id']; ?>">
+                                            <div class="comments-list" id="comments-list-<?= $post['post_id']; ?>">
                                                 <!-- Comments will be loaded here -->
                                             </div>
                                         </div>
