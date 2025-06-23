@@ -202,7 +202,7 @@ include_once 'includes/header1.php';
             class="cover-photo-section" alt="<?= htmlspecialchars($user['username']) ?>">
           
 
-            <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic-xl" alt="<?= htmlspecialchars($user['username']) ?>">
+            <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic-xl prfile-pic-md profile-pic-sm" alt="<?= htmlspecialchars($user['username']) ?>">
             <div class="profile-info">
                 <h1 class="profile-name"><?= htmlspecialchars($user['username']) ?></h1>
                 <!-- You can add additional profile info here if needed -->
