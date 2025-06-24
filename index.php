@@ -444,8 +444,7 @@ include_once 'includes/header1.php';
                                                 <!-- Comments will be loaded here -->
                                                  <?php
                                                 // var_dump(getPostComments($db, $post['post_id']));
-                                                foreach (getPostComments($db, $post['post_id']) as $comment) {
-                                                    ?>
+                                                foreach (getPostComments($db, $post['post_id']) as $comment):?>
 <div class="d-flex mb-3"><img src="<?php echo htmlspecialchars($comment['profile_picture'] ?: 'assets/default-avatar.png'); ?>" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="profile pic"><div>
                                         <div class="bg-light p-3 rounded">
                                             <strong><?= htmlspecialchars($comment['username']); ?></strong>
@@ -458,8 +457,8 @@ include_once 'includes/header1.php';
                                         </div>
                                     </div>
                                 </div>
-                                                    <?
-                                                }
+                                                    <?php
+                                                endforeach;
                                                  ?>
                                             </div>
                                         </div>

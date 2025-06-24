@@ -609,7 +609,7 @@ document.getElementById('media').addEventListener('change', function (event) {
     .catch(error => console.error('Error:', error));
 } */
 function toggleLike(postId) {
-    alert(postId);
+    // alert(postId);
     fetch('apis/like.php', {
         method: 'POST',
         headers: {
@@ -703,7 +703,7 @@ function addComment(postId, comment) {
 }
 
 function loadComments(postId) {
-    fetch('index.php', {
+    fetch('apis/comment.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

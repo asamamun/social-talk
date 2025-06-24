@@ -2,7 +2,7 @@
 if (!function_exists('settings')) {
     function settings()
     {
-       $root = "http://localhost/Social_talk_project_Sir/social-talk/"; 
+       $root = "http://localhost/project/social-talk/"; 
         return [
             'root'  => $root,
             'companyname'=> 'Unicorn Inc.',
