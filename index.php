@@ -126,9 +126,32 @@ function getFeedPosts($db, $user_id)
 
     // Convert array to comma-separated string for IN clause
     $friend_ids_str = implode(',', array_map('intval', $friend_ids));
+    // var_dump($friend_ids_str);
 
     // Get posts from friends and current user with proper column names
     $posts_query = "
+        SELECT 
+            p.post_id,
+            p.user_id,
+            p.content,
+            p.visibility,
+            p.images,
+            p.created_at,
+            u.username,
+            up.profile_picture,
+            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) as like_count,
+            (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count,
+            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id AND user_id = ?) as user_liked
+        FROM posts p
+        JOIN users u ON p.user_id = u.user_id
+        LEFT JOIN user_profile up ON p.user_id = up.user_id
+        WHERE            
+            (p.user_id = ?) OR    -
+            (p.user_id IN ($friend_ids_str) AND (p.visibility = 'public' OR p.visibility = 'friends'))
+        ORDER BY p.created_at DESC
+        LIMIT 50
+    ";
+    /* $posts_query = "
         SELECT 
             p.post_id,
             p.user_id,
@@ -150,7 +173,7 @@ function getFeedPosts($db, $user_id)
             (p.user_id = ?)
         ORDER BY p.created_at DESC
         LIMIT 50
-    ";
+    "; */
 
     return $db->rawQuery($posts_query, array($user_id, $user_id));
 }
@@ -385,18 +408,18 @@ include_once 'includes/header1.php';
                                     <!-- Post Actions -->
                                     <div class="d-flex justify-content-between border-top pt-2">
                                         <!-- Like -->
-                                        <button class="btn btn-light flex-fill me-2 <?= $post['user_liked'] ? 'text-danger' : ''; ?>"
+                                        <button class="like-btn btn btn-light flex-fill me-2 <?= $post['user_liked'] ? 'text-danger' : ''; ?>"
                                             onclick="toggleLike(<?= $post['post_id']; ?>)">
                                             <i class="fas fa-heart me-1"></i>
                                             <span class="like-text">Like</span>
-                                            <span class="like-count">(<?= $post['like_count']; ?>)</span>
+                                            (<span class="like-count"><?= $post['like_count']; ?></span>)
                                         </button>
 
                                         <!-- Comment -->
                                         <button class="btn btn-light flex-fill me-2" onclick="toggleComments(<?= $post['post_id']; ?>)">
                                             <i class="fas fa-comment me-1"></i>
                                             <span class="comment-text">Comment</span>
-                                            <span class="comment-count">(<?= $post['comment_count']; ?>)</span>
+                                            (<span class="comment-count"><?= $post['comment_count']; ?></span>)
                                         </button>
 
                                         <!-- Share -->
@@ -419,6 +442,25 @@ include_once 'includes/header1.php';
                                             </div>
                                             <div class="comments-list" id="comments-list-<?= $post['post_id']; ?>">
                                                 <!-- Comments will be loaded here -->
+                                                 <?php
+                                                // var_dump(getPostComments($db, $post['post_id']));
+                                                foreach (getPostComments($db, $post['post_id']) as $comment) {
+                                                    ?>
+<div class="d-flex mb-3"><img src="<?php echo htmlspecialchars($comment['profile_picture'] ?: 'assets/default-avatar.png'); ?>" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="profile pic"><div>
+                                        <div class="bg-light p-3 rounded">
+                                            <strong><?= htmlspecialchars($comment['username']); ?></strong>
+                                            <p class="mb-1"><?php echo nl2br(htmlspecialchars($comment['content'])); ?></p>
+                                            <small class="text-muted"><?php echo timeAgo($comment['created_at']); ?></small>
+                                        </div>
+                                        <div class="d-flex mt-2">
+                                            <a href="#" class="text-decoration-none me-3">Like</a>
+                                            <a href="#" class="text-decoration-none">Reply</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                                    <?
+                                                }
+                                                 ?>
                                             </div>
                                         </div>
                                     </div>

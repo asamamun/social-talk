@@ -581,16 +581,14 @@ document.getElementById('media').addEventListener('change', function (event) {
 
 
 //post actions for index.php
-function toggleLike(postId) {
-    fetch('index.php', {
+/* function toggleLike(postId) {
+    fetch('apis/like.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=like_post&post_id=${postId}`
+        body: JSON.stringify({ post_id: postId, action: 'like' }),      
     })
     .then(response => response.json())
     .then(data => {
+        console.log(data);
         const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
         const likeCount = likeBtn.querySelector('.like-count');
         
@@ -609,6 +607,53 @@ function toggleLike(postId) {
         summaryText.textContent = `${newLikeCount} likes · ${commentCount} comments`;
     })
     .catch(error => console.error('Error:', error));
+} */
+function toggleLike(postId) {
+    alert(postId);
+    fetch('apis/like.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest' // Add this header
+        },
+        body: JSON.stringify({ post_id: postId, action: 'like' }),
+    })
+    .then(response => {
+        // Check if response is OK        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        if (!data.success) {
+            console.error('Server error:', data.message);
+            return;
+        }
+        const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+        const likeCount = likeBtn.querySelector('.like-count');
+        console.log(likeBtn);
+        console.log(likeCount);
+
+        if (data.status === 'liked') {
+            likeBtn.classList.add('liked');
+            likeCount.textContent = parseInt(likeCount.textContent) + 1;
+        } else {
+            likeBtn.classList.remove('liked');
+            likeCount.textContent = Math.max(0, parseInt(likeCount.textContent) - 1);
+        }
+
+        // Update summary text
+        const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+        const newLikeCount = likeCount.textContent;
+        const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`).textContent;
+        summaryText.textContent = `${newLikeCount} likes · ${commentCount} comments`;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to process like. Please try again.');
+    });
 }
 
 function toggleComments(postId) {
