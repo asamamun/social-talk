@@ -196,10 +196,17 @@ include_once 'includes/header1.php';
     <div class="profile-header">
         <div class="profile-header-content" >
 
-            <!-- Cover Photo as Image -->
+             <!-- Cover Photo as Image -->
           
-            <img  src="<?= htmlspecialchars($current_user['cover_photo']) ?>" 
-            class="cover-photo-section" alt="<?= htmlspecialchars($user['username']) ?>">
+            <?php if (!empty($current_user['cover_photo'])): ?>
+    <img src="<?= htmlspecialchars($current_user['cover_photo']) ?>" 
+         class="cover-photo-section" 
+         alt="<?= htmlspecialchars($current_user['username']) ?>">
+<?php else: ?>
+    <div class="cover-photo-placeholder">
+        <?= htmlspecialchars($current_user['username']) ?>
+    </div>
+<?php endif; ?>
           
 
             <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic-xl prfile-pic-md profile-pic-sm" alt="<?= htmlspecialchars($user['username']) ?>">
