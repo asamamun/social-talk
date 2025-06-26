@@ -40,9 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $friendship_id = (int)$_POST['friendship_id'];
         $action = $_POST['action'];
         
-        try {
-            $db->where('friendship_id', $friendship_id);
-            $db->where('(user1_id = ? OR user2_id = ?)', [$current_user_id, $current_user_id]);
+        try {            
+            $db->where('friendship_id ', $friendship_id);
+            $db->where('(user2_id = ?)', [$current_user_id]);
             $friendship = $db->getOne('friendships');
             
             if (!$friendship) {
@@ -56,17 +56,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $new_status = $action === 'accept' ? 'accepted' : 'declined';
             $data = [
                 'status' => $new_status,
-                'action_user_id' => $current_user_id,
-                'updated_at' => $db->now()
+                'action_user_id' => $current_user_id                
             ];
             
-            $db->where('friendship_id', $friendship_id);
+            if($new_status === 'accepted'){
+                $db->where('friendship_id', $friendship_id);
             if (!$db->update('friendships', $data)) {
                 throw new Exception('Failed to update friend request');
             }
+            }
+            else{
+                $db->where('friendship_id', $friendship_id);
+                $db->delete('friendships');
+            }
+            
             
             // Create notification for the other user
-            $other_user_id = $friendship['user1_id'] == $current_user_id ? $friendship['user2_id'] : $friendship['user1_id'];
+            $other_user_id = $friendship['user1_id'];
             
             $notification_data = [
                 'user_id' => $other_user_id,
@@ -127,6 +133,7 @@ foreach ($requests as $request) {
             'mutual_friends' => $mutual_count,
             'created_at' => $request['created_at']
         ];
+        // var_dump($friend_requests);
     }
 }
 
@@ -175,16 +182,16 @@ include_once 'includes/header1.php';
                                             <form method="post" class="me-2">
                                                 <input type="hidden" name="friendship_id" value="<?= $request['friendship_id'] ?>">
                                                 <input type="hidden" name="action" value="accept">
-                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                <button type="submit" class="btn btn-success btn-sm">
                                                     Accept
                                                 </button>
                                             </form>
-                                            <form method="post">
+                                            <form method="post" class="me-2">
                                                 <input type="hidden" name="friendship_id" value="<?= $request['friendship_id'] ?>">
                                                 <input type="hidden" name="action" value="decline">
-                                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                                <button type="submit" class="btn btn-primary btn-sm">
                                                     Decline
-                                                </button>
+                                                </button>                                                
                                             </form>
                                         </div>
                                     </div>

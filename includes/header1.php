@@ -3,6 +3,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require __DIR__ . '/../vendor/autoload.php';
+$db = new MysqliDb();
+$current_user_id = $_SESSION['user_id'];
+$db->where("user_id", $current_user_id);
+$notifications = $db->get("notifications");
+// var_dump($notifications);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +21,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
    <link rel="stylesheet" href="assets/css/style1.css">
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <link rel="stylesheet" href="<?= settings()['root']?>assets/css/lightbox.min.css">
    
 </head>
 <body>
@@ -47,7 +54,21 @@ if (session_status() === PHP_SESSION_NONE) {
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
                             <h6 class="dropdown-header">Notifications</h6>
-                            <div class="notification-item unread">
+                            <div id="notificationContainer"> 
+                                <?php
+                                foreach ($notifications as $notification) {
+                                    echo '<div class="notification-item unread">
+                                        <div class="d-flex align-items-center">
+                                            <img src="' . $notification['source_id'] . '" class="profile-pic me-3" alt="Profile picture of ' . $notification['notification_id'] . '">
+                                            <div>
+                                                <strong>' . $notification['source_id'] . '</strong> ' . $notification['type'] . '
+                                                <div class="text-muted small">' . $notification['created_at'] . '</div>
+                                            </div>
+                                        </div>
+                                    </div>';
+                                }
+                                ?>
+    <!--                         <div class="notification-item unread">
                                 <div class="d-flex align-items-center">
                                     <img src="https://images.unsplash.com/photo-1494790108755-2616b612b820?w=50&h=50&fit=crop&crop=face" class="profile-pic me-3" alt="Sarah Johnson profile picture">
                                     <div>
@@ -64,6 +85,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                         <div class="text-muted small">5 minutes ago</div>
                                     </div>
                                 </div>
+                            </div> -->
                             </div>
                         </div>
                     </div>

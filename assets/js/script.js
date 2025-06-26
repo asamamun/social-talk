@@ -645,7 +645,7 @@ function toggleLike(postId) {
         }
 
         // Update summary text
-        const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+        const summaryText = document.querySelector(`[data-post-id="${postId}"] .likecomment`);
         const newLikeCount = likeCount.textContent;
         const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`).textContent;
         summaryText.textContent = `${newLikeCount} likes · ${commentCount} comments`;
@@ -677,7 +677,8 @@ function handleCommentSubmit(event, postId) {
 }
 
 function addComment(postId, comment) {
-    fetch('index.php', {
+    // console.log(postId, comment);
+    fetch('apis/comment.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -686,6 +687,7 @@ function addComment(postId, comment) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log(data);
         if (data.status === 'success') {
             loadComments(postId);
             // Update comment count
@@ -694,7 +696,7 @@ function addComment(postId, comment) {
             commentCount.textContent = currentCount + 1;
             
             // Update summary text
-            const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+            const summaryText = document.querySelector(`[data-post-id="${postId}"] .likecomment`);
             const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`).textContent;
             summaryText.textContent = `${likeCount} likes · ${currentCount + 1} comments`;
         }
@@ -712,6 +714,7 @@ function loadComments(postId) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log(data);
         if (data.status === 'success') {
             const commentsList = document.getElementById(`comments-list-${postId}`);
             commentsList.innerHTML = '';

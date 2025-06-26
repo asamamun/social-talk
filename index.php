@@ -129,6 +129,7 @@ function getFeedPosts($db, $user_id)
     // var_dump($friend_ids_str);
 
     // Get posts from friends and current user with proper column names
+    $index=0;
     $posts_query = "
         SELECT 
             p.post_id,
@@ -149,7 +150,7 @@ function getFeedPosts($db, $user_id)
             (p.user_id = ?) OR    -
             (p.user_id IN ($friend_ids_str) AND (p.visibility = 'public' OR p.visibility = 'friends'))
         ORDER BY p.created_at DESC
-        LIMIT 50
+        LIMIT $index, 50
     ";
     /* $posts_query = "
         SELECT 
@@ -188,26 +189,6 @@ function getCurrentUser($db, $user_id)
         WHERE u.user_id = ?
     ";
     return $db->rawQuery($user_query, array($user_id))[0] ?? null;
-}
-
-// Function to get comments for a post
-function getPostComments($db, $post_id)
-{
-    $comments_query = "
-        SELECT 
-            c.comment_id,
-            c.content,
-            c.created_at,
-            u.username,
-            up.profile_picture
-        FROM comments c
-        JOIN users u ON c.user_id = u.user_id
-        LEFT JOIN user_profile up ON c.user_id = up.user_id
-        WHERE c.post_id = ?
-        ORDER BY c.created_at ASC
-        LIMIT 10
-    ";
-    return $db->rawQuery($comments_query, array($post_id));
 }
 
 // Function to format time ago
@@ -383,12 +364,13 @@ include_once 'includes/header1.php';
                                         ?>
                                         <div class="post-images">
                                             <?php foreach ($images as $index => $image): ?>
-                                                <?php if ($index < 4): // Show max 4 images 
+                                                <?php //if ($index): // Show max 4 images 
                                                 ?>
-                                                    <img src="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
+                                                <a href="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>"><img src="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
                                                         alt="Post image" class="post-image"
-                                                        style="<?php echo $image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>">
-                                                <?php endif; ?>
+                                                        style="<?php echo $image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
+                                                    
+                                                <?php //endif; ?>
                                             <?php endforeach; ?>
                                             <?php if ($image_count > 4): ?>
                                                 <div class="more-images-overlay">
@@ -400,7 +382,7 @@ include_once 'includes/header1.php';
 
                                     
                                     <div class="mb-2">
-                                        <span class="text-muted">
+                                        <span class="text-muted likecomment">
                                             <?= $post['like_count']; ?> likes • <?= $post['comment_count']; ?> comments
                                         </span>
                                     </div>
@@ -435,31 +417,15 @@ include_once 'includes/header1.php';
                                                 <img src="<?= htmlspecialchars($current_user['profile_picture']); ?>"
                                                     alt="Your Profile" class="profile-img me-2">
                                                 <div class="flex-grow-1">
-                                                    <input type="text" class="form-control form-control-sm comment-input"
+                                                    <input type="text" class="form-control form-control-sm comment-input commentinput"
                                                         placeholder="Write a comment..."
                                                         onkeypress="handleCommentSubmit(event, <?= $post['post_id']; ?>)">
                                                 </div>
                                             </div>
                                             <div class="comments-list" id="comments-list-<?= $post['post_id']; ?>">
                                                 <!-- Comments will be loaded here -->
-                                                 <?php
-                                                // var_dump(getPostComments($db, $post['post_id']));
-                                                foreach (getPostComments($db, $post['post_id']) as $comment):?>
-<div class="d-flex mb-3"><img src="<?php echo htmlspecialchars($comment['profile_picture'] ?: 'assets/default-avatar.png'); ?>" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="profile pic"><div>
-                                        <div class="bg-light p-3 rounded">
-                                            <strong><?= htmlspecialchars($comment['username']); ?></strong>
-                                            <p class="mb-1"><?php echo nl2br(htmlspecialchars($comment['content'])); ?></p>
-                                            <small class="text-muted"><?php echo timeAgo($comment['created_at']); ?></small>
-                                        </div>
-                                        <div class="d-flex mt-2">
-                                            <a href="#" class="text-decoration-none me-3">Like</a>
-                                            <a href="#" class="text-decoration-none">Reply</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                                    <?php
-                                                endforeach;
-                                                 ?>
+                                                <!-- Comments will be loaded here end -->
+
                                             </div>
                                         </div>
                                     </div>
