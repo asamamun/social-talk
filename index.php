@@ -67,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $allowed_visibilities = ['public', 'friends', 'private'];
 
     // Validate inputs
-    if (empty($content) || strlen($content) < 30) {
-        $_SESSION['error'] = "Post content must be at least 30 characters long.";
+    if (empty($content) || strlen($content) < 2) {
+        $_SESSION['error'] = "Post content must be at least 2 characters long.";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
@@ -462,7 +462,7 @@ include_once 'includes/header1.php';
                         <div class="d-flex align-items-center mb-3">
                             <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic me-3">
                             <!-- <input type="text" class="form-control" placeholder="What's on your mind, John?" onclick="openCreatePost()"> -->
-                            <textarea name="postContent" id="" class="form-control" placeholder="What's on your mind, <?= $user['username'] ?>?" required minlength="30"></textarea>
+                            <textarea name="postContent" id="" class="form-control" placeholder="What's on your mind, <?= $user['username'] ?>?" required minlength="2"></textarea>
                         </div>
 
 

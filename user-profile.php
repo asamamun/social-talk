@@ -806,7 +806,7 @@ include_once 'includes/header1.php';
 
                             <div class="d-flex align-items-center mb-3">
                                 <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>" class="profile-pic me-3" alt="Your profile">
-                                <textarea name="postContent" class="form-control" placeholder="What's on your mind, <?= htmlspecialchars($current_user['username']) ?>?" required minlength="30" rows="3"></textarea>
+                                <textarea name="postContent" class="form-control" placeholder="What's on your mind, <?= htmlspecialchars($current_user['username']) ?>?" required minlength="2" rows="3"></textarea>
                             </div>
 
                             <div class="d-flex justify-content-between">

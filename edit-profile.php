@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir($upload_dir, 0755, true);
         }
 
-        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $allowed_extensions = ['jpg', 'jpeg', 'png','webp', 'gif'];
 
         // Handle profile picture upload
         if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = "Failed to upload cover photo.";
                 }
             } else {
-                $error = "Invalid file type for cover photo. Only JPG, JPEG, PNG, and GIF are allowed.";
+                $error = "Invalid file type for cover photo. Only JPG, JPEG, PNG, WEBP and GIF are allowed.";
             }
         }
 
