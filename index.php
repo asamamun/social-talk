@@ -98,7 +98,172 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 /* 
 create post script end
 */
+// Function to get current user's profile details
+function getCurrentUserProfile($db, $user_id)
+{
+    $query = "
+        SELECT 
+            u.user_id, 
+            u.username, 
+            up.profile_picture,
+            up.bio
+        FROM users u
+        LEFT JOIN user_profile up ON u.user_id = up.user_id
+        WHERE u.user_id = ?
+    ";
+    $result = $db->rawQuery($query, [$user_id]);
+    $user = $result[0] ?? null;
+    if ($user) {
+        // Set default profile picture if none exists
+        $user['profile_picture'] = $user['profile_picture'] ?: 'assets/default-avatar.png';
+        // Use bio (trimmed to 50 characters) or fallback to 'Member'
+        $user['bio'] = $user['bio'] ? substr($user['bio'], 0, 50) . (strlen($user['bio']) > 50 ? '...' : '') : 'Member';
+    }
+    return $user;
+}
 
+// Function to count accepted friends
+function getFriendCount($db, $user_id)
+{
+    $query = "
+        SELECT COUNT(*) as friend_count
+        FROM friendships
+        WHERE (user1_id = ? OR user2_id = ?) AND status = 'accepted'
+    ";
+    $result = $db->rawQuery($query, [$user_id, $user_id]);
+    return $result[0]['friend_count'] ?? 0;
+}
+
+// Function to count user's posts
+function getPostCount($db, $user_id)
+{
+    $query = "
+        SELECT COUNT(*) as post_count
+        FROM posts
+        WHERE user_id = ?
+    ";
+    $result = $db->rawQuery($query, [$user_id]);
+    return $result[0]['post_count'] ?? 0;
+}
+
+// Function to count unread messages
+function getUnreadMessageCount($db, $user_id)
+{
+    $query = "
+        SELECT COUNT(*) as unread_count
+        FROM messages
+        WHERE receiver_id = ? AND is_read = 0
+    ";
+    $result = $db->rawQuery($query, [$user_id]);
+    return $result[0]['unread_count'] ?? 0;
+}
+
+// Function to count pending friend requests
+function getPendingFriendRequestCount($db, $user_id)
+{
+    $query = "
+        SELECT COUNT(*) as pending_count
+        FROM friendships
+        WHERE user2_id = ? AND status = 'pending'
+    ";
+    $result = $db->rawQuery($query, [$user_id]);
+    return $result[0]['pending_count'] ?? 0;
+}
+
+// Fetch data
+$current_user = getCurrentUserProfile($db, $_SESSION['user_id']);
+$friend_count = getFriendCount($db, $_SESSION['user_id']);
+$post_count = getPostCount($db, $_SESSION['user_id']);
+$unread_message_count = getUnreadMessageCount($db, $_SESSION['user_id']);
+$pending_request_count = getPendingFriendRequestCount($db, $_SESSION['user_id']);
+
+// Function to get friend suggestions for the current user
+function getFriendSuggestions($db, $current_user_id, $limit = 3)
+{
+    // Get current user's friends
+    $friends_query = "
+        SELECT CASE 
+            WHEN user1_id = ? THEN user2_id 
+            ELSE user1_id 
+        END as friend_id
+        FROM friendships 
+        WHERE (user1_id = ? OR user2_id = ?) AND status = 'accepted'
+    ";
+    $friends = $db->rawQuery($friends_query, [$current_user_id, $current_user_id, $current_user_id]);
+    $friend_ids = array_column($friends, 'friend_id');
+    $friend_ids[] = $current_user_id; // Exclude current user
+
+    // Convert friend IDs to a comma-separated string for exclusion
+    $friend_ids_str = implode(',', array_map('intval', $friend_ids));
+
+    // Get suggested users (not friends, not the current user)
+    $suggestions_query = "
+        SELECT 
+            u.user_id,
+            u.username,
+            up.profile_picture,
+            CONCAT(up.first_name, ' ', up.last_name) as full_name
+        FROM users u
+        LEFT JOIN user_profile up ON u.user_id = up.user_id
+        WHERE u.user_id NOT IN ($friend_ids_str)
+        ORDER BY RAND()
+        LIMIT ?
+    ";
+    $suggestions = $db->rawQuery($suggestions_query, [$limit]);
+
+    // Calculate mutual friends for each suggestion
+    foreach ($suggestions as &$suggestion) {
+        $suggested_user_id = $suggestion['user_id'];
+        $mutual_friends_query = "
+            SELECT COUNT(*) as mutual_count
+            FROM friendships f1
+            WHERE f1.status = 'accepted'
+            AND (
+                (f1.user1_id = ? AND f1.user2_id IN (
+                    SELECT CASE 
+                        WHEN user1_id = ? THEN user2_id 
+                        ELSE user1_id 
+                    END
+                    FROM friendships 
+                    WHERE (user1_id = ? OR user2_id = ?) AND status = 'accepted'
+                ))
+                OR 
+                (f1.user2_id = ? AND f1.user1_id IN (
+                    SELECT CASE 
+                        WHEN user1_id = ? THEN user2_id 
+                        ELSE user1_id 
+                    END
+                    FROM friendships 
+                    WHERE (user1_id = ? OR user2_id = ?) AND status = 'accepted'
+                ))
+            )
+        ";
+        $mutual_result = $db->rawQuery($mutual_friends_query, [
+            $suggested_user_id,
+            $current_user_id,
+            $current_user_id,
+            $current_user_id,
+            $suggested_user_id,
+            $current_user_id,
+            $current_user_id,
+            $current_user_id
+        ]);
+        $suggestion['mutual_count'] = $mutual_result[0]['mutual_count'] ?? 0;
+
+        // Use default profile picture if none exists
+        $suggestion['profile_picture'] = $suggestion['profile_picture'] ?: 'assets/default-avatar.png';
+    }
+
+    // Sort by mutual friends (descending) to prioritize relevant suggestions
+    usort($suggestions, function ($a, $b) {
+        return $b['mutual_count'] <=> $a['mutual_count'];
+    });
+
+    return $suggestions;
+}
+
+// Get friend suggestions
+$friend_suggestions = getFriendSuggestions($db, $_SESSION['user_id'], 3);
 /*
 show all posts of users and users friends
 */
@@ -126,33 +291,9 @@ function getFeedPosts($db, $user_id)
 
     // Convert array to comma-separated string for IN clause
     $friend_ids_str = implode(',', array_map('intval', $friend_ids));
-    // var_dump($friend_ids_str);
 
     // Get posts from friends and current user with proper column names
-    $index=0;
     $posts_query = "
-        SELECT 
-            p.post_id,
-            p.user_id,
-            p.content,
-            p.visibility,
-            p.images,
-            p.created_at,
-            u.username,
-            up.profile_picture,
-            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) as like_count,
-            (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count,
-            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id AND user_id = ?) as user_liked
-        FROM posts p
-        JOIN users u ON p.user_id = u.user_id
-        LEFT JOIN user_profile up ON p.user_id = up.user_id
-        WHERE            
-            (p.user_id = ?) OR    -
-            (p.user_id IN ($friend_ids_str) AND (p.visibility = 'public' OR p.visibility = 'friends'))
-        ORDER BY p.created_at DESC
-        LIMIT $index, 50
-    ";
-    /* $posts_query = "
         SELECT 
             p.post_id,
             p.user_id,
@@ -174,7 +315,7 @@ function getFeedPosts($db, $user_id)
             (p.user_id = ?)
         ORDER BY p.created_at DESC
         LIMIT 50
-    "; */
+    ";
 
     return $db->rawQuery($posts_query, array($user_id, $user_id));
 }
@@ -189,6 +330,26 @@ function getCurrentUser($db, $user_id)
         WHERE u.user_id = ?
     ";
     return $db->rawQuery($user_query, array($user_id))[0] ?? null;
+}
+
+// Function to get comments for a post
+function getPostComments($db, $post_id)
+{
+    $comments_query = "
+        SELECT 
+            c.comment_id,
+            c.content,
+            c.created_at,
+            u.username,
+            up.profile_picture
+        FROM comments c
+        JOIN users u ON c.user_id = u.user_id
+        LEFT JOIN user_profile up ON c.user_id = up.user_id
+        WHERE c.post_id = ?
+        ORDER BY c.created_at ASC
+        LIMIT 10
+    ";
+    return $db->rawQuery($comments_query, array($post_id));
 }
 
 // Function to format time ago
@@ -219,20 +380,23 @@ include_once 'includes/header1.php';
     <!-- Main Content -->
     <div class="container-fluid mt-3">
         <div class="row" id="mainContent">
+
             <!-- Left Sidebar -->
             <div class="col-lg-3">
                 <div class="sidebar fade-in">
                     <div class="text-center mb-4">
-                        <img src="<?= $current_user['profile_picture'] ?>" class="profile-pic-lg mb-3" alt="<?= $user['username'] ?>">
-                        <h5><?= $user['username'] ?></h5>
-                        <p class="text-muted">Software Developer</p>
+                        <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>"
+                            class="profile-pic-lg mb-3"
+                            alt="<?= htmlspecialchars($current_user['username']) ?>">
+                        <h5><?= htmlspecialchars($current_user['username']) ?></h5>
+                        <p class="text-muted"><?= htmlspecialchars($current_user['bio'] ?? 'No bio yet') ?></p>
                         <div class="d-flex justify-content-around">
                             <div class="text-center">
-                                <div class="fw-bold">245</div>
+                                <div class="fw-bold"><?= $friend_count ?></div>
                                 <small class="text-muted">Friends</small>
                             </div>
                             <div class="text-center">
-                                <div class="fw-bold">89</div>
+                                <div class="fw-bold"><?= $post_count ?></div>
                                 <small class="text-muted">Posts</small>
                             </div>
                         </div>
@@ -246,11 +410,15 @@ include_once 'includes/header1.php';
                         </a>
                         <a href="messages.php" class="list-group-item" onclick="socialTalk.showMessages()">
                             <i class="fas fa-envelope me-2"></i>Messages
-                            <span class="badge bg-primary text-dark">2</span>
+                            <?php if ($unread_message_count > 0): ?>
+                                <span class="badge bg-primary text-dark"><?= $unread_message_count ?></span>
+                            <?php endif; ?>
                         </a>
                         <a href="friend-request.php" class="list-group-item" onclick="socialTalk.showFriendRequests()">
                             <i class="fas fa-user-plus me-2"></i>Friend Requests
-                            <span class="badge bg-success">3</span>
+                            <?php if ($pending_request_count > 0): ?>
+                                <span class="badge bg-success"><?= $pending_request_count ?></span>
+                            <?php endif; ?>
                         </a>
                     </div>
                 </div>
@@ -336,10 +504,17 @@ include_once 'includes/header1.php';
                                 <div class="card-body">
                                     <!-- Post Header -->
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="<?php echo htmlspecialchars($post['profile_picture'] ?: 'assets/default-avatar.png'); ?>"
-                                            alt="Profile" class="profile-img me-3">
+                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
+                                            <img src="<?php echo htmlspecialchars($post['profile_picture'] ?: 'assets/default-avatar.png'); ?>"
+
+                                                alt="Profile" class="profile-img me-3">
+                                        </a>
                                         <div>
-                                            <h6 class="mb-0"><?php echo htmlspecialchars($post['username']); ?></h6>
+                                            <h6 class="mb-0">
+                                                <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
+                                                    <?= htmlspecialchars($post['username']); ?>
+                                                </a>
+                                            </h6>
                                             <small class="text-muted">
                                                 <?php echo timeAgo($post['created_at']); ?>
                                                 <?php if ($post['visibility'] === 'friends'): ?>
@@ -369,8 +544,9 @@ include_once 'includes/header1.php';
                                                 <a href="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>"><img src="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
                                                         alt="Post image" class="post-image"
                                                         style="<?php echo $image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
-                                                    
-                                                <?php //endif; ?>
+
+                                                <?php //endif; 
+                                                ?>
                                             <?php endforeach; ?>
                                             <?php if ($image_count > 4): ?>
                                                 <div class="more-images-overlay">
@@ -380,7 +556,7 @@ include_once 'includes/header1.php';
                                         </div>
                                     <?php endif; ?>
 
-                                    
+
                                     <div class="mb-2">
                                         <span class="text-muted likecomment">
                                             <?= $post['like_count']; ?> likes • <?= $post['comment_count']; ?> comments
@@ -443,31 +619,35 @@ include_once 'includes/header1.php';
             <!-- Right Sidebar -->
             <div class="col-lg-3">
                 <div class="sidebar">
+
                     <h6 class="mb-3">Friend Suggestions</h6>
-                    <div class="mb-3">
-                        <div class="d-flex align-items-center mb-2">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="Alex Rodriguez profile">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0" style="font-size: 0.9em;">Alex Rodriguez</h6>
-                                <small class="text-muted">2 mutual friends</small>
-                            </div>
-                            <button class="btn btn-primary btn-sm" onclick="socialTalk.sendFriendRequest(this)" aria-label="Add Alex Rodriguez as friend">
-                                <i class="fas fa-user-plus"></i>
-                            </button>
+                    <?php if (empty($friend_suggestions)): ?>
+                        <div class="mb-3 text-muted">
+                            <p>No friend suggestions available.</p>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="d-flex align-items-center mb-2">
-                            <img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=40&h=40&fit=crop&crop=face" class="profile-pic me-2" style="width: 40px; height: 40px;" alt="Lisa Park profile">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0" style="font-size: 0.9em;">Lisa Park</h6>
-                                <small class="text-muted">5 mutual friends</small>
+                    <?php else: ?>
+                        <?php foreach ($friend_suggestions as $suggestion): ?>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="<?= htmlspecialchars($suggestion['profile_picture']) ?>"
+                                        class="profile-pic me-2"
+                                        style="width: 40px; height: 40px;"
+                                        alt="<?= htmlspecialchars($suggestion['full_name']) ?> profile">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0" style="font-size: 0.9em;">
+                                            <?= htmlspecialchars($suggestion['full_name'] ?: $suggestion['username']) ?>
+                                        </h6>
+                                        <small class="text-muted"><?= $suggestion['mutual_count'] ?> mutual friend<?= $suggestion['mutual_count'] != 1 ? 's' : '' ?></small>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="socialTalk.sendFriendRequest(this, <?= $suggestion['user_id'] ?>)"
+                                        aria-label="Add <?= htmlspecialchars($suggestion['full_name']) ?> as friend">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button class="btn btn-primary btn-sm" onclick="socialTalk.sendFriendRequest(this)" aria-label="Add Lisa Park as friend">
-                                <i class="fas fa-user-plus"></i>
-                            </button>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
                 <div class="sidebar fade-in">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -531,6 +711,28 @@ include_once 'includes/header1.php';
         </div>
     </div>
 
+    <script>
+        // In your socialTalk object
+        function sendFriendRequest(buttonElement, userId) {
+            const btn = $(buttonElement);
+            btn.prop('disabled', true);
+
+            $.post('ajax/send_friend_request.php', {
+                user_id: userId
+            }, function(response) {
+                if (response.success) {
+                    btn.html('<i class="fas fa-check"></i> Sent');
+                    btn.removeClass('btn-primary').addClass('btn-success');
+                } else {
+                    btn.prop('disabled', false);
+                    alert(response.message || 'Request failed');
+                }
+            }).fail(function() {
+                btn.prop('disabled', false);
+                alert('Network error');
+            });
+        }
+    </script>
 
     <?php
     include_once 'includes/footer1.php';

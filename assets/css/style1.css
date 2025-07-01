@@ -751,3 +751,43 @@ body {
     }
 }
 
+ /* Search modal styles */
+ #searchResultsModal .modal-dialog {
+    max-width: 500px;
+}
+#searchResultsModal .modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.search-result-item {
+    border-left: 0;
+    border-right: 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+.search-result-item:first-child {
+    border-top: 0;
+}
+.search-result-item:last-child {
+    border-bottom: 0;
+}
+mark {
+    background-color: #ffeb3b;
+    padding: 0;
+}
+.search-input-group {
+    width: 250px;
+}
+@media (max-width: 992px) {
+    .search-input-group {
+        width: 200px;
+    }
+}
+@media (max-width: 768px) {
+    .search-input-group {
+        width: 150px;
+    }
+}

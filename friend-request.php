@@ -165,12 +165,15 @@ include_once 'includes/header1.php';
                             <?php foreach ($friend_requests as $request): ?>
                                 <div class="friend-request-card mb-3 p-3 border rounded">
                                     <div class="d-flex align-items-center">
-                                        <img src="<?= htmlspecialchars($request['profile_picture']) ?>" 
+                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($request['user_id']); ?>" style="text-decoration: none;"><img src="<?= htmlspecialchars($request['profile_picture']) ?>" 
                                              class="rounded-circle me-3" 
                                              style="width: 60px; height: 60px; object-fit: cover;" 
-                                             alt="Profile picture of <?= htmlspecialchars($request['username']) ?>">
+                                             alt="<?= htmlspecialchars($request['username']) ?>">
+                                        </a>
                                         <div class="flex-grow-1">
-                                            <h5 class="mb-1"><?= htmlspecialchars($request['username']) ?></h5>
+                                            <h5 class="mb-1"><a href="user-profile.php?user_id=<?= htmlspecialchars($request['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($request['username']) ?> 
+                                            </a>
+                                        </h5>
                                             <p class="text-muted mb-1">
                                                 <?= $request['mutual_friends'] ?> mutual friend<?= $request['mutual_friends'] != 1 ? 's' : '' ?>
                                             </p>

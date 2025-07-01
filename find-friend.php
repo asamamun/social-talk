@@ -97,13 +97,39 @@ $suggested_friends = $db->rawQuery("
     $current_user_id  // For NOT IN subquery (3)
 ]);
 
-
+// Handle cancel friend request
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_request']) && isset($_POST['recipient_id'])) {
+    $recipient_id = (int)$_POST['recipient_id'];
+    
+    // Find and delete the pending request
+    $db->where('(user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)', 
+              [$current_user_id, $recipient_id, $recipient_id, $current_user_id]);
+    $db->where('status', 'pending');
+    $db->where('action_user_id', $current_user_id);
+    
+    if ($db->delete('friendships')) {
+        $_SESSION['success_message'] = "Friend request cancelled successfully.";
+    } else {
+        $_SESSION['error_message'] = "Failed to cancel friend request.";
+    }
+    
+    header("Location: find-friend.php" . (isset($_GET['search']) ? "?search=" . urlencode($_GET['search']) : ""));
+    exit;
+}
 
 include_once 'includes/header1.php';
 ?>
 
 <!-- Find Friends Section -->
 <div class="container mt-4">
+    <!-- Display success/error messages -->
+    <?php if (isset($_SESSION['success_message'])) : ?>
+        <div class="alert alert-success"><?= htmlspecialchars($_SESSION['success_message']); unset($_SESSION['success_message']); ?></div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['error_message'])) : ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error_message']); unset($_SESSION['error_message']); ?></div>
+    <?php endif; ?>
+
     <!-- Search Bar -->
     <div class="search-card">
         <h4 class="mb-4">Find New Friends</h4>
@@ -140,19 +166,22 @@ include_once 'includes/header1.php';
                 <div class="friend-grid">
                     <?php foreach ($search_results as $user) : ?>
                         <div class="friend-card position-relative">
-                            <img src="<?= htmlspecialchars($user['profile_picture']) ?>" 
+                            <a href="user-profile.php?user_id=<?= htmlspecialchars($user['user_id']); ?>" style="text-decoration: none;"><img src="<?= htmlspecialchars($user['profile_picture']) ?>" 
                                  class="rounded-circle"
                                  alt="<?= htmlspecialchars($user['username']) ?>"
                                  width="100" height="100">
+                            </a>
                             
                             <?php if ($user['is_online'] ?? false) : ?>
                                 <div class="online-status"></div>
                             <?php endif; ?>
                             
-                            <h6><?= htmlspecialchars($user['username']) ?></h6>
+                            <h6 >
+                                <a href="user-profile.php?user_id=<?= htmlspecialchars($user['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($user['username']) ?>
+                                </h6>
                             
                             <?php 
-                            // Check if already friends or request sent
+                            // Check friendship status
                             $db->where('(user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)', 
                                       [$current_user_id, $user['user_id'], $user['user_id'], $current_user_id]);
                             $friendship = $db->getOne('friendships');
@@ -163,10 +192,22 @@ include_once 'includes/header1.php';
                                     <button class="btn btn-success btn-sm" disabled>
                                         <i class="fas fa-user-friends me-2"></i>Friends
                                     </button>
-                                <?php elseif ($friendship['status'] == 'pending' && $friendship['action_user_id'] == $current_user_id) : ?>
-                                    <button class="btn btn-secondary btn-sm" disabled>
-                                        <i class="fas fa-user-clock me-2"></i>Request Sent
-                                    </button>
+                                <?php elseif ($friendship['status'] == 'pending') : ?>
+                                    <?php if ($friendship['action_user_id'] == $current_user_id) : ?>
+                                        <form method="POST" action="find-friend.php" class="d-flex gap-2">
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                <i class="fas fa-user-clock me-2"></i>Request Sent
+                                            </button>
+                                            <input type="hidden" name="recipient_id" value="<?= $user['user_id'] ?>">
+                                            <button type="submit" name="cancel_request" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </button>
+                                        </form>
+                                    <?php else : ?>
+                                        <a href="friend-request.php" class="btn btn-info btn-sm">
+                                            <i class="fas fa-user-clock me-2"></i>Respond to Request
+                                        </a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             <?php else : ?>
                                 <form method="POST" action="send-friend-request.php">
@@ -199,22 +240,27 @@ include_once 'includes/header1.php';
                 <div class="friend-grid">
                     <?php foreach ($suggested_friends as $friend) : ?>
                         <div class="friend-card position-relative">
-                            <img src="<?= htmlspecialchars($friend['profile_picture']) ?>" 
+                           <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"> <img src="<?= htmlspecialchars($friend['profile_picture']) ?>" 
                                  class="rounded-circle"
                                  alt="<?= htmlspecialchars($friend['username']) ?>"
                                  width="100" height="100">
+                            </a>
                             
                             <?php if ($friend['is_online'] ?? false) : ?>
                                 <div class="online-status"></div>
                             <?php endif; ?>
                             
-                            <h6><?= htmlspecialchars($friend['username']) ?></h6>
+                            <h6>
+                                <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($friend['username']) ?>
+                                </a>
+                            
+                            </h6>
                             <p class="text-muted small">
                                 <?= $friend['mutual_friends'] ?> mutual friend<?= $friend['mutual_friends'] != 1 ? 's' : '' ?>
                             </p>
                             
                             <?php 
-                            // Check if already friends or request sent
+                            // Check friendship status
                             $db->where('(user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)', 
                                       [$current_user_id, $friend['user_id'], $friend['user_id'], $current_user_id]);
                             $friendship = $db->getOne('friendships');
@@ -225,10 +271,22 @@ include_once 'includes/header1.php';
                                     <button class="btn btn-success btn-sm" disabled>
                                         <i class="fas fa-user-friends me-2"></i>Friends
                                     </button>
-                                <?php elseif ($friendship['status'] == 'pending' && $friendship['action_user_id'] == $current_user_id) : ?>
-                                    <button class="btn btn-secondary btn-sm" disabled>
-                                        <i class="fas fa-user-clock me-2"></i>Request Sent
-                                    </button>
+                                <?php elseif ($friendship['status'] == 'pending') : ?>
+                                    <?php if ($friendship['action_user_id'] == $current_user_id) : ?>
+                                        <form method="POST" action="find-friend.php" class="d-flex gap-2">
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                <i class="fas fa-user-clock me-2"></i>Request Sent
+                                            </button>
+                                            <input type="hidden" name="recipient_id" value="<?= $friend['user_id'] ?>">
+                                            <button type="submit" name="cancel_request" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times me-2"></i>Cancel
+                                            </button>
+                                        </form>
+                                    <?php else : ?>
+                                        <a href="friend-request.php" class="btn btn-info btn-sm">
+                                            <i class="fas fa-user-clock me-2"></i>Respond to Request
+                                        </a>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             <?php else : ?>
                                 <form method="POST" action="send-friend-request.php">
