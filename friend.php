@@ -42,12 +42,12 @@ if ($is_own_profile) {
     $db->join("user_profile up", "up.user_id = u.user_id", "LEFT");
     $db->where("u.user_id", $viewing_user_id);
     $profile_user = $db->getOne("users u");
-    
+
     if (!$profile_user) {
         header("Location: error.php?message=User+not+found");
         exit;
     }
-    
+
     // Set default images for target user
     if (empty($profile_user['profile_picture'])) {
         $profile_user['profile_picture'] = 'assets/default-avatar.png';
@@ -92,54 +92,59 @@ include_once 'includes/header1.php';
             <h4 class="mb-0"><a href="user-profile.php?user_id=<?= htmlspecialchars($profile_user['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($profile_user['username']) ?></a>'s Friends (<?= $friend_count ?>)</h4>
             <div>
                 <?php if ($is_own_profile): ?>
-                <a href="find-friend.php" class="btn btn-primary me-2">
-                    <i class="fas fa-user-plus me-2"></i>Find Friends
-                </a>
+                    <a href="find-friend.php" class="btn btn-primary me-2">
+                        <i class="fas fa-user-plus me-2"></i>Find Friends
+                    </a>
                 <?php endif; ?>
                 <a href="user-profile.php?user_id=<?= $viewing_user_id ?>" class="btn btn-light">
                     <i class="fas fa-arrow-left me-2"></i>Back to Profile
                 </a>
             </div>
         </div>
-        
+
         <?php if (empty($friends)): ?>
             <div class="alert alert-info">
-                <?= $is_own_profile ? 'You don\'t have any friends yet.' : htmlspecialchars($profile_user['username']) . ' has no friends yet.' ?> 
+                <?= $is_own_profile ? 'You don\'t have any friends yet.' : htmlspecialchars($profile_user['username']) . ' has no friends yet.' ?>
                 <?php if ($is_own_profile): ?>
                     <a href="find-friend.php">Find friends</a> to get started!
                 <?php endif; ?>
             </div>
         <?php else: ?>
-            <div class="friend-grid">
+            <div >
                 <?php foreach ($friends as $friend): ?>
                     <div class="friend-card position-relative">
-                       <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"> <img src="<?= htmlspecialchars($friend['profile_picture'] ?? 'assets/default-avatar.png') ?>" 
-                             alt="<?= htmlspecialchars($friend['username']) ?>"
-                             class="img-fluid rounded-circle">
+                        <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"> <img src="<?= htmlspecialchars($friend['profile_picture'] ?? 'assets/default-avatar.png') ?>"
+                                alt="<?= htmlspecialchars($friend['username']) ?>"
+                                class="img-fluid rounded-circle">
                         </a>
-                             
+
                         <?php if ($friend['is_online']): ?>
                             <div class="online-status"></div>
                         <?php endif; ?>
-                        
-                        <h6> <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($friend['username']) ?>
-                        </a>
-                    </h6>
-                        
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="user-profile.php?user_id=<?= $friend['user_id'] ?>" 
-                               class="btn btn-sm btn-outline-primary">
-                               <i class="fas fa-user me-1"></i> Profile
-                            </a>
-                            <a href="messages.php?to=<?= $friend['user_id'] ?>" 
-                               class="btn btn-sm btn-success">
-                               <i class="fas fa-comment me-1"></i> Message
-                            </a>
+                        <div class="friend-request-card mb-3 p-3 border rounded">
+                            <div class="d-flex align-items-center">
+                                <h6> <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($friend['username']) ?>
+                                    </a>
+                                </h6>
+
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="user-profile.php?user_id=<?= $friend['user_id'] ?>"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-user me-1"></i> Profile
+                                    </a>
+                                    <a href="messages.php?conversation_id=<?= $friend['user_id'] ?>"
+                                        class="btn btn-sm btn-success">
+                                        <i class="fas fa-comment me-1"></i> Message
+                                    </a>
+                                </div>
+                            </div>
                         </div>
+
+
                     </div>
                 <?php endforeach; ?>
             </div>
-            
+
             <?php if ($friend_count > 12): ?>
                 <div class="text-center mt-4">
                     <a href="friends-list.php?user_id=<?= $viewing_user_id ?>" class="btn btn-primary">
