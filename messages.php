@@ -216,18 +216,21 @@ function time_elapsed_string($datetime, $full = false) {
                             <?php if (!empty($messages)): ?>
                                 <?php foreach ($messages as $message): ?>
                                     <div class="message <?= $message['sender_id'] == $current_user_id ? 'sent' : 'received' ?>" id="msg-<?= $message['message_id'] ?>">
-                                        <div class="message-content">
-                                            <?= htmlspecialchars($message['content']) ?>
-                                        </div>
-                                        <div class="message-time">
-                                            <?= date('h:i A', strtotime($message['created_at'])) ?>
-                                            <?php if ($message['sender_id'] == $current_user_id && $message['is_read']): ?>
-                                                <i class="fas fa-check-double ms-1 text-primary"></i>
-                                            <?php elseif ($message['sender_id'] == $current_user_id): ?>
-                                                <i class="fas fa-check ms-1 text-muted"></i>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
+    <?php if ($message['sender_id'] != $current_user_id): ?>
+        <img src="<?= htmlspecialchars($selected_conversation['profile_picture']) ?>" class="profile-pic me-2" alt="Profile picture">
+    <?php endif; ?>
+    <div class="message-content">
+        <?= htmlspecialchars($message['content']) ?>
+    </div>
+    <div class="message-time">
+        <?= date('h:i A', strtotime($message['created_at'])) ?>
+        <?php if ($message['sender_id'] == $current_user_id && $message['is_read']): ?>
+            <i class="fas fa-check-double ms-1 text-primary"></i>
+        <?php elseif ($message['sender_id'] == $current_user_id): ?>
+            <i class="fas fa-check ms-1 text-muted"></i>
+        <?php endif; ?>
+    </div>
+</div>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <div class="text-center text-muted py-4">
@@ -254,8 +257,8 @@ function time_elapsed_string($datetime, $full = false) {
         </div>
     </div>
 
-    <!-- Search Results Modal -->
-    <div class="modal fade" id="searchResultsModal" tabindex="-1" aria-labelledby="searchResultsModalLabel" aria-hidden="true">
+     <!-- Search Results Modal -->
+     <div class="modal fade" id="searchResultsModal" tabindex="-1" aria-labelledby="searchResultsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -277,6 +280,8 @@ function time_elapsed_string($datetime, $full = false) {
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="<?= settings()['root']?>assets/js/lightbox-plus-jquery.min.js"></script>
     <script>
    // Global variables
 let currentUserId = <?= $current_user_id ?>;
