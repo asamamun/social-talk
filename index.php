@@ -388,7 +388,11 @@ include_once 'includes/header1.php';
                         <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>"
                             class="profile-pic-lg mb-3"
                             alt="<?= htmlspecialchars($current_user['username']) ?>">
-                        <h5><?= htmlspecialchars($current_user['username']) ?></h5>
+                        <h5> <a href="user-profile.php?user_id=<?= htmlspecialchars($current_user['user_id']); ?>" style="text-decoration: none;">
+                                                    <?= htmlspecialchars($current_user['username']); ?>
+                                                </a>
+                </h5>
+            
                         <p class="text-muted"><?= htmlspecialchars($current_user['bio'] ?? 'No bio yet') ?></p>
                         <div class="d-flex justify-content-around">
                             <div class="text-center">

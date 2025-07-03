@@ -121,24 +121,26 @@ include_once 'includes/header1.php';
                         <?php if ($friend['is_online']): ?>
                             <div class="online-status"></div>
                         <?php endif; ?>
-                        <div class="friend-request-card mb-3 p-3 border rounded">
-                            <div class="d-flex align-items-center">
-                                <h6> <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($friend['username']) ?>
-                                    </a>
-                                </h6>
+                        
+                       <!-- <div class="friend-request-card mb-3 p-3 border rounded"> -->
+    <div class="d-flex align-items-center justify-content-between">
+        <h6 class="mb-0">
+            <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;">
+                <?= htmlspecialchars($friend['username']) ?>
+            </a>
+        </h6>
 
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a href="user-profile.php?user_id=<?= $friend['user_id'] ?>"
-                                        class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-user me-1"></i> Profile
-                                    </a>
-                                    <a href="messages.php?conversation_id=<?= $friend['user_id'] ?>"
-                                        class="btn btn-sm btn-success">
-                                        <i class="fas fa-comment me-1"></i> Message
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+        <div class="d-flex gap-2">
+            <a href="user-profile.php?user_id=<?= $friend['user_id'] ?>" class="btn btn-sm btn-primary">
+                <i class="fas fa-user me-1"></i> Profile
+            </a>
+            <a href="messages.php?conversation_id=<?= $friend['user_id'] ?>" class="btn btn-sm btn-success">
+                <i class="fas fa-comment me-1"></i> Message
+            </a>
+        </div>
+    <!-- </div> -->
+</div>
+
 
 
                     </div>

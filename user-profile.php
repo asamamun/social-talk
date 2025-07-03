@@ -577,8 +577,8 @@ include_once 'includes/header1.php';
                 <h4 class="mb-4">About</h4>
 
                 <?php if (!empty($profile_user['blood_group'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-tint mt-1"></i>
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-tint mt-1" style="padding-top: 9px;"></i>
                         <div>
                             <h6 class="mb-0">Blood Group</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['blood_group']) ?></p>
@@ -587,8 +587,8 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['country'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-globe mt-1"></i>
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-globe mt-1"style="padding-top: 9px;"></i>
                         <div>
                             <h6 class="mb-0">Country</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['country']) ?></p>
@@ -597,8 +597,8 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['city'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-city mt-1"></i>
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-city mt-1"style="padding-top: 9px;"></i>
                         <div>
                             <h6 class="mb-0">City</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['city']) ?></p>
@@ -607,8 +607,8 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['gender'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-venus-mars mt-1"></i>
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-venus-mars mt-1"style="padding-top: 9px;"></i>
                         <div>
                             <h6 class="mb-0">Gender</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['gender']) ?></p>
@@ -617,8 +617,8 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['relationship'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-heart mt-1"></i> <!-- Changed to heart icon for relationship -->
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-heart mt-1"style="padding-top: 9px;"></i> <!-- Changed to heart icon for relationship -->
                         <div>
                             <h6 class="mb-0">Relationship</h6> <!-- Fixed spelling -->
                             <p class="text-muted"><?= htmlspecialchars($profile_user['relationship']) ?></p>
@@ -627,8 +627,8 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['date_of_birth'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-birthday-cake mt-1"></i>
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-birthday-cake mt-1"style="padding-top: 9px;"></i>
                         <div>
                             <h6 class="mb-0">Date of Birth</h6>
                             <p class="text-muted"><?= date('F j, Y', strtotime($profile_user['date_of_birth'])) ?></p>
@@ -637,8 +637,8 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['phone_number'])): ?>
-                    <div class="info-item d-flex">
-                        <i class="fas fa-phone mt-1"></i>
+                    <div class="info-item d-flex gap-3">
+                        <i class="fas fa-phone mt-1"style="padding-top: 9px;"></i>
                         <div>
                             <h6 class="mb-0">Phone</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['phone_number']) ?></p>
@@ -646,8 +646,8 @@ include_once 'includes/header1.php';
                     </div>
                 <?php endif; ?>
 
-                <div class="info-item d-flex">
-                    <i class="fas fa-calendar-alt mt-1"></i>
+                <div class="info-item d-flex gap-3">
+                    <i class="fas fa-calendar-alt mt-1"style="padding-top: 9px;"></i>
                     <div>
                         <h6 class="mb-0">Joined</h6>
                         <p class="text-muted"><?= date('F j, Y', strtotime($profile_user['created_at'])) ?></p>
@@ -655,8 +655,8 @@ include_once 'includes/header1.php';
                 </div>
 
                 <?php if ($is_own_profile): ?>
-                    <a href="edit-profile.php" class="btn btn-primary btn-sm px-3 py-2 mt-3" style="font-size: 0.9rem;">
-                        <i class="fas fa-edit"></i> Edit Profile
+                    <a href="edit-about.php" class="btn btn-primary btn-sm px-3 py-2 mt-3" style="font-size: 0.9rem;">
+                        <i class="fas fa-edit"></i> Edit About
                     </a>
                 <?php endif; ?>
             </div>
