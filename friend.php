@@ -82,6 +82,18 @@ $friends = $db->rawQuery("
     LIMIT 12
 ", [$viewing_user_id, $viewing_user_id, $viewing_user_id]);
 
+function timeAgo($datetime)
+{
+    $time = time() - strtotime($datetime);
+
+    if ($time < 60) return 'just now';
+    if ($time < 3600) return floor($time / 60) . ' minutes ago';
+    if ($time < 86400) return floor($time / 3600) . ' hours ago';
+    if ($time < 2592000) return floor($time / 86400) . ' days ago';
+    if ($time < 31536000) return floor($time / 2592000) . ' months ago';
+    return floor($time / 31536000) . ' years ago';
+}
+
 include_once 'includes/header1.php';
 ?>
 
@@ -110,39 +122,42 @@ include_once 'includes/header1.php';
                 <?php endif; ?>
             </div>
         <?php else: ?>
-            <div >
+            <div class="row">
                 <?php foreach ($friends as $friend): ?>
-                    <div class="friend-card position-relative">
-                        <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;"> <img src="<?= htmlspecialchars($friend['profile_picture'] ?? 'assets/default-avatar.png') ?>"
-                                alt="<?= htmlspecialchars($friend['username']) ?>"
-                                class="img-fluid rounded-circle">
-                        </a>
-
-                        <?php if ($friend['is_online']): ?>
-                            <div class="online-status"></div>
-                        <?php endif; ?>
-                        
-                       <!-- <div class="friend-request-card mb-3 p-3 border rounded"> -->
-    <div class="d-flex align-items-center justify-content-between">
-        <h6 class="mb-0">
-            <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;">
-                <?= htmlspecialchars($friend['username']) ?>
-            </a>
-        </h6>
-
-        <div class="d-flex gap-2">
-            <a href="user-profile.php?user_id=<?= $friend['user_id'] ?>" class="btn btn-sm btn-primary">
-                <i class="fas fa-user me-1"></i> Profile
-            </a>
-            <a href="messages.php?conversation_id=<?= $friend['user_id'] ?>" class="btn btn-sm btn-success">
-                <i class="fas fa-comment me-1"></i> Message
-            </a>
-        </div>
-    <!-- </div> -->
-</div>
-
-
-
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card friend-card h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>">
+                                    <img src="<?= htmlspecialchars($friend['profile_picture'] ?? 'assets/default-avatar.png') ?>"
+                                        alt="<?= htmlspecialchars($friend['username']) ?>" class="profile-img me-3">
+                                </a>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">
+                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>" style="text-decoration: none;">
+                                            <?= htmlspecialchars($friend['username']) ?>
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">
+                                        <?php if ($friend['is_online']): ?>
+                                            <span class="text-success"><i class="fas fa-circle"></i> Online</span>
+                                        <?php else: ?>
+                                            Last active: <?= timeAgo($friend['last_active']); ?>
+                                        <?php endif; ?>
+                                    </small>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="user-profile.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>">Profile</a></li>
+                                        <li><a class="dropdown-item" href="messages.php?user_id=<?= htmlspecialchars($friend['user_id']); ?>">Message</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="event.stopPropagation(); event.preventDefault(); socialTalk.unfriend(<?= htmlspecialchars($friend['user_id']); ?>);">Unfriend</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             </div>

@@ -137,8 +137,8 @@ include_once 'includes/header1.php';
 <div class="container mt-4">
     <!-- Display messages -->
     <?php if (isset($_SESSION['message'])): ?>
-        <div class="alert alert-<?= $_SESSION['message']['type'] ?> alert-dismissible fade show" role="alert">
-            <?= $_SESSION['message']['text'] ?>
+        <div class="alert alert-<?= htmlspecialchars($_SESSION['message']['type']) ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['message']['text']) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php unset($_SESSION['message']); ?>
