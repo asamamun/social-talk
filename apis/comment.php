@@ -15,7 +15,7 @@ header('Content-Type: application/json; charset=UTF-8');
 } */
 if (isset($_POST['action']) && $_POST['action'] === 'add_comment') {
     $post_id = intval($_POST['post_id']);
-    $comment = trim($_POST['comment']);
+    $comment = trim(htmlspecialchars($_POST['comment']));
 /*     echo json_encode(['status' => 'success', 'post_id' => $post_id, 'comment' => $comment]);
     exit(); */
 

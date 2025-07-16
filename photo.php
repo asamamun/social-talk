@@ -92,7 +92,7 @@ include_once 'includes/header1.php';
                         // Construct the correct path using the viewing user's ID
                         $imagePath = "assets/contentimages/{$viewing_user_id}/" . htmlspecialchars(trim($image));
                     ?>
-                        <img src="<?php echo $imagePath; ?>" alt="Photo" class="img-fluid rounded">
+                         <a href="assets/contentimages/<?php echo $viewing_user_id; ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $photo['post_id']; ?>"><img src="<?php echo $imagePath; ?>" alt="Photo" class="img-fluid rounded"></a>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             <?php else: ?>

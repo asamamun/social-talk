@@ -636,8 +636,8 @@ include_once 'includes/header1.php';
 
                 <?php if ($is_own_profile): ?>
                     <div class="mt-4">
-                        <a href="edit-profile.php" class="btn btn-primary">
-                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        <a href="edit-about.php" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit About
                         </a>
                     </div>
                 <?php endif; ?>

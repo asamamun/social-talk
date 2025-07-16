@@ -253,19 +253,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $db->where("user1_id", min($current_user_id, $target_user_id));
             $db->where("user2_id", max($current_user_id, $target_user_id));
             $db->where("status", 'accepted');
-            if (!$db->delete('friendships')) {
-                throw new Exception('Failed to unfriend: ' . $db->getLastError());
-            }
-            error_log("Unfriended: user1_id=$current_user_id, user2_id=$target_user_id");
+            error_log("Unfriend attempt: current_user_id=$current_user_id, target_user_id=$target_user_id");
+            error_log("Unfriend WHERE clause: user1_id=" . min($current_user_id, $target_user_id) . ", user2_id=" . max($current_user_id, $target_user_id) . ", status='accepted'");
+            $deleted = $db->delete('friendships');
+            error_log("MysqliDb last query: " . $db->getLastQuery());
 
-            $db->commit();
-            echo json_encode(['status' => 'success', 'message' => 'Unfriended successfully']);
+            if ($deleted && $db->count > 0) {
+                error_log("Unfriended successfully: user1_id=$current_user_id, user2_id=$target_user_id. Rows affected: " . $db->count);
+                $db->commit();
+                echo json_encode(['status' => 'success', 'message' => 'Unfriended successfully']);
+            } else {
+                $db->rollback();
+                if ($db->count === 0) {
+                    error_log("Unfriend failed: Friendship record not found for user1_id=$current_user_id, user2_id=$target_user_id with status 'accepted'.");
+                    echo json_encode(['status' => 'error', 'message' => 'Friendship not found or already unfriended.', 'debug_query' => $db->getLastQuery()]);
+                } else {
+                    error_log("Failed to unfriend: " . $db->getLastError());
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to unfriend: ' . $db->getLastError(), 'debug_query' => $db->getLastQuery()]);
+                }
+            }
             exit;
         }
     } catch (Exception $e) {
         $db->rollback();
-        error_log("User Profile Error: " . $e->getMessage());
-        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        $debug_query = $db->getLastQuery();
+        error_log("User Profile Error: " . $e->getMessage() . " | Last Query: " . $debug_query);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage(), 'debug_query' => $debug_query]);
         exit;
     }
 
@@ -441,15 +454,25 @@ function getUserPosts($db, $user_id, $viewer_id, $is_own_profile)
             p.visibility,
             p.images,
             p.created_at,
+            p.original_post_id,
             u.username,
             COALESCE(up.profile_picture, 'assets/default-avatar.png') as profile_picture,
             (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) as like_count,
             (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count,
             (SELECT COUNT(*) FROM shares WHERE post_id = p.post_id) as share_count,
-            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id AND user_id = ?) as user_liked
+            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id AND user_id = ?) as user_liked,
+            op.content as original_content,
+            op.images as original_images,
+            op.created_at as original_created_at,
+            ou.username as original_username,
+            COALESCE(oup.profile_picture, 'assets/default-avatar.png') as original_profile_picture,
+            op.user_id as original_user_id
         FROM posts p
         JOIN users u ON p.user_id = u.user_id
         LEFT JOIN user_profile up ON p.user_id = up.user_id
+        LEFT JOIN posts op ON p.original_post_id = op.post_id
+        LEFT JOIN users ou ON op.user_id = ou.user_id
+        LEFT JOIN user_profile oup ON ou.user_id = oup.user_id
         WHERE p.user_id = ? $visibility_condition
         ORDER BY p.created_at DESC
         LIMIT 50
@@ -523,7 +546,7 @@ include_once 'includes/header1.php';
                             <button class="btn btn-success me-2" disabled>
                                 <i class="fas fa-user-check me-2"></i>Friends
                             </button>
-                            <button class="btn btn-outline-danger me-2" onclick="unfriend(<?= $viewing_user_id; ?>)">
+                            <button class="btn btn-outline-danger me-2" onclick="socialTalk.unfriend(<?= $viewing_user_id; ?>)">
                                 <i class="fas fa-user-times me-2"></i>Unfriend
                             </button>
                         <?php elseif ($friendship_info['outgoing_pending'] && $friendship_info['incoming_pending']): ?>
@@ -577,79 +600,79 @@ include_once 'includes/header1.php';
                 <h4 class="mb-4">About</h4>
 
                 <?php if (!empty($profile_user['blood_group'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-tint mt-1" style="padding-top: 9px;"></i>
+                    <div class="info-item d-flex">
+                        <i class="fas fa-tint fa-lg mt-1"></i>
                         <div>
-                            <h6 class="mb-0">Blood Group</h6>
+                            <h6 class="mb-0">  Blood Group</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['blood_group']) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['country'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-globe mt-1"style="padding-top: 9px;"></i>
+                    <div class="info-item d-flex">
+                        <i class="fas fa-globe fa-lg mt-1"></i>
                         <div>
-                            <h6 class="mb-0">Country</h6>
+                            <h6 class="mb-0">  Country</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['country']) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['city'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-city mt-1"style="padding-top: 9px;"></i>
+                    <div class="info-item d-flex">
+                        <i class="fas fa-city fa-lg mt-1"></i>
                         <div>
-                            <h6 class="mb-0">City</h6>
+                            <h6 class="mb-0">  City</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['city']) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['gender'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-venus-mars mt-1"style="padding-top: 9px;"></i>
+                    <div class="info-item d-flex">
+                        <i class="fas fa-venus-mars fa-lg mt-1 "></i>
                         <div>
-                            <h6 class="mb-0">Gender</h6>
+                            <h6 class="mb-0">  Gender</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['gender']) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['relationship'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-heart mt-1"style="padding-top: 9px;"></i> <!-- Changed to heart icon for relationship -->
+                    <div class="info-item d-flex">
+                        <i class="fas fa-heart fa-lg mt-1"></i> <!-- Changed to heart icon for relationship -->
                         <div>
-                            <h6 class="mb-0">Relationship</h6> <!-- Fixed spelling -->
+                            <h6 class="mb-0">  Relationship</h6> <!-- Fixed spelling -->
                             <p class="text-muted"><?= htmlspecialchars($profile_user['relationship']) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['date_of_birth'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-birthday-cake mt-1"style="padding-top: 9px;"></i>
+                    <div class="info-item d-flex">
+                        <i class="fas fa-birthday-cake fa-lg mt-1"></i>
                         <div>
-                            <h6 class="mb-0">Date of Birth</h6>
+                            <h6 class="mb-0">  Date of Birth</h6>
                             <p class="text-muted"><?= date('F j, Y', strtotime($profile_user['date_of_birth'])) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($profile_user['phone_number'])): ?>
-                    <div class="info-item d-flex gap-3">
-                        <i class="fas fa-phone mt-1"style="padding-top: 9px;"></i>
+                    <div class="info-item d-flex">
+                        <i class="fas fa-phone fa-lg mt-1"></i>
                         <div>
-                            <h6 class="mb-0">Phone</h6>
+                            <h6 class="mb-0">  Phone</h6>
                             <p class="text-muted"><?= htmlspecialchars($profile_user['phone_number']) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
 
-                <div class="info-item d-flex gap-3">
-                    <i class="fas fa-calendar-alt mt-1"style="padding-top: 9px;"></i>
+                <div class="info-item d-flex">
+                    <i class="fas fa-calendar-alt fa-lg mt-1"></i>
                     <div>
-                        <h6 class="mb-0">Joined</h6>
+                        <h6 class="mb-0">  Joined</h6>
                         <p class="text-muted"><?= date('F j, Y', strtotime($profile_user['created_at'])) ?></p>
                     </div>
                 </div>
@@ -838,61 +861,125 @@ include_once 'includes/header1.php';
                         </div>
                     <?php else: ?>
                         <?php foreach ($posts as $post): ?>
-                            <div class="post-card mb-4">
+                            <div class="card post-card" data-post-id="<?php echo $post['post_id']; ?>" id="post-<?php echo $post['post_id']; ?>">
                                 <div class="card-body">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <img src="<?= htmlspecialchars($post['profile_picture']) ?>" class="profile-img me-3" alt="<?= htmlspecialchars($post['username']) ?>">
-                                        <div>
-                                            <h6 class="mb-0"><?= htmlspecialchars($post['username']) ?></h6>
-                                            <small class="text-muted"><?= timeAgo($post['created_at']); ?></small>
-                                        </div>
-                                        <?php if ($post['user_id'] == $current_user_id): ?>
-                                            <div class="ms-auto dropdown">
-                                                <button class="btn btn-sm" data-bs-toggle="dropdown" aria-label="Post options">
-                                                    <i class="fas fa-ellipsis-h"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" onclick="editPost(<?= $post['post_id'] ?>)">Edit</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="deletePost(<?= $post['post_id'] ?>)">Delete</a></li>
-                                                </ul>
+                                    <!-- Post Header -->
+                                    <div class="d-flex align-items-center mb-3 justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
+                                                <img src="<?php echo htmlspecialchars($post['profile_picture'] ?: 'assets/default-avatar.png'); ?>"
+                                                    alt="Profile" class="profile-img me-3">
+                                            </a>
+                                            <div>
+                                                <h6 class="mb-0">
+                                                    <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
+                                                        <?= htmlspecialchars($post['username']); ?>
+                                                    </a>
+                                                </h6>
+                                                <small class="text-muted">
+                                                    <?php echo timeAgo($post['created_at']); ?>
+                                                    <?php if ($post['visibility'] === 'friends'): ?>
+                                                        <i class="fas fa-users ms-1" title="Friends only"></i>
+                                                    <?php elseif ($post['visibility'] === 'public'): ?>
+                                                        <i class="fas fa-globe ms-1" title="Public"></i>
+                                                    <?php elseif ($post['visibility'] === 'private'): ?>
+                                                        <i class="fas fa-lock ms-1" title="Private"></i>
+                                                    <?php endif; ?>
+                                                </small>
                                             </div>
-                                        <?php endif; ?>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted" type="button" id="postOptions<?= $post['post_id']; ?>" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postOptions<?= $post['post_id']; ?>">
+                                                <?php if ($post['user_id'] !== $_SESSION['user_id']): ?>
+                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reportModal" data-post-id="<?= $post['post_id']; ?>">Report Post</a></li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </div>
 
-                                    <p><?= nl2br(htmlspecialchars($post['content'])); ?></p>
+                                    <!-- Post Content -->
+                                    <?php if (!empty($post['original_post_id'])): ?>
+                                        <div class="shared-post-container border p-3 mb-3 rounded">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <img src="<?php echo htmlspecialchars($post['original_profile_picture'] ?: 'assets/default-avatar.png'); ?>"
+                                                    alt="Original Profile" class="profile-img me-2" style="width: 30px; height: 30px;">
+                                                <div>
+                                                    <h6 class="mb-0" style="font-size: 0.9em;">
+                                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($post['original_user_id']); ?>" style="text-decoration: none;">
+                                                            <?= htmlspecialchars($post['original_username']); ?>
+                                                        </a>
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <?php echo timeAgo($post['original_created_at']); ?>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['original_content'])); ?></p>
+                                            <?php if (!empty($post['original_images'])): ?>
+                                                <?php
+                                                $original_images = explode(',', $post['original_images']);
+                                                $original_image_count = count($original_images);
+                                                ?>
+                                                <div class="post-images">
+                                                    <?php foreach ($original_images as $index => $image): ?>
+                                                        <a href="assets/contentimages/<?= $post['original_user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>-original"><img src="assets/contentimages/<?= $post['original_user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
+                                                                alt="Original Post image" class="post-image"
+                                                                style="<?php echo $original_image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                                        <?php if (!empty($post['images'])): ?>
+                                            <?php
+                                            $images = explode(',', $post['images']);
+                                            $image_count = count($images);
+                                            ?>
+                                            <div class="post-images">
+                                                <?php foreach ($images as $index => $image): ?>
+                                                    <a href="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>"><img src="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
+                                                            alt="Post image" class="post-image"
+                                                            style="<?php echo $image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
+                                                <?php endforeach; ?>
+                                                <?php if ($image_count > 4): ?>
+                                                    <div class="more-images-overlay">
+                                                        <span>+<?php echo $image_count - 4; ?> more</span>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
 
-                                    <?php if (!empty($post['images'])):
-                                        $images = array_filter(explode(',', $post['images']));
-                                        foreach ($images as $img):
-                                            $img = trim($img);
-                                            if (!empty($img)):
-                                    ?>
-                                                <img src="assets/contentimages/<?= $post['user_id']; ?>/<?= htmlspecialchars($img); ?>" class="img-fluid rounded mb-3" alt="Post image">
-                                    <?php
-                                            endif;
-                                        endforeach;
-                                    endif; ?>
 
                                     <div class="mb-2">
-                                        <span class="text-muted">
+                                        <span class="text-muted likecomment">
                                             <?= $post['like_count']; ?> likes • <?= $post['comment_count']; ?> comments
                                         </span>
                                     </div>
 
                                     <!-- Post Actions -->
                                     <div class="d-flex justify-content-between border-top pt-2">
-                                        <button class="btn btn-light flex-fill me-2 <?= $post['user_liked'] ? 'text-danger' : ''; ?>"
+                                        <!-- Like -->
+                                        <button class="like-btn btn btn-light flex-fill me-2 <?= $post['user_liked'] ? 'text-danger' : ''; ?>"
                                             onclick="toggleLike(<?= $post['post_id']; ?>)">
                                             <i class="fas fa-heart me-1"></i>
                                             <span class="like-text">Like</span>
-                                            <span class="like-count">(<?= $post['like_count']; ?>)</span>
+                                            (<span class="like-count"><?= $post['like_count']; ?></span>)
                                         </button>
+
+                                        <!-- Comment -->
                                         <button class="btn btn-light flex-fill me-2" onclick="toggleComments(<?= $post['post_id']; ?>)">
                                             <i class="fas fa-comment me-1"></i>
                                             <span class="comment-text">Comment</span>
-                                            <span class="comment-count">(<?= $post['comment_count']; ?>)</span>
+                                            (<span class="comment-count"><?= $post['comment_count']; ?></span>)
                                         </button>
-                                        <button class="btn btn-light flex-fill" onclick="sharePost(<?= $post['post_id']; ?>)">
+
+                                        <!-- Share -->
+                                        <button class="btn btn-light flex-fill" onclick="socialTalk.sharePost(<?= $post['post_id']; ?>)">
                                             <i class="fas fa-share me-1"></i>Share
                                         </button>
                                     </div>
@@ -904,13 +991,15 @@ include_once 'includes/header1.php';
                                                 <img src="<?= htmlspecialchars($current_user['profile_picture']); ?>"
                                                     alt="Your Profile" class="profile-img me-2">
                                                 <div class="flex-grow-1">
-                                                    <input type="text" class="form-control form-control-sm comment-input"
+                                                    <input type="text" class="form-control form-control-sm comment-input commentinput"
                                                         placeholder="Write a comment..."
                                                         onkeypress="handleCommentSubmit(event, <?= $post['post_id']; ?>)">
                                                 </div>
                                             </div>
                                             <div class="comments-list" id="comments-list-<?= $post['post_id']; ?>">
                                                 <!-- Comments will be loaded here -->
+                                                <!-- Comments will be loaded here end -->
+
                                             </div>
                                         </div>
                                     </div>
@@ -994,43 +1083,7 @@ include_once 'includes/header1.php';
             });
     }
 
-    function unfriend(targetUserId) {
-    if (!confirm('Are you sure you want to unfriend this user?')) {
-        return;
-    }
-
-    fetch(window.location.href, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=unfriend&target_user_id=${targetUserId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            // Update the UI to show they're no longer friends
-            document.getElementById('friendship-buttons').innerHTML = `
-                <button class="btn btn-primary me-2" onclick="sendFriendRequest(${targetUserId})">
-                    <i class="fas fa-user-plus me-2"></i>Add Friend
-                </button>
-                <button class="btn btn-success" 
-                    onclick="startMessaging(${targetUserId})"
-                    data-bs-toggle="tooltip"
-                    title="Send message to user">
-                    <i class="fas fa-envelope me-2"></i>Message
-                </button>
-            `;
-            alert('Unfriended successfully');
-        } else {
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while trying to unfriend');
-    });
-}
+    
 
     //messages
     // Initialize tooltips
@@ -1103,3 +1156,171 @@ include_once 'includes/header1.php';
 <?php
 include_once 'includes/footer1.php';
 ?>
+<script>
+    function toggleLike(postId) {
+        fetch('apis/like.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ post_id: postId, action: 'like' }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                console.error('Server error:', data.message);
+                return;
+            }
+            const likeBtn = document.querySelector(`[data-post-id="${postId}"] .like-btn`);
+            const likeCount = likeBtn.querySelector('.like-count');
+
+            if (data.status === 'liked') {
+                likeBtn.classList.add('text-danger');
+                likeCount.textContent = parseInt(likeCount.textContent) + 1;
+            } else {
+                likeBtn.classList.remove('text-danger');
+                likeCount.textContent = Math.max(0, parseInt(likeCount.textContent) - 1);
+            }
+
+            const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+            const newLikeCount = likeCount.textContent;
+            const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`).textContent;
+            summaryText.textContent = `${newLikeCount} likes • ${commentCount} comments`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to process like. Please try again.');
+        });
+    }
+
+    function toggleComments(postId) {
+        const commentsSection = document.getElementById(`comments-${postId}`);
+        if (commentsSection.style.display === 'none') {
+            commentsSection.style.display = 'block';
+            loadComments(postId);
+        } else {
+            commentsSection.style.display = 'none';
+        }
+    }
+
+    function handleCommentSubmit(event, postId) {
+        if (event.key === 'Enter') {
+            const comment = event.target.value.trim();
+            if (comment) {
+                addComment(postId, comment);
+                event.target.value = '';
+            }
+        }
+    }
+
+    function addComment(postId, comment) {
+        fetch('apis/comment.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=add_comment&post_id=${postId}&comment=${encodeURIComponent(comment)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadComments(postId);
+                const commentCount = document.querySelector(`[data-post-id="${postId}"] .comment-count`);
+                const currentCount = parseInt(commentCount.textContent);
+                commentCount.textContent = currentCount + 1;
+                
+                const summaryText = document.querySelector(`[data-post-id="${postId}"] .text-muted`);
+                const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`).textContent;
+                summaryText.textContent = `${likeCount} likes • ${currentCount + 1} comments`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function loadComments(postId) {
+        fetch('apis/comment.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `action=load_comments&post_id=${postId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const commentsList = document.getElementById(`comments-list-${postId}`);
+                commentsList.innerHTML = '';
+                
+                data.comments.forEach(comment => {
+                    const commentHtml = `
+                        <div class="comment-item d-flex">
+                            <img src="${comment.profile_picture || 'assets/default-avatar.png'}" 
+                                 alt="Profile" class="profile-img me-2">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <strong class="small">${comment.username}</strong>
+                                    <small class="text-muted">${timeAgoJS(comment.created_at)}</small>
+                                </div>
+                                <p class="mb-0 small">${comment.content}</p>
+                            </div>
+                        </div>
+                    `;
+                    commentsList.innerHTML += commentHtml;
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function timeAgoJS(datetime) {
+        const time = Math.floor((new Date() - new Date(datetime)) / 1000);
+        
+        if (time < 60) return 'just now';
+        if (time < 3600) return Math.floor(time/60) + ' minutes ago';
+        if (time < 86400) return Math.floor(time/3600) + ' hours ago';
+        if (time < 2592000) return Math.floor(time/86400) + ' days ago';
+        if (time < 31536000) return Math.floor(time/2592000) + ' months ago';
+        return Math.floor(time/31536000) + ' years ago';
+    }
+
+    function sharePost(postId) {
+        fetch('apis/share_post.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ post_id: postId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to share post.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Network error. Failed to share post.');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('post_id');
+        if (postId) {
+            const postElement = document.getElementById('post-' + postId);
+            if (postElement) {
+                postElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+</script>
