@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 01, 2025 at 07:32 AM
+-- Generation Time: Jul 15, 2025 at 02:00 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -296,7 +296,8 @@ INSERT INTO `notifications` (`notification_id`, `user_id`, `type`, `source_id`, 
 (56, 3, 'message', 6, 0, '2025-06-30 05:50:16'),
 (57, 3, 'message', 6, 0, '2025-06-30 05:50:32'),
 (58, 20, 'friend_request', 3, 0, '2025-06-30 02:05:20'),
-(59, 16, 'friend_request', 3, 0, '2025-06-30 06:43:04');
+(59, 16, 'friend_request', 3, 0, '2025-06-30 06:43:04'),
+(60, 20, '', 43, 0, '2025-07-15 07:58:57');
 
 -- --------------------------------------------------------
 
@@ -321,6 +322,7 @@ CREATE TABLE `password_resets` (
 CREATE TABLE `posts` (
   `post_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `original_post_id` int(11) DEFAULT NULL,
   `content` text NOT NULL,
   `images` varchar(255) DEFAULT NULL,
   `visibility` enum('public','friends','private') DEFAULT 'public',
@@ -332,36 +334,37 @@ CREATE TABLE `posts` (
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`post_id`, `user_id`, `content`, `images`, `visibility`, `created_at`, `updated_at`) VALUES
-(1, 5, 'test post number 1 for testing  out post in test post', '', 'public', '2025-05-31 05:02:43', '2025-05-31 05:02:43'),
-(2, 5, 'Your JavaScript preview script is correct and unrelated to why images aren’t uploading. If the images are previewing fine but not getting uploaded, the issue is likely in your PHP file handling or form setup.', 'img_683a8e7de33063.21047537.jpg,img_683a8e7de35040.39753478.jpg', 'public', '2025-05-31 05:07:09', '2025-05-31 05:07:09'),
-(3, 6, 'This is our social media.which name social-talk', 'img_683a9a5c7dbe51.33889234.webp', 'public', '2025-05-31 05:57:48', '2025-05-31 05:57:48'),
-(4, 8, 'hi.\r\nwe are testing socialtalk.', '', 'public', '2025-05-31 05:59:57', '2025-05-31 05:59:57'),
-(5, 6, 'This is our social media which name is social-talk', 'img_683a9af07ca231.58964211.jpg', 'public', '2025-05-31 06:00:16', '2025-05-31 06:00:16'),
-(6, 9, 'sfdgfhgfjhgkiojklkm,lhfyhrdse34eretfdgfghjhkjlk;l\';l\'p[[[[[[[[[[[[[[', 'img_683a9b8749b1b8.87455655.png', 'public', '2025-05-31 06:02:47', '2025-05-31 06:02:47'),
-(7, 8, 'Hulk is my favorite hero....rddfgfdg', 'img_683a9bdb956a51.37816438.png', 'public', '2025-05-31 06:04:11', '2025-05-31 06:04:11'),
-(8, 11, 'mdjkgfgnmdxfkkkkkkkkkkkkkfgvfdgvn', 'img_683a9c13d50fc6.18568980.PNG', 'public', '2025-05-31 06:05:07', '2025-05-31 06:05:07'),
-(15, 12, 'iugfhniughsdjfogkd;shgojjolkosdjfgdfshfgjhgkjlk', '', 'public', '2025-06-21 16:30:07', '2025-06-21 16:30:07'),
-(22, 3, 'sdfhjhgkj;lk\';l\'jljkgljjjjjjjjjjjjjjjjjjjjjjjjjjjghhhhhhhhhhhhhhhhhhhhhhh', 'img_685985cfc23451.61371896.jpg,img_685985cfc26870.61284607.jpg,img_685985cfc271d1.81936253.jpg,img_685985cfc279e3.37330586.jpg,img_685985cfc280e2.26234866.jpg,img_685985cfc28925.92373076.jpg,img_685985cfc58959.16282776.jpg,img_685985cfc59f48.23506539.jpg', 'public', '2025-06-23 16:50:23', '2025-06-23 16:50:23'),
-(23, 13, 'Captain America is a superhero created by Joe Simon and Jack Kirby who appears in American comic books published by Marvel Comics. The character first appeared in Captain America', 'img_685a27f00a1a08.12495460.jpg', 'public', '2025-06-24 04:22:08', '2025-06-24 04:22:08'),
-(24, 13, 'Captain America is a superhero created by Joe Simon and Jack Kirby who appears in American comic books published by Marvel Comics. The character first appeared in Captain America', 'img_685a27feb5a5c2.01183254.jpg', 'public', '2025-06-24 04:22:22', '2025-06-24 04:22:22'),
-(25, 14, 'The Avengers are a team of superheroes from Marvel Comics. Some of the most well-known members include Iron Man, Captain America, Thor, Hulk, Black Widow, and Hawkeye. Other prominent members include Scarlet Witch, Vision, War Machine, Falcon, Spider-Man, Black Panther, Ant-Man, and Captain Marvel. They often work together to defend Earth from various threats. ', 'img_685a2c09648052.46709801.jpg', 'public', '2025-06-24 04:39:37', '2025-06-24 04:39:37'),
-(26, 14, 'The Avengers are a team of superheroes from Marvel Comics. Some of the most well-known members include Iron Man, Captain America, Thor, Hulk, Black Widow, and Hawkeye. Other prominent members include Scarlet Witch, Vision, War Machine, Falcon, Spider-Man, Black Panther, Ant-Man, and Captain Marvel. They often work together to defend Earth from various threats. ', 'img_685a2c1b3870e8.22681606.jpg', 'public', '2025-06-24 04:39:55', '2025-06-24 04:39:55'),
-(27, 15, 'Black Widow is a superhero appearing in American comic books published by Marvel Comics. Created by editor Stan Lee, scripter Don Rico, and artist Don Heck, the character debuted as an enemy of Iron Man in Tales', 'img_685a2d5c87d2f2.92163550.jpg', 'public', '2025-06-24 04:45:16', '2025-06-24 04:45:16'),
-(28, 15, 'Black Widow is a superhero appearing in American comic books published by Marvel Comics. Created by editor Stan Lee, scripter Don Rico, and artist Don Heck, the character debuted as an enemy of Iron Man in Tales', 'img_685a2d686b8213.36789486.jpg', 'public', '2025-06-24 04:45:28', '2025-06-24 04:45:28'),
-(29, 16, 'The first iteration of the team, consisting of Iron Man, Captain America, Hulk, Thor, Black Widow and Hawkeye, defeated Loki in the Battle of New York to stop ...', 'img_685a2efab79513.12224751.jpg', 'public', '2025-06-24 04:52:10', '2025-06-24 04:52:10'),
-(30, 16, 'The first iteration of the team, consisting of Iron Man, Captain America, Hulk, Thor, Black Widow and Hawkeye, defeated Loki in the Battle of New York to stop ...', 'img_685a2f061d7f80.36269839.jpg', 'public', '2025-06-24 04:52:22', '2025-06-24 04:52:22'),
-(31, 17, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team ...', 'img_685a3384d5c0e7.01795962.jpg', 'public', '2025-06-24 05:11:32', '2025-06-24 05:11:32'),
-(32, 17, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team ...', 'img_685a339771d673.80647692.jpg', 'public', '2025-06-24 05:11:51', '2025-06-24 05:11:51'),
-(34, 18, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team .', 'img_685a51e7895600.39364870.jpg', 'public', '2025-06-24 07:21:11', '2025-06-24 07:21:11'),
-(35, 18, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team .', '', 'public', '2025-06-24 07:21:28', '2025-06-24 07:21:28'),
-(36, 3, 'etytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytyty', '', 'friends', '2025-06-24 11:43:37', '2025-06-24 15:43:37'),
-(37, 4, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team .', '', 'public', '2025-06-24 23:20:15', '2025-06-25 03:20:15'),
-(38, 9, 'yeffffffffffffffffffffffffffffffff', '', 'public', '2025-06-25 06:42:49', '2025-06-25 06:42:49'),
-(39, 6, 'fgggggggggggggggggggggggggggggggggggggggg', '', 'public', '2025-06-25 06:51:06', '2025-06-25 06:51:06'),
-(40, 6, 'fffffffffffvvvvvvvvvvvvvvvvvvvvvvvvv', '', 'public', '2025-06-28 03:25:48', '2025-06-28 03:25:48'),
-(41, 20, 'shfhsdggvbxhcvjkyuadtguyfgfgfgfgfgfgcbnzsc', 'img_685f648cc8d6b8.18167629.jpg', 'public', '2025-06-28 03:42:04', '2025-06-28 03:42:04'),
-(42, 20, 'cvbflkxhnppppppppppppppppppghiooooooojmn', 'img_6860b31c54ed29.16678898.jpg', 'public', '2025-06-29 03:29:32', '2025-06-29 03:29:32');
+INSERT INTO `posts` (`post_id`, `user_id`, `original_post_id`, `content`, `images`, `visibility`, `created_at`, `updated_at`) VALUES
+(1, 5, NULL, 'test post number 1 for testing  out post in test post', '', 'public', '2025-05-31 05:02:43', '2025-05-31 05:02:43'),
+(2, 5, NULL, 'Your JavaScript preview script is correct and unrelated to why images aren’t uploading. If the images are previewing fine but not getting uploaded, the issue is likely in your PHP file handling or form setup.', 'img_683a8e7de33063.21047537.jpg,img_683a8e7de35040.39753478.jpg', 'public', '2025-05-31 05:07:09', '2025-05-31 05:07:09'),
+(3, 6, NULL, 'This is our social media.which name social-talk', 'img_683a9a5c7dbe51.33889234.webp', 'public', '2025-05-31 05:57:48', '2025-05-31 05:57:48'),
+(4, 8, NULL, 'hi.\r\nwe are testing socialtalk.', '', 'public', '2025-05-31 05:59:57', '2025-05-31 05:59:57'),
+(5, 6, NULL, 'This is our social media which name is social-talk', 'img_683a9af07ca231.58964211.jpg', 'public', '2025-05-31 06:00:16', '2025-05-31 06:00:16'),
+(6, 9, NULL, 'sfdgfhgfjhgkiojklkm,lhfyhrdse34eretfdgfghjhkjlk;l\';l\'p[[[[[[[[[[[[[[', 'img_683a9b8749b1b8.87455655.png', 'public', '2025-05-31 06:02:47', '2025-05-31 06:02:47'),
+(7, 8, NULL, 'Hulk is my favorite hero....rddfgfdg', 'img_683a9bdb956a51.37816438.png', 'public', '2025-05-31 06:04:11', '2025-05-31 06:04:11'),
+(8, 11, NULL, 'mdjkgfgnmdxfkkkkkkkkkkkkkfgvfdgvn', 'img_683a9c13d50fc6.18568980.PNG', 'public', '2025-05-31 06:05:07', '2025-05-31 06:05:07'),
+(15, 12, NULL, 'iugfhniughsdjfogkd;shgojjolkosdjfgdfshfgjhgkjlk', '', 'public', '2025-06-21 16:30:07', '2025-06-21 16:30:07'),
+(22, 3, NULL, 'sdfhjhgkj;lk\';l\'jljkgljjjjjjjjjjjjjjjjjjjjjjjjjjjghhhhhhhhhhhhhhhhhhhhhhh', 'img_685985cfc23451.61371896.jpg,img_685985cfc26870.61284607.jpg,img_685985cfc271d1.81936253.jpg,img_685985cfc279e3.37330586.jpg,img_685985cfc280e2.26234866.jpg,img_685985cfc28925.92373076.jpg,img_685985cfc58959.16282776.jpg,img_685985cfc59f48.23506539.jpg', 'public', '2025-06-23 16:50:23', '2025-06-23 16:50:23'),
+(23, 13, NULL, 'Captain America is a superhero created by Joe Simon and Jack Kirby who appears in American comic books published by Marvel Comics. The character first appeared in Captain America', 'img_685a27f00a1a08.12495460.jpg', 'public', '2025-06-24 04:22:08', '2025-06-24 04:22:08'),
+(24, 13, NULL, 'Captain America is a superhero created by Joe Simon and Jack Kirby who appears in American comic books published by Marvel Comics. The character first appeared in Captain America', 'img_685a27feb5a5c2.01183254.jpg', 'public', '2025-06-24 04:22:22', '2025-06-24 04:22:22'),
+(25, 14, NULL, 'The Avengers are a team of superheroes from Marvel Comics. Some of the most well-known members include Iron Man, Captain America, Thor, Hulk, Black Widow, and Hawkeye. Other prominent members include Scarlet Witch, Vision, War Machine, Falcon, Spider-Man, Black Panther, Ant-Man, and Captain Marvel. They often work together to defend Earth from various threats. ', 'img_685a2c09648052.46709801.jpg', 'public', '2025-06-24 04:39:37', '2025-06-24 04:39:37'),
+(26, 14, NULL, 'The Avengers are a team of superheroes from Marvel Comics. Some of the most well-known members include Iron Man, Captain America, Thor, Hulk, Black Widow, and Hawkeye. Other prominent members include Scarlet Witch, Vision, War Machine, Falcon, Spider-Man, Black Panther, Ant-Man, and Captain Marvel. They often work together to defend Earth from various threats. ', 'img_685a2c1b3870e8.22681606.jpg', 'public', '2025-06-24 04:39:55', '2025-06-24 04:39:55'),
+(27, 15, NULL, 'Black Widow is a superhero appearing in American comic books published by Marvel Comics. Created by editor Stan Lee, scripter Don Rico, and artist Don Heck, the character debuted as an enemy of Iron Man in Tales', 'img_685a2d5c87d2f2.92163550.jpg', 'public', '2025-06-24 04:45:16', '2025-06-24 04:45:16'),
+(28, 15, NULL, 'Black Widow is a superhero appearing in American comic books published by Marvel Comics. Created by editor Stan Lee, scripter Don Rico, and artist Don Heck, the character debuted as an enemy of Iron Man in Tales', 'img_685a2d686b8213.36789486.jpg', 'public', '2025-06-24 04:45:28', '2025-06-24 04:45:28'),
+(29, 16, NULL, 'The first iteration of the team, consisting of Iron Man, Captain America, Hulk, Thor, Black Widow and Hawkeye, defeated Loki in the Battle of New York to stop ...', 'img_685a2efab79513.12224751.jpg', 'public', '2025-06-24 04:52:10', '2025-06-24 04:52:10'),
+(30, 16, NULL, 'The first iteration of the team, consisting of Iron Man, Captain America, Hulk, Thor, Black Widow and Hawkeye, defeated Loki in the Battle of New York to stop ...', 'img_685a2f061d7f80.36269839.jpg', 'public', '2025-06-24 04:52:22', '2025-06-24 04:52:22'),
+(31, 17, NULL, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team ...', 'img_685a3384d5c0e7.01795962.jpg', 'public', '2025-06-24 05:11:32', '2025-06-24 05:11:32'),
+(32, 17, NULL, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team ...', 'img_685a339771d673.80647692.jpg', 'public', '2025-06-24 05:11:51', '2025-06-24 05:11:51'),
+(34, 18, NULL, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team .', 'img_685a51e7895600.39364870.jpg', 'public', '2025-06-24 07:21:11', '2025-06-24 07:21:11'),
+(35, 18, NULL, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team .', '', 'public', '2025-06-24 07:21:28', '2025-06-24 07:21:28'),
+(36, 3, NULL, 'etytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytytyty', '', 'friends', '2025-06-24 11:43:37', '2025-06-24 15:43:37'),
+(37, 4, NULL, 'At Ant-Man\'s suggestion, the five heroes agreed to form a team, and Wasp quickly named them “the Avengers.” During one of their earliest adventures, the team .', '', 'public', '2025-06-24 23:20:15', '2025-06-25 03:20:15'),
+(38, 9, NULL, 'yeffffffffffffffffffffffffffffffff', '', 'public', '2025-06-25 06:42:49', '2025-06-25 06:42:49'),
+(39, 6, NULL, 'fgggggggggggggggggggggggggggggggggggggggg', '', 'public', '2025-06-25 06:51:06', '2025-06-25 06:51:06'),
+(40, 6, NULL, 'fffffffffffvvvvvvvvvvvvvvvvvvvvvvvvv', '', 'public', '2025-06-28 03:25:48', '2025-06-28 03:25:48'),
+(41, 20, NULL, 'shfhsdggvbxhcvjkyuadtguyfgfgfgfgfgfgcbnzsc', 'img_685f648cc8d6b8.18167629.jpg', 'public', '2025-06-28 03:42:04', '2025-06-28 03:42:04'),
+(42, 20, NULL, 'cvbflkxhnppppppppppppppppppghiooooooojmn', 'img_6860b31c54ed29.16678898.jpg', 'public', '2025-06-29 03:29:32', '2025-06-29 03:29:32'),
+(43, 3, 41, 'shfhsdggvbxhcvjkyuadtguyfgfgfgfgfgfgcbnzsc', 'img_685f648cc8d6b8.18167629.jpg', 'public', '2025-07-15 07:58:57', '2025-07-15 07:58:57');
 
 -- --------------------------------------------------------
 
@@ -375,6 +378,7 @@ CREATE TABLE `reports` (
   `reported_post_id` int(11) DEFAULT NULL,
   `reported_user_id` int(11) DEFAULT NULL,
   `reason` text NOT NULL,
+  `status` enum('pending','resolved','dismissed') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -390,6 +394,26 @@ CREATE TABLE `sessions` (
   `is_online` tinyint(1) DEFAULT 0,
   `last_active` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `settings`
+--
+
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL,
+  `site_name` varchar(255) NOT NULL DEFAULT 'SocialTalk',
+  `max_post_length` int(11) NOT NULL DEFAULT 1000,
+  `privacy_policy_url` varchar(255) NOT NULL DEFAULT '#'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `settings`
+--
+
+INSERT INTO `settings` (`id`, `site_name`, `max_post_length`, `privacy_policy_url`) VALUES
+(1, 'SocialTalk', 1000, '#');
 
 -- --------------------------------------------------------
 
@@ -620,6 +644,12 @@ ALTER TABLE `sessions`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `shares`
 --
 ALTER TABLE `shares`
@@ -689,7 +719,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `password_resets`
@@ -701,7 +731,7 @@ ALTER TABLE `password_resets`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `reports`
@@ -714,6 +744,12 @@ ALTER TABLE `reports`
 --
 ALTER TABLE `sessions`
   MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `settings`
+--
+ALTER TABLE `settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `shares`
