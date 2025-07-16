@@ -294,28 +294,38 @@ function getFeedPosts($db, $user_id)
 
     // Get posts from friends and current user with proper column names
     $posts_query = "
-        SELECT 
-            p.post_id,
-            p.user_id,
-            p.content,
-            p.visibility,
-            p.images,
-            p.created_at,
-            u.username,
-            up.profile_picture,
-            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) as like_count,
-            (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count,
-            (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id AND user_id = ?) as user_liked
-        FROM posts p
-        JOIN users u ON p.user_id = u.user_id
-        LEFT JOIN user_profile up ON p.user_id = up.user_id
-        WHERE 
-            (p.visibility = 'public') OR 
-            (p.visibility = 'friends' AND p.user_id IN ($friend_ids_str)) OR
-            (p.user_id = ?)
-        ORDER BY p.created_at DESC
-        LIMIT 50
-    ";
+    SELECT 
+        p.post_id,
+        p.user_id,
+        p.content,
+        p.visibility,
+        p.images,
+        p.created_at,
+        p.original_post_id,
+        u.username,
+        up.profile_picture,
+        (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id) as like_count,
+        (SELECT COUNT(*) FROM comments WHERE post_id = p.post_id) as comment_count,
+        (SELECT COUNT(*) FROM likes WHERE post_id = p.post_id AND user_id = ?) as user_liked,
+        op.content as original_content,
+        op.images as original_images,
+        op.created_at as original_created_at,
+        ou.username as original_username,
+        oup.profile_picture as original_profile_picture,
+        op.user_id as original_user_id
+    FROM posts p
+    JOIN users u ON p.user_id = u.user_id
+    LEFT JOIN user_profile up ON p.user_id = up.user_id
+    LEFT JOIN posts op ON p.original_post_id = op.post_id
+    LEFT JOIN users ou ON op.user_id = ou.user_id
+    LEFT JOIN user_profile oup ON ou.user_id = oup.user_id
+    WHERE 
+        (p.visibility = 'public') OR 
+        (p.visibility = 'friends' AND p.user_id IN ($friend_ids_str)) OR
+        (p.user_id = ?)
+    ORDER BY p.created_at DESC
+    LIMIT 50
+";
 
     return $db->rawQuery($posts_query, array($user_id, $user_id));
 }
@@ -388,11 +398,7 @@ include_once 'includes/header1.php';
                         <img src="<?= htmlspecialchars($current_user['profile_picture']) ?>"
                             class="profile-pic-lg mb-3"
                             alt="<?= htmlspecialchars($current_user['username']) ?>">
-                        <h5> <a href="user-profile.php?user_id=<?= htmlspecialchars($current_user['user_id']); ?>" style="text-decoration: none;">
-                                                    <?= htmlspecialchars($current_user['username']); ?>
-                                                </a>
-                </h5>
-            
+                        <h5> <a href="user-profile.php?user_id=<?= htmlspecialchars($current_user['user_id']); ?>" style="text-decoration: none;"><?= htmlspecialchars($current_user['username']) ?> </a></h5>
                         <p class="text-muted"><?= htmlspecialchars($current_user['bio'] ?? 'No bio yet') ?></p>
                         <div class="d-flex justify-content-around">
                             <div class="text-center">
@@ -507,57 +513,94 @@ include_once 'includes/header1.php';
                             <div class="card post-card" data-post-id="<?php echo $post['post_id']; ?>">
                                 <div class="card-body">
                                     <!-- Post Header -->
-                                    <div class="d-flex align-items-center mb-3">
-                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
-                                            <img src="<?php echo htmlspecialchars($post['profile_picture'] ?: 'assets/default-avatar.png'); ?>"
-
-                                                alt="Profile" class="profile-img me-3">
-                                        </a>
-                                        <div>
-                                            <h6 class="mb-0">
-                                                <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
-                                                    <?= htmlspecialchars($post['username']); ?>
-                                                </a>
-                                            </h6>
-                                            <small class="text-muted">
-                                                <?php echo timeAgo($post['created_at']); ?>
-                                                <?php if ($post['visibility'] === 'friends'): ?>
-                                                    <i class="fas fa-users ms-1" title="Friends only"></i>
-                                                <?php elseif ($post['visibility'] === 'public'): ?>
-                                                    <i class="fas fa-globe ms-1" title="Public"></i>
-                                                <?php elseif ($post['visibility'] === 'private'): ?>
-                                                    <i class="fas fa-lock ms-1" title="Private"></i>
+                                    <div class="d-flex align-items-center mb-3 justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
+                                                <img src="<?php echo htmlspecialchars($post['profile_picture'] ?: 'assets/default-avatar.png'); ?>"
+                                                    alt="Profile" class="profile-img me-3">
+                                            </a>
+                                            <div>
+                                                <h6 class="mb-0">
+                                                    <a href="user-profile.php?user_id=<?= htmlspecialchars($post['user_id']); ?>" style="text-decoration: none;">
+                                                        <?= htmlspecialchars($post['username']); ?>
+                                                    </a>
+                                                </h6>
+                                                <small class="text-muted">
+                                                    <?php echo timeAgo($post['created_at']); ?>
+                                                    <?php if ($post['visibility'] === 'friends'): ?>
+                                                        <i class="fas fa-users ms-1" title="Friends only"></i>
+                                                    <?php elseif ($post['visibility'] === 'public'): ?>
+                                                        <i class="fas fa-globe ms-1" title="Public"></i>
+                                                    <?php elseif ($post['visibility'] === 'private'): ?>
+                                                        <i class="fas fa-lock ms-1" title="Private"></i>
+                                                    <?php endif; ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted" type="button" id="postOptions<?= $post['post_id']; ?>" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postOptions<?= $post['post_id']; ?>">
+                                                <?php if ($post['user_id'] !== $_SESSION['user_id']): ?>
+                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reportModal" data-post-id="<?= $post['post_id']; ?>">Report Post</a></li>
                                                 <?php endif; ?>
-                                            </small>
+                                            </ul>
                                         </div>
                                     </div>
 
                                     <!-- Post Content -->
-                                    <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
-
-                                    <!-- Post Images -->
-                                    <?php if (!empty($post['images'])): ?>
-                                        <?php
-                                        $images = explode(',', $post['images']);
-                                        $image_count = count($images);
-                                        ?>
-                                        <div class="post-images">
-                                            <?php foreach ($images as $index => $image): ?>
-                                                <?php //if ($index): // Show max 4 images 
+                                    <?php if (!empty($post['original_post_id'])): ?>
+                                        <div class="shared-post-container border p-3 mb-3 rounded">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <img src="<?php echo htmlspecialchars($post['original_profile_picture'] ?: 'assets/default-avatar.png'); ?>"
+                                                    alt="Original Profile" class="profile-img me-2" style="width: 30px; height: 30px;">
+                                                <div>
+                                                    <h6 class="mb-0" style="font-size: 0.9em;">
+                                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($post['original_user_id']); ?>" style="text-decoration: none;">
+                                                            <?= htmlspecialchars($post['original_username']); ?>
+                                                        </a>
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <?php echo timeAgo($post['original_created_at']); ?>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['original_content'])); ?></p>
+                                            <?php if (!empty($post['original_images'])): ?>
+                                                <?php
+                                                $original_images = explode(',', $post['original_images']);
+                                                $original_image_count = count($original_images);
                                                 ?>
-                                                <a href="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>"><img src="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
-                                                        alt="Post image" class="post-image"
-                                                        style="<?php echo $image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
-
-                                                <?php //endif; 
-                                                ?>
-                                            <?php endforeach; ?>
-                                            <?php if ($image_count > 4): ?>
-                                                <div class="more-images-overlay">
-                                                    <span>+<?php echo $image_count - 4; ?> more</span>
+                                                <div class="post-images">
+                                                    <?php foreach ($original_images as $index => $image): ?>
+                                                        <a href="assets/contentimages/<?= $post['original_user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>-original"><img src="assets/contentimages/<?= $post['original_user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
+                                                                alt="Original Post image" class="post-image"
+                                                                style="<?php echo $original_image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
+                                                    <?php endforeach; ?>
                                                 </div>
                                             <?php endif; ?>
                                         </div>
+                                    <?php else: ?>
+                                        <p class="mb-3"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                                        <?php if (!empty($post['images'])): ?>
+                                            <?php
+                                            $images = explode(',', $post['images']);
+                                            $image_count = count($images);
+                                            ?>
+                                            <div class="post-images">
+                                                <?php foreach ($images as $index => $image): ?>
+                                                    <a href="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>" data-lightbox="post-images-<?php echo $post['post_id']; ?>"><img src="assets/contentimages/<?= $post['user_id'] ?>/<?= htmlspecialchars(trim($image)); ?>"
+                                                            alt="Post image" class="post-image"
+                                                            style="<?php echo $image_count === 1 ? 'max-width: 100%;' : 'width:200px'; ?>"></a>
+                                                <?php endforeach; ?>
+                                                <?php if ($image_count > 4): ?>
+                                                    <div class="more-images-overlay">
+                                                        <span>+<?php echo $image_count - 4; ?> more</span>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     <?php endif; ?>
 
 
@@ -585,7 +628,7 @@ include_once 'includes/header1.php';
                                         </button>
 
                                         <!-- Share -->
-                                        <button class="btn btn-light flex-fill" onclick="sharePost(<?= $post['post_id']; ?>)">
+                                        <button class="btn btn-light flex-fill" onclick="socialTalk.sharePost(<?= $post['post_id']; ?>)">
                                             <i class="fas fa-share me-1"></i>Share
                                         </button>
                                     </div>
@@ -633,13 +676,14 @@ include_once 'includes/header1.php';
                         <?php foreach ($friend_suggestions as $suggestion): ?>
                             <div class="mb-3">
                                 <div class="d-flex align-items-center mb-2">
-                                    <img src="<?= htmlspecialchars($suggestion['profile_picture']) ?>"
+                                <a href="user-profile.php?user_id=<?= htmlspecialchars($suggestion['user_id']); ?>" style="text-decoration: none;">
+                                <img src="<?= htmlspecialchars($suggestion['profile_picture']) ?>"
                                         class="profile-pic me-2"
                                         style="width: 40px; height: 40px;"
-                                        alt="<?= htmlspecialchars($suggestion['full_name']) ?> profile">
+                                        alt="<?= htmlspecialchars($suggestion['full_name']) ?>"> </a>
                                     <div class="flex-grow-1">
                                         <h6 class="mb-0" style="font-size: 0.9em;">
-                                            <?= htmlspecialchars($suggestion['full_name'] ?: $suggestion['username']) ?>
+                                        <a href="user-profile.php?user_id=<?= htmlspecialchars($suggestion['user_id']); ?>" style="text-decoration: none;"> <?= htmlspecialchars($suggestion['full_name'] ?: $suggestion['username']) ?></a>
                                         </h6>
                                         <small class="text-muted"><?= $suggestion['mutual_count'] ?> mutual friend<?= $suggestion['mutual_count'] != 1 ? 's' : '' ?></small>
                                     </div>
@@ -741,3 +785,72 @@ include_once 'includes/header1.php';
     <?php
     include_once 'includes/footer1.php';
     ?>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Report Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm">
+                    <input type="hidden" id="reportPostId" name="post_id">
+                    <div class="mb-3">
+                        <label for="reportReason" class="form-label">Reason for reporting:</label>
+                        <textarea class="form-control" id="reportReason" name="reason" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Submit Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        if (window.reportScriptLoaded) {
+            return;
+        }
+        window.reportScriptLoaded = true;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var reportModal = document.getElementById('reportModal');
+            reportModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var postId = button.getAttribute('data-post-id');
+                var modalPostIdInput = reportModal.querySelector('#reportPostId');
+                modalPostIdInput.value = postId;
+            });
+
+            document.getElementById('reportForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                var postId = document.getElementById('reportPostId').value;
+                var reason = document.getElementById('reportReason').value;
+
+                fetch('apis/report_post.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'post_id=' + encodeURIComponent(postId) + '&reason=' + encodeURIComponent(reason)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Post reported successfully!');
+                        var modal = bootstrap.Modal.getInstance(reportModal);
+                        modal.hide();
+                    } else {
+                        alert('Error reporting post: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while reporting the post.');
+                });
+            });
+        });
+    })();
+</script>

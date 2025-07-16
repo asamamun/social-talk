@@ -8,8 +8,8 @@ if (!isset($_SESSION['logged_in'])) {
     exit;
 }
 
-$conversation_id = $_GET['conversation_id'] ?? null;
-$last_id = $_GET['last_id'] ?? 0;
+$conversation_id = isset($_GET['conversation_id']) ? (int)$_GET['conversation_id'] : null;
+$last_id = isset($_GET['last_id']) ? (int)$_GET['last_id'] : 0;
 
 if (!$conversation_id) {
     echo json_encode(['success' => false, 'message' => 'Invalid conversation']);

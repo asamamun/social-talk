@@ -17,6 +17,11 @@ $db = new MysqliDb();
 $db->where("user_id", $_SESSION['user_id']);
 $user = $db->getOne("users");
 
+// Initialize $user as an empty array if it's null
+if ($user === null) {
+    $user = [];
+}
+
 // Get current user profile data
 $db->where("user_id", $_SESSION['user_id']);
 $current_user_profile = $db->getOne("user_profile");
@@ -40,10 +45,17 @@ foreach ($notifications as $notification) {
     // Get the source user (who triggered the notification)
     $db->where("user_id", $notification['source_id']);
     $sourceUser = $db->getOne("users");
+    error_log("Notifications: Source User for notification ID " . $notification['notification_id'] . ": " . print_r($sourceUser, true));
+
+    // Initialize $sourceUser as an empty array if it's null
+    if ($sourceUser === null) {
+        $sourceUser = [];
+    }
     
     // Get profile info for the source user
     $db->where("user_id", $notification['source_id']);
     $sourceProfile = $db->getOne("user_profile");
+    error_log("Notifications: Source Profile for notification ID " . $notification['notification_id'] . ": " . print_r($sourceProfile, true));
     
     $notification['source_user'] = array_merge($sourceUser, $sourceProfile ?: []);
     
@@ -80,18 +92,19 @@ include_once 'includes/header1.php';
                             <?php
                             $notificationClass = $notification['is_read'] ? 'notification-item' : 'notification-item unread';
                             $actionUser = $notification['source_user'];
+                            error_log("Notifications: Action User for notification ID " . $notification['notification_id'] . ": " . print_r($actionUser, true));
                             $timeAgo = time_elapsed_string($notification['created_at']);
                             ?>
                             
                             <div class="<?php echo $notificationClass; ?>" 
                                  onclick="handleNotificationClick('<?php echo $notification['type']; ?>', '<?php echo $notification['source_id']; ?>', this)">
                                 <div class="d-flex align-items-center">
-                                   <a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id']); ?>" style="text-decoration: none;"> <img src="<?php echo htmlspecialchars($actionUser['profile_picture']); ?>" 
+                                   <a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id'] ?? ''); ?>" style="text-decoration: none;"> <img src="<?php echo htmlspecialchars($actionUser['profile_picture'] ?? 'assets/default-avatar.png'); ?>" 
                                          class="profile-pic me-3" 
-                                         alt="<?php echo htmlspecialchars($actionUser['username']); ?>"> </a>
+                                         alt="<?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>"> </a>
                                     <div>
                                         <?php if ($notification['type'] == 'friend_request'): ?>
-                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id']); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username']); ?> </a></strong> sent you a friend request
+                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id'] ?? ''); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?> </a></strong> sent you a friend request
                                             <div class="text-muted small"><?php echo $timeAgo; ?></div>
                                             <?php 
                                             // Check if this is the current user who needs to take action
@@ -104,27 +117,31 @@ include_once 'includes/header1.php';
                                                 <div class="mt-2">
                                                     <button class="btn btn-primary btn-sm me-2" 
                                                             onclick="acceptFriendRequest(<?php echo $notification['source_id']; ?>, this, event)" 
-                                                            aria-label="Accept friend request from <?php echo htmlspecialchars($actionUser['username']); ?>">
+                                                            aria-label="Accept friend request from <?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>">
                                                         Accept
                                                     </button>
                                                     <button class="btn btn-secondary btn-sm" 
                                                             onclick="declineFriendRequest(<?php echo $notification['source_id']; ?>, this, event)" 
-                                                            aria-label="Decline friend request from <?php echo htmlspecialchars($actionUser['username']); ?>">
+                                                            aria-label="Decline friend request from <?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>">
                                                         Decline
                                                     </button>
                                                 </div>
                                             <?php endif; ?>
                                         <?php elseif ($notification['type'] == 'like'): ?>
-                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id']); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username']); ?>
+                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id'] ?? ''); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>
                                             </a></strong> liked your post
                                             <div class="text-muted small"><?php echo $timeAgo; ?></div>
                                         <?php elseif ($notification['type'] == 'comment'): ?>
-                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id']); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username']); ?>
+                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id'] ?? ''); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>
                                             </a></strong>commented on your post
                                             <div class="text-muted small"><?php echo $timeAgo; ?></div>
                                         <?php elseif ($notification['type'] == 'message'): ?>
-                                           <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id']); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username']); ?>
+                                           <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id'] ?? ''); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>
                                             </a></strong> sent you a message
+                                            <div class="text-muted small"><?php echo $timeAgo; ?></div>
+                                        <?php elseif ($notification['type'] == 'share'): ?>
+                                            <strong><a href="user-profile.php?user_id=<?= htmlspecialchars($actionUser['user_id'] ?? ''); ?>" style="text-decoration: none;"><?php echo htmlspecialchars($actionUser['username'] ?? 'Unknown User'); ?>
+                                            </a></strong> shared your post
                                             <div class="text-muted small"><?php echo $timeAgo; ?></div>
                                         <?php endif; ?>
                                     </div>
@@ -209,7 +226,7 @@ function handleNotificationClick(type, sourceId, element) {
             break;
         case 'like':
         case 'comment':
-            // You'll need to store post_id in the notifications table or join with likes/comments table
+        case 'share':
             window.location.href = 'post.php?id=' + sourceId;
             break;
         case 'message':

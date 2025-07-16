@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($message)) {
             //dismissible alert
             echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
-            echo $message;
+            echo htmlspecialchars($message);
             echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
             echo '</div>';
         }
